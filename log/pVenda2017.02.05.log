@@ -1,0 +1,3 @@
+[ 5/2/2017 17:32:15 ] Erro - Erro na comando / Erro: violation of FOREIGN KEY constraint "TRANSITEM_PRODUTO" on table "TRANSITEM"
+Foreign key reference target does not exist
+ / ACmd : insert into TRANSITEM (CD_DNATRANS, NR_ITEM, U_VERSION, CD_OPERADOR, DT_CADASTRO, CD_BARRAPRD, CD_PRODUTO, DS_PRODUTO, CD_ESPECIE, CD_NCM, CD_CFOP, QT_ITEM, VL_CUSTO, VL_UNITARIO, VL_ITEM, VL_VARIACAO, VL_VARIACAOCAPA, VL_FRETE, VL_SEGURO, VL_OUTRO, VL_DESPESA) values ('#20170205#23', 2, '', 0, '05.02.2017 17:32:12', '1', 0, '', '', '', 6101, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0) / TmConexao.ExecComando()

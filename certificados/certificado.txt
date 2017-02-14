@@ -1,0 +1,9 @@
+SerialNumber: 6400C7B0BA901F562FF7626C4B038746
+Subject: CN=BEMATECH S A:82373077000171, OU=Autenticado por AR Maiaramar, OU=RFB e-CNPJ A1, OU=Secretaria da Receita Federal do Brasil - RFB, L=Curitiba, S=PR, O=ICP-Brasil, C=BR
+NotBefore: 03/04/2016 21:00:00
+NotAfter: 03/04/2017 20:59:59
+
+Password: 1234
+
+IdCSC: 000001
+CSC: SS107Q7N7YKCFFSOPNRARSDQYMNRQUXSYALU

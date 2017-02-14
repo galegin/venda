@@ -1,0 +1,18 @@
+[ 22/1/2017 19:08:41 ] Erro - Erro na consulta / Erro: Unable to Load fbclient.dll / ASql : select  from PESSOA  / TmConexao.GetConsulta()
+[ 22/1/2017 19:12:27 ] Erro - Erro na consulta / Erro: Token unknown - line 1, column 9
+from
+ / ASql : select  from PESSOA  / TmConexao.GetConsulta()
+[ 22/1/2017 19:28:05 ] Erro - Erro na comando / Erro: validation error for column VL_ITEM, value "*** null ***"
+ / ACmd : insert into TRANSACAO (CD_DNATRANS, U_VERSION, CD_OPERADOR, DT_CADASTRO, CD_EQUIP, DT_TRANSACAO, NR_TRANSACAO, NR_CPFCNPJ, TP_DOCFISCAL, TP_OPERACAO, TP_MODALIDADE, CD_CFOP, CD_SERIE, NR_NF, CD_DNAPAGTO, DT_CANC) values ('123#2017.01.22#6', '', 0, '22.01.2017 19:26:40', '123', '22.01.2017 00:00:00', 6, '00000000000', 1, 'S', 1, 1201, '1', 0, '', '30.12.1899 00:00:00') / TmConexao.ExecComando()
+[ 22/1/2017 19:51:25 ] Erro - Erro na comando / Erro: Column unknown
+U_VERSION
+At line 1, column 46
+ / ACmd : insert into TRANSITEM (CD_DNATRANS, NR_ITEM, U_VERSION, CD_OPERADOR, DT_CADASTRO, CD_BARRAPRD, CD_PRODUTO, DS_PRODUTO, CD_CFOP, CD_CST, CD_CSOSN, QT_ITEM, PR_ALIQUOTA, VL_CUSTO, VL_UNITARIO, VL_ITEM, VL_VARIACAO, VL_VARIACAOCAPA, VL_TOTITEM) values ('123#20170122#8', 1, '', 0, '22.01.2017 19:39:00', '10', 100000, 'TESTE', 1201, '0', '', 1, 18, 10, 15, 15, 0, 0, 15) / TmConexao.ExecComando()
+[ 22/1/2017 19:52:42 ] Erro - Erro na comando / Erro: Column unknown
+CD_CSOSN
+At line 1, column 137
+ / ACmd : insert into TRANSITEM (CD_DNATRANS, NR_ITEM, U_VERSION, CD_OPERADOR, DT_CADASTRO, CD_BARRAPRD, CD_PRODUTO, DS_PRODUTO, CD_CFOP, CD_CST, CD_CSOSN, QT_ITEM, PR_ALIQUOTA, VL_CUSTO, VL_UNITARIO, VL_ITEM, VL_VARIACAO, VL_VARIACAOCAPA, VL_TOTITEM) values ('123#20170122#8', 2, '', 0, '22.01.2017 19:51:36', '10', 100000, 'TESTE', 1201, '0', '', 1, 18, 10, 15, 15, 0, 0, 15) / TmConexao.ExecComando()
+[ 22/1/2017 19:53:20 ] Erro - Erro na comando / Erro: Column unknown
+CD_CSOSN
+At line 1, column 184
+ / ACmd : insert into TRANSITEMIMP (CD_DNATRANS, NR_ITEM, CD_IMPOSTO, U_VERSION, CD_OPERADOR, DT_CADASTRO, PR_ALIQUOTA, VL_BASECALCULO, PR_BASECALCULO, VL_IMPOSTO, VL_OUTRO, VL_ISENTO, CD_CST, CD_CSOSN) values ('123#20170122#8', 3, 1, '', 0, '22.01.2017 19:52:51', 18, 15, 100, 2.7, 0, 0, '', '') / TmConexao.ExecComando()

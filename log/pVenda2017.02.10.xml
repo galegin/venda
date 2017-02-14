@@ -1,0 +1,17 @@
+<log>
+<data_hora>10/2/2017 19:35:50</data_hora>
+<tipo_mensagem>Erro</tipo_mensagem>
+<mensagem>Erro na comando / Erro: violation of PRIMARY or UNIQUE KEY constraint "TRANSIMPOSTOP1" on table "TRANSIMPOSTO"
+ / ACmd : insert into TRANSIMPOSTO (CD_DNATRANS, NR_ITEM, CD_IMPOSTO, U_VERSION, CD_OPERADOR, DT_CADASTRO, PR_ALIQUOTA, VL_BASECALCULO, PR_BASECALCULO, PR_REDBASECALCULO, VL_IMPOSTO, VL_OUTRO, VL_ISENTO, CD_CST, CD_CSOSN) values ('#20170210#43', 1, 1, '', 0, '10.02.2017 19:33:50', 18, 15, 100, 0, 2.7, 0, 0, '0', '')</mensagem>
+<metodo>TmConexao.ExecComando()</metodo>
+</log>
+
+<log>
+<data_hora>10/2/2017 22:11:31</data_hora>
+<tipo_mensagem>Erro</tipo_mensagem>
+<mensagem>Erro na comando / Erro: arithmetic exception, numeric overflow, or string truncation
+string right truncation
+ / ACmd : insert into TRANSITEM (CD_DNATRANS, NR_ITEM, U_VERSION, CD_OPERADOR, DT_CADASTRO, CD_BARRAPRD, CD_PRODUTO, DS_PRODUTO, CD_ESPECIE, CD_NCM, CD_CFOP, QT_ITEM, VL_CUSTO, VL_UNITARIO, VL_ITEM, VL_VARIACAO, VL_VARIACAOCAPA, VL_FRETE, VL_SEGURO, VL_OUTRO, VL_DESPESA) values ('#20170210#90', 1, '', 0, '10.02.2017 22:11:27', '10', 10, 'TESTE', 'PC', '61130000', 6101, 1, 10, 15, 15, 0, 0, 0, 0, 0, 0)</mensagem>
+<metodo>TmConexao.ExecComando()</metodo>
+</log>
+

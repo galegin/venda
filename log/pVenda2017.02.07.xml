@@ -1,0 +1,7 @@
+<log>
+<data_hora>7/2/2017 20:09:37</data_hora>
+<tipo_mensagem>Erro</tipo_mensagem>
+<mensagem>Erro: Invalid pointer operation</mensagem>
+<metodo>TmObjeto.ResetValues</metodo>
+</log>
+
