@@ -66,7 +66,7 @@ type
       ADhRecibo : TDateTime;
       ANrRecibo : String;
       ARetornoXml : String);
-
+    
     procedure GerarDFe;
 
     procedure EnviarDFe;
@@ -482,14 +482,12 @@ begin
 
 // IMPOSTO
 
-        with Imposto do
-          vTotTrib := 0;
-
         for J := 0 to List_Imposto.Count - 1 do begin
 
           with Imposto, List_Imposto[J] do begin
 
             // lei da transparencia nos impostos
+			vVlTotTrib := vVlTotTrib + Vl_Imposto;
             vTotTrib := vTotTrib + Vl_Imposto;
 
             case Tp_Imposto of
@@ -650,20 +648,21 @@ begin
 
 // TOTAL
 
-    Total.ICMSTot.vBC     := fObj_Transacao.Vl_Baseicms;
-    Total.ICMSTot.vICMS   := fObj_Transacao.Vl_Icms;
-    Total.ICMSTot.vBCST   := fObj_Transacao.Vl_Baseicmsst;
-    Total.ICMSTot.vST     := fObj_Transacao.Vl_Icmsst;
-    Total.ICMSTot.vProd   := fObj_Transacao.Vl_Item;
-    Total.ICMSTot.vFrete  := fObj_Transacao.Vl_Frete;
-    Total.ICMSTot.vSeg    := fObj_Transacao.Vl_Seguro;
-    Total.ICMSTot.vDesc   := fObj_Transacao.Vl_Desconto;
-    Total.ICMSTot.vII     := fObj_Transacao.Vl_Ii;
-    Total.ICMSTot.vIPI    := fObj_Transacao.Vl_Ipi;
-    Total.ICMSTot.vPIS    := fObj_Transacao.Vl_Pis;
-    Total.ICMSTot.vCOFINS := fObj_Transacao.Vl_Cofins;
-    Total.ICMSTot.vOutro  := fObj_Transacao.Vl_Outro;
-    Total.ICMSTot.vNF     := fObj_Transacao.Vl_Total;
+    Total.ICMSTot.vBC      := fObj_Transacao.Vl_Baseicms;
+    Total.ICMSTot.vICMS    := fObj_Transacao.Vl_Icms;
+    Total.ICMSTot.vBCST    := fObj_Transacao.Vl_Baseicmsst;
+    Total.ICMSTot.vST      := fObj_Transacao.Vl_Icmsst;
+    Total.ICMSTot.vProd    := fObj_Transacao.Vl_Item;
+    Total.ICMSTot.vFrete   := fObj_Transacao.Vl_Frete;
+    Total.ICMSTot.vSeg     := fObj_Transacao.Vl_Seguro;
+    Total.ICMSTot.vDesc    := fObj_Transacao.Vl_Desconto;
+    Total.ICMSTot.vII      := fObj_Transacao.Vl_Ii;
+    Total.ICMSTot.vIPI     := fObj_Transacao.Vl_Ipi;
+    Total.ICMSTot.vPIS     := fObj_Transacao.Vl_Pis;
+    Total.ICMSTot.vCOFINS  := fObj_Transacao.Vl_Cofins;
+    Total.ICMSTot.vOutro   := fObj_Transacao.Vl_Outro;
+    Total.ICMSTot.vNF      := fObj_Transacao.Vl_Total;
+	Total.ICMSTot.vTotTrib := vVlTotTrib;
 
     // partilha do icms e fundo de probreza
     Total.ICMSTot.vFCPUFDest   := 0.00;
@@ -688,35 +687,43 @@ begin
 
     Transp.modFrete := mfSemFrete; // NFC-e não pode ter FRETE
 
-// COBRANCA
-
-    with Cobr do begin
-      with Fat do begin
-        nFat  := IntToStr(fObj_Transacao.Obj_Fiscal.Nr_Docfiscal);
-        vOrig := fObj_Transacao.Vl_Item;
-        vDesc := fObj_Transacao.Vl_Desconto;
-        vLiq  := fObj_Transacao.Vl_Total;
-      end;
-
-      for I := 0 to fObj_Transacao.List_Vencto.Count - 1 do begin
-        with Dup.Add, fObj_Transacao.List_Vencto[I] do begin
-          nDup  := IntToStr(Nr_Parcela);
-          dVenc := Dt_Parcela;
-          vDup  := Vl_Parcela;
-        end;
-      end;
-    end;
+    case fTp_ModeloDF of
 
 // PAGAMENTOS apenas para NFC-e
 
-    pag.Clear();
-    if fTp_ModeloDF in [moNFCe] then
-      for I := 0 to fObj_Transacao.List_Pagto.Count - 1 do begin
-        with pag.Add, fObj_Transacao.List_Pagto[I] do begin
-          tPag := StrToFormaPagamento(vOk, IntToStr(Tp_Pagto));
-          vPag := Vl_Pagto;
+      moNFCe: begin
+        pag.Clear();
+        for I := 0 to fObj_Transacao.List_Pagto.Count - 1 do begin
+          with pag.Add, fObj_Transacao.List_Pagto[I] do begin
+            tPag := StrToFormaPagamento(vOk, IntToStr(Tp_Pagto));
+            vPag := Vl_Pagto;
+          end;
         end;
       end;
+
+// COBRANCA
+
+      moNFe: begin
+        with Cobr do begin
+          with Fat do begin
+            nFat  := IntToStr(fObj_Transacao.Obj_Fiscal.Nr_Docfiscal);
+            vOrig := fObj_Transacao.Vl_Item;
+            vDesc := fObj_Transacao.Vl_Desconto;
+            vLiq  := fObj_Transacao.Vl_Total;
+          end;
+
+          Dup.Clear();
+          for I := 0 to fObj_Transacao.List_Vencto.Count - 1 do begin
+            with Dup.Add, fObj_Transacao.List_Vencto[I] do begin
+              nDup  := IntToStr(Nr_Parcela);
+              dVenc := Dt_Parcela;
+              vDup  := Vl_Parcela;
+            end;
+          end;
+        end;
+      end;
+
+    end;
 
     InfAdic.infCpl     :=  '';
     InfAdic.infAdFisco :=  '';
@@ -1081,13 +1088,22 @@ begin
   CarregarDFe;
   EnviarDFeContingencia;
 
-  if fcStat in [100, 150, 204] then begin
+  if (fTp_Contingencia in [tpcSemContingencia]) and (fcStat in [100, 105, 204]) then begin
     GravarDFe(
       tppAutorizada,
       fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
+      fACBrNFe.WebServices.Retorno.RetornoWS);
+  
+  end else if (fTp_Contingencia in [tpcSemContingencia]) and not (fcStat in [100]) then begin
+    GravarDFe(
+      tppCancelada,
+      fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
+      'NA',
+      Now,
+      '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
   end;
