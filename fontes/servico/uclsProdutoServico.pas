@@ -83,7 +83,7 @@ begin
     Cd_Barraprd := ACd_Barraprd;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Produto := ACd_Produto;

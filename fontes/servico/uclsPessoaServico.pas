@@ -94,7 +94,7 @@ begin
     Nr_Cpfcnpj := ANr_Cpfcnpj;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Nr_Rgie := ANr_Rgie;

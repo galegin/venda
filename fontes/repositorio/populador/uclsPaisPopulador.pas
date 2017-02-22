@@ -28,7 +28,7 @@ var
     with vList_Pais.Add do begin
       Cd_Pais := ACd_Pais;
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
       Ds_Pais := ADs_Pais;
       Ds_Sigla := ADs_Sigla;

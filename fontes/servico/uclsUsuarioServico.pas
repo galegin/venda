@@ -65,7 +65,7 @@ begin
     Cd_Usuario := ACd_Usuario;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Nm_Usuario := ANm_Usuario;

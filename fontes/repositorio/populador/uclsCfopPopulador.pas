@@ -26,9 +26,11 @@ var
   begin
     with vList_Cfop.Add do begin
       Cd_Cfop := ACd_Cfop;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Cfop := ADs_Cfop;
     end;
   end;

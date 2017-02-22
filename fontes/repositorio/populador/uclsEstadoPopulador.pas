@@ -28,9 +28,11 @@ var
   begin
     with vList_Estado.Add do begin
       Cd_Estado := ACd_Estado;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Estado := ADs_Estado;
       Ds_Sigla := ADs_Sigla;
       Cd_Pais := ACd_Pais;

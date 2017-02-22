@@ -38,7 +38,7 @@ begin
   Propert('Vl_Entrada').IsRequired().HasPrecision(15, 2);
   Propert('Vl_Troco').IsRequired().HasPrecision(15, 2);
   Propert('Vl_Variacao').IsRequired().HasPrecision(15, 2);
-  Propert('Cd_Dnacaixa').IsRequired().MaxLength(40);
+  Propert('Cd_Dnacaixa').IsOptional().MaxLength(40);
 
   HasRequired('Obj_Equip').WithMany().HasForengKey(['Cd_Equip']);
   HasRequired('Obj_Caixa').WithMany().HasForengKey(['Cd_Dnacaixa']);

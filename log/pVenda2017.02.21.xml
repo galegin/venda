@@ -1,0 +1,16 @@
+<log>
+<data_hora>21/02/2017 21:28:26</data_hora>
+<tipo_mensagem>Erro</tipo_mensagem>
+<mensagem>Erro na comando / Erro: validation error for column CD_CSOSN, value "*** null ***"
+ / ACmd : insert into TRANSIMPOSTO (CD_DNATRANS, NR_ITEM, CD_IMPOSTO, CD_OPERADOR, DT_CADASTRO, PR_ALIQUOTA, VL_BASECALCULO, PR_BASECALCULO, PR_REDBASECALCULO, VL_IMPOSTO, VL_OUTRO, VL_ISENTO, CD_CST) values ('AC77EFA3#20170221#110', 1, 1, 1, '21.02.2017 21:27:42', 18, 15, 100, 0, 2.7, 0, 0, '0')</mensagem>
+<metodo>TmConexao.ExecComando()</metodo>
+</log>
+
+<log>
+<data_hora>21/02/2017 21:31:05</data_hora>
+<tipo_mensagem>Erro</tipo_mensagem>
+<mensagem>Erro na comando / Erro: validation error for column CD_CSOSN, value "*** null ***"
+ / ACmd : insert into TRANSIMPOSTO (CD_DNATRANS, NR_ITEM, CD_IMPOSTO, CD_OPERADOR, DT_CADASTRO, PR_ALIQUOTA, VL_BASECALCULO, PR_BASECALCULO, PR_REDBASECALCULO, VL_IMPOSTO, VL_OUTRO, VL_ISENTO, CD_CST) values ('AC77EFA3#20170221#111', 1, 1, 1, '21.02.2017 21:30:16', 18, 15, 100, 0, 2.7, 0, 0, '0')</mensagem>
+<metodo>TmConexao.ExecComando()</metodo>
+</log>
+

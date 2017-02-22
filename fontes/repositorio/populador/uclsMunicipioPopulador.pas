@@ -28,9 +28,11 @@ var
   begin
     with vList_Municipio.Add do begin
       Cd_Municipio := ACd_Municipio;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Municipio := ADs_Municipio;
       Ds_Sigla := ADs_Sigla;
       Cd_Estado := ACd_Estado;

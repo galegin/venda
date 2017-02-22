@@ -120,7 +120,7 @@ begin
       IntToStr(ANr_Pagto);
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Equip := ACd_Equip;
@@ -185,7 +185,7 @@ begin
       Nr_Parcela := ANr_Parcela;
 
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
 
       Vl_Parcela := AVl_Parcela;

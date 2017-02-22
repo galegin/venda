@@ -28,9 +28,11 @@ var
     with vList_Aliqicms.Add do begin
       Uf_Origem := AUf_Origem;
       Uf_Destino := AUf_Destino;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Pr_Aliquota := APr_Aliquota;
     end;
   end;

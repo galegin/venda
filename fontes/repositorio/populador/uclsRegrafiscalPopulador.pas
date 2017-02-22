@@ -31,9 +31,11 @@ var
   begin
     with vList_Regrafiscal.Add do begin
       Cd_Regrafiscal := ACd_Regrafiscal;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Regrafiscal := ADs_Regrafiscal;
       In_Calcimposto := AIn_CalcImposto;
     end;
@@ -52,9 +54,11 @@ var
     with vList_Imposto.Add do begin
       Cd_Regrafiscal := ACd_Regrafiscal;
       Cd_Imposto := ACd_Imposto;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Pr_Aliquota := APr_Aliquota;
       Pr_Basecalculo := APr_Basecalculo;
       Cd_Cst := ACd_Cst;

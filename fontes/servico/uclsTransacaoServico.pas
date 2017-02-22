@@ -168,7 +168,7 @@ begin
       IntToStr(vNr_Transacao);
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Equip := ACd_Equip;
@@ -187,7 +187,7 @@ begin
       Cd_Dnatrans := fTransacao.Cd_Dnatrans;
 
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
 
       Tp_Docfiscal := fOperacao.Tp_Docfiscal;
@@ -240,7 +240,7 @@ begin
     Nr_Item := fTransacao.List_Item.Count;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Barraprd := fProduto.Cd_Barraprd;
@@ -411,7 +411,7 @@ begin
     Nr_Parcela := fTransacao.List_Vencto.Count;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Dt_Parcela := ADt_Parcela;
@@ -445,7 +445,7 @@ begin
     Nr_Pagto := fTransacao.List_Pagto.Count;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Tp_Pagto := ATp_Pagto;

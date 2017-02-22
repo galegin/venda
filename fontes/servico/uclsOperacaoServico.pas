@@ -80,7 +80,7 @@ begin
     Cd_Operacao := ACd_Operacao;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Tp_Docfiscal := ATp_Docfiscal;

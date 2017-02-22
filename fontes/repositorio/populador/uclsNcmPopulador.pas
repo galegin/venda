@@ -26,9 +26,11 @@ var
   begin
     with vList_Ncm.Add do begin
       Cd_Ncm := ACd_Ncm;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Ncm := ADs_Ncm;
     end;
   end;

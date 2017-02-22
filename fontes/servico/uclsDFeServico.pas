@@ -129,7 +129,7 @@ implementation
 uses
   uTipoImposto,
   uMunicipio, uPessoa, uTransdfe, uTransitem, uTransimposto,
-  mPath, mProxy, mTipoMensagem, mTipoParametro;
+  mPath, mProxy, mTipoMensagem, mTipoParametro, mString;
 
 var
   _instance : TcDFeServico;
@@ -318,7 +318,7 @@ begin
       Cd_Dnatrans := fObj_Transacao.Cd_Dnatrans;
 
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
 
       Ds_Xml := AXmlProt;
@@ -335,19 +335,21 @@ type
     cEAN : String;
   end;
 
-  function GetProdEAN(AcProd : Integer; AcEAN : String) : TrProdEAN;
+  function GetProdEAN(AcProd, AcEAN : String) : TrProdEAN;
   begin
-    Result.cProd := IntToStr(AcProd);
-    Result.cEAN := AcEAN;
+    if (AcEAN = AcProd)
+    or (Length(AcEAN) <> 13)
+    or not TmString.StartsWiths(AcEAN, '789') then
+      AcEAN := '';
 
-    with Result do
-      if cProd = cEAN then
-        cEAN := '';
+    Result.cProd := AcProd;
+    Result.cEAN := AcEAN;
   end;
 
 procedure TcDFeServico.GerarDFe;
 var
   vProdEAN : TrProdEAN;
+  vVlTotTrib : Real;
   I, J : Integer;
   vOk : Boolean;
 begin
@@ -449,10 +451,12 @@ begin
 
 //Adicionando Produtos
 
+    vVlTotTrib := 0;
+
     for I := 0 to fObj_Transacao.List_Item.Count - 1 do begin
       with Det.Add, fObj_Transacao.List_Item[I] do begin
 
-        vProdEAN := GetProdEAN(Cd_Produto, Cd_Barraprd);
+        vProdEAN := GetProdEAN(IntToStr(Cd_Produto), Cd_Barraprd);
 
         Prod.nItem    := Nr_Item; // Número sequencial, para cada item deve ser incrementado
         Prod.cProd    := vProdEAN.cProd;
@@ -487,7 +491,7 @@ begin
           with Imposto, List_Imposto[J] do begin
 
             // lei da transparencia nos impostos
-			vVlTotTrib := vVlTotTrib + Vl_Imposto;
+            vVlTotTrib := vVlTotTrib + Vl_Imposto;
             vTotTrib := vTotTrib + Vl_Imposto;
 
             case Tp_Imposto of

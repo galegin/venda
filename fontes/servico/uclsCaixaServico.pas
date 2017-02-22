@@ -65,7 +65,7 @@ begin
       IntToStr(ANr_Seq);
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Equip := ACd_Equip;

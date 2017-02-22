@@ -41,7 +41,7 @@ begin
   Propert('Vl_Outro').IsRequired().HasPrecision(15, 2);
   Propert('Vl_Isento').IsRequired().HasPrecision(15, 2);
   Propert('Cd_Cst').IsRequired().MaxLength(3);
-  Propert('Cd_Csosn').IsRequired().MaxLength(5);
+  Propert('Cd_Csosn').IsOptional().MaxLength(5);
 
   HasRequired('Obj_Item').WithMany().HasForengKey(['Cd_Dnatrans', 'Nr_Item']);
 end;

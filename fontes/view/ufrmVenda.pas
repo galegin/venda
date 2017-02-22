@@ -131,7 +131,7 @@ begin
 
   if fVendaServico.Transacao.Nr_Transacao = 0 then
     fVendaServico.Salvar(
-      uclsEquipServico.Instance.Equip.Cd_Dnaequip,
+      uclsEquipServico.Instance.Equip.Cd_Equip,
       Date,
       EditCliente.Text,
       uclsOperacaoServico.Instance.Operacao.Cd_Operacao);

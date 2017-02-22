@@ -65,7 +65,7 @@ begin
     Limpar();
     if ACd_Equip <> '' then begin
       Cd_Equip := ACd_Equip;
-      Consultar(nil);
+      ConsultarAll(nil);
       Result := fEquip;
     end else begin
       Result := nil;
@@ -83,7 +83,7 @@ begin
       IntToStr(ACd_Terminal);
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Cd_Equip := ACd_Equip;

@@ -32,9 +32,11 @@ var
   begin
     with vList_Operacao.Add do begin
       Cd_Operacao := ACd_Operacao;
+
       U_Version := '';
-      Cd_Operador := 0;
+      Cd_Operador := 1;
       Dt_Cadastro := Now;
+
       Ds_Operacao := ADs_Operacao;
       Tp_Docfiscal := ATp_Docfiscal;
       Tp_Modalidade := ATp_Modalidade;

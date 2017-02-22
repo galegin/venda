@@ -73,7 +73,7 @@ begin
     Cd_Imposto := fRegrafiscalImposto.Cd_Imposto;
 
     U_Version := '';
-    Cd_Operador := 0;
+    Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Vl_Basecalculo := fTransitem.Vl_Totitem;
