@@ -43,7 +43,7 @@ begin
   Propert('Cd_Cst').IsRequired().MaxLength(3);
   Propert('Cd_Csosn').IsOptional().MaxLength(5);
 
-  HasRequired('Obj_Item').WithMany().HasForengKey(['Cd_Dnatrans', 'Nr_Item']);
+  HasRequired('Obj_Item').WithMany().HasForeignKey(['Cd_Dnatrans', 'Nr_Item']);
 end;
 
 end.

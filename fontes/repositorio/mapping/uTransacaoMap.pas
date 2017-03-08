@@ -37,10 +37,10 @@ begin
   Propert('Cd_Dnapagto').IsOptional().MaxLength(40);
   Propert('Dt_Canc').IsOptional();
 
-  HasRequired('Obj_Equip').WithMany().HasForengKey(['Cd_Equip']);
-  HasRequired('Obj_Operacao').WithMany().HasForengKey(['Cd_Operacao']);
-  HasRequired('Obj_Pessoa').WithMany().HasForengKey(['Nr_Cpfcnpj']);
-  HasRequired('Obj_Pagto').WithMany().HasForengKey(['Cd_Dnapagto']);
+  HasRequired('Obj_Equip').WithMany().HasForeignKey(['Cd_Equip']);
+  HasRequired('Obj_Operacao').WithMany().HasForeignKey(['Cd_Operacao']);
+  HasRequired('Obj_Pessoa').WithMany().HasForeignKey(['Nr_Cpfcnpj']);
+  HasRequired('Obj_Pagto').WithMany().HasForeignKey(['Cd_Dnapagto']);
 end;
 
 end.

@@ -35,7 +35,7 @@ begin
   Propert('Ds_Sigla').IsRequired().MaxLength(3);
   Propert('Cd_Estado').IsRequired();
 
-  HasRequired('Obj_Estado').WithMany().HasForengKey(['Cd_Estado']);
+  HasRequired('Obj_Estado').WithMany().HasForeignKey(['Cd_Estado']);
 end;
 
 end.

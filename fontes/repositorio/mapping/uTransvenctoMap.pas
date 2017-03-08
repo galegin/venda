@@ -35,7 +35,7 @@ begin
   Propert('Dt_Parcela').IsRequired();
   Propert('Vl_Parcela').IsRequired().HasPrecision(15, 2);
 
-  HasRequired('Obj_Transacao').WithMany().HasForengKey(['Cd_Dnatrans']);
+  HasRequired('Obj_Transacao').WithMany().HasForeignKey(['Cd_Dnatrans']);
 end;
 
 end.

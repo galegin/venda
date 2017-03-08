@@ -49,8 +49,8 @@ begin
   Propert('Vl_Outro').IsRequired().HasPrecision(15, 2);
   Propert('Vl_Despesa').IsRequired().HasPrecision(15, 2);
 
-  HasRequired('Obj_Transacao').WithMany().HasForengKey(['Cd_Dnatrans']);
-  HasRequired('Obj_Produto').WithMany().HasForengKey(['Cd_Barraprd']);
+  HasRequired('Obj_Transacao').WithMany().HasForeignKey(['Cd_Dnatrans']);
+  HasRequired('Obj_Produto').WithMany().HasForeignKey(['Cd_Barraprd']);
 
 end;
 

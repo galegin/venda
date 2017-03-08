@@ -37,7 +37,7 @@ begin
   Propert('Vl_Abertura').IsRequired();
   Propert('Dt_Fechado').IsRequired();
 
-  HasRequired('Obj_Equip').WithMany().HasForengKey(['Cd_Equip']);
+  HasRequired('Obj_Equip').WithMany().HasForeignKey(['Cd_Equip']);
 end;
 
 end.

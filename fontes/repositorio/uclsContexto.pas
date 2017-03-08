@@ -79,34 +79,33 @@ begin
 
   // mapeamento
 
-  ClearEntidade();
-
-  AddEntidade(TAliqicmsMap);
-  AddEntidade(TCaixaMap);
-  AddEntidade(TCfopMap);
-  AddEntidade(TEmpresaMap);
-  AddEntidade(TEquipMap);
-  AddEntidade(TEstadoMap);
-  AddEntidade(THistrelMap);
-  AddEntidade(TMunicipioMap);
-  AddEntidade(TNcmMap);
-  AddEntidade(TNcmsubstMap);
-  AddEntidade(TOperacaoMap);
-  AddEntidade(TPagtoMap);
-  AddEntidade(TPagtoparcMap);
-  AddEntidade(TPaisMap);
-  AddEntidade(TPessoaMap);
-  AddEntidade(TProdutoMap);
-  AddEntidade(TRegrafiscalMap);
-  AddEntidade(TRegrafiscalImpostoMap);
-  AddEntidade(TTransacaoMap);
-  AddEntidade(TTransdfeMap);
-  AddEntidade(TTransfiscalMap);
-  AddEntidade(TTransimpostoMap);
-  AddEntidade(TTransitemMap);
-  AddEntidade(TTranspagtoMap);
-  AddEntidade(TTransvenctoMap);
-  AddEntidade(TUsuarioMap);
+  AddEntidadeList([
+    TAliqicmsMap,
+    TCaixaMap,
+    TCfopMap,
+    TEmpresaMap,
+    TEquipMap,
+    TEstadoMap,
+    THistrelMap,
+    TMunicipioMap,
+    TNcmMap,
+    TNcmsubstMap,
+    TOperacaoMap,
+    TPagtoMap,
+    TPagtoparcMap,
+    TPaisMap,
+    TPessoaMap,
+    TProdutoMap,
+    TRegrafiscalMap,
+    TRegrafiscalImpostoMap,
+    TTransacaoMap,
+    TTransdfeMap,
+    TTransfiscalMap,
+    TTransimpostoMap,
+    TTransitemMap,
+    TTranspagtoMap,
+    TTransvenctoMap,
+    TUsuarioMap]);
 
   // migracao
 

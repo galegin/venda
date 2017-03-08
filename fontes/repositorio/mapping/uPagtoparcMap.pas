@@ -39,7 +39,7 @@ begin
   Propert('Ds_Adicional').IsRequired().MaxLength(1000);
   Propert('Cd_Dnabaixa').IsRequired().MaxLength(40);
 
-  HasRequired('Obj_Pagto').WithMany().HasForengKey(['Cd_Dnapagto']);
+  HasRequired('Obj_Pagto').WithMany().HasForeignKey(['Cd_Dnapagto']);
 end;
 
 end.

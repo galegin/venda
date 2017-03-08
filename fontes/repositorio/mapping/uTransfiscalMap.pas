@@ -45,7 +45,7 @@ begin
   Propert('Nr_Recibo').IsOptional().MaxLength(40);
   Propert('Tp_Processamento').IsOptional().MaxLength(1);
 
-  HasRequired('Obj_Transacao').WithMany().HasForengKey(['Cd_Dnatrans']);
+  HasRequired('Obj_Transacao').WithMany().HasForeignKey(['Cd_Dnatrans']);
 end;
 
 end.

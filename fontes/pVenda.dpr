@@ -1,11 +1,23 @@
 program pVenda;
 
+// mCreateEnt
+
 uses
   Forms,
+  mFrame,
+  mForm,
+  mTempoString,
+  mAppException,
+  mAppMessage,
+  mAppSerial,
   mCollection,
   mCollectionItem,
   mCollectionMap,
   mCollectionSet,
+  mField,
+  mFieldControl,
+  mTipoCampo,
+  mTipoEstilo,
   mTipoMensagem,
   mTipoParametro,
   uTipoDocumentoFiscal in 'model\uTipoDocumentoFiscal.pas',

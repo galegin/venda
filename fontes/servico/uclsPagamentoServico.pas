@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, StrUtils,
-  uPagto, mSequence;
+  uPagto, mSequence, mException;
 
 type
   TcPagamentoServico = class(TComponent)
@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  uPagtoparc, mMensagemLog;
+  uPagtoparc, mLogger;
 
 var
   _instance : TcPagamentoServico;
@@ -104,11 +104,11 @@ const
   cDS_METHOD = 'TcPagamentoServico.Salvar';
 begin
   if ACd_Equip = '' then
-    mMensagemLog.Instance.ErroException('Equipamento do pagamento deve ser informado', cDS_METHOD);
+    raise TmException.Create('Equipamento do pagamento deve ser informado', cDS_METHOD);
   if ADt_Pagto = 0 then
-    mMensagemLog.Instance.ErroException('Data do pagamento deve ser informada', cDS_METHOD);
+    raise TmException.Create('Data do pagamento deve ser informada', cDS_METHOD);
   if AVl_Pagto = 0 then
-    mMensagemLog.Instance.ErroException('Valor do pagamento deve ser informado', cDS_METHOD);
+    raise TmException.Create('Valor do pagamento deve ser informado', cDS_METHOD);
 
   if ANr_Pagto = 0 then
     ANr_Pagto := NumerarCapa(ADt_Pagto);
@@ -168,13 +168,13 @@ const
   cDS_METHOD = 'TcPagamentoServico.AdicionarParcela';
 begin
   if AVl_Parcela = 0 then
-    mMensagemLog.Instance.ErroException('Valor da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create('Valor da parcela deve ser informado', cDS_METHOD);
   if ATp_Docto = 0 then
-    mMensagemLog.Instance.ErroException('Tipo docto da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create('Tipo docto da parcela deve ser informado', cDS_METHOD);
   if ANr_Docto = 0 then
-    mMensagemLog.Instance.ErroException('Numero docto da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create('Numero docto da parcela deve ser informado', cDS_METHOD);
   if ADt_Vencto = 0 then
-    mMensagemLog.Instance.ErroException('Data da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create('Data da parcela deve ser informado', cDS_METHOD);
 
   if ANr_Parcela = 0 then
     ANr_Parcela := NumerarParcela();

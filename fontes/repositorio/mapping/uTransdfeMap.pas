@@ -35,7 +35,7 @@ begin
   Propert('Ds_Xml').IsRequired().MaxLength(4000).HasSubType('CLOB');
   Propert('Ds_RetornoXml').IsRequired().MaxLength(4000).HasSubType('CLOB');
 
-  HasRequired('Obj_Transacao').WithMany().HasForengKey(['Cd_Dnatrans']);
+  HasRequired('Obj_Transacao').WithMany().HasForeignKey(['Cd_Dnatrans']);
 end;
 
 end.

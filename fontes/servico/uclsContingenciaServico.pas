@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, StrUtils,
   pcnConversao, pcnConversaoNFe,
-  mMensagemLog, mInternet, mFilter,
+  mException, mInternet, mFilter,
   uTipoProcessamento, uTransfiscal, uTransacao;
 
 type
@@ -99,9 +99,8 @@ begin
           Break;
       end;
     except
-      on E : Exception do begin
-        mMensagemLog.Instance.ErroException(E, cDS_METHOD);
-      end;
+      on E : Exception do
+        raise TmException.Create(E.Message, cDS_METHOD);
     end;
 
     cStat := vObj_DFeServico.cStat;
