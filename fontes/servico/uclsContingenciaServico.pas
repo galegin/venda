@@ -80,8 +80,8 @@ begin
 
   vLst_Filter := TmFilterList.Create;
   with vLst_Filter do begin
-    Adicionar(TmFilter.CreateS('Tp_Processamento', TipoProcessamentoToStr(tppGerada)));
-    Adicionar(TmFilter.CreateD('Dh_Emissao', tpfMaiorIgual, vDt_Emissao));
+    Add(TmFilter.CreateS('Tp_Processamento', TipoProcessamentoToStr(tppGerada)));
+    Add(TmFilter.CreateD('Dh_Emissao', tpfMaiorIgual, vDt_Emissao));
   end;
 
   fObj_Fiscal.Limpar();

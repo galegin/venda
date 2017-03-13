@@ -6,6 +6,8 @@ uses
   Forms,
   mFrame,
   mForm,
+  mPersistable,
+  mObjetoJson,
   mTempoString,
   mAppException,
   mAppMessage,

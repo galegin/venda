@@ -1,0 +1,225 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{A2104F21-96EF-4603-89B8-0BEDB70A74F7}</ProjectGuid>
+			<MainSource>pVenda.dpr</MainSource>
+			<Base>True</Base>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<TargetedPlatforms>1</TargetedPlatforms>
+			<AppType>Application</AppType>
+			<FrameworkType>VCL</FrameworkType>
+			<ProjectVersion>13.4</ProjectVersion>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+			<Base_Win64>true</Base_Win64>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_UsePackage>vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP;$(DCC_UsePackage)</DCC_UsePackage>
+			<VerInfo_Keys>CompanyName=MFG Info;FileDescription=PDV;FileVersion=1.0.0.2;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Build>2</VerInfo_Build>
+			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<DCC_ExeOutput>..\</DCC_ExeOutput>
+			<DCC_K>false</DCC_K>
+			<DCC_N>true</DCC_N>
+			<DCC_S>false</DCC_S>
+			<DCC_F>false</DCC_F>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<VerInfo_Locale>1046</VerInfo_Locale>
+			<DCC_E>false</DCC_E>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win64)'!=''">
+			<Icon_MainIcon>pVenda_Icon.ico</Icon_MainIcon>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Icon_MainIcon>pVenda_Icon.ico</Icon_MainIcon>
+			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="$(MainSource)">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="model\uTipoDocumentoFiscal.pas"/>
+			<DCCReference Include="model\uTipoImposto.pas"/>
+			<DCCReference Include="model\uTipoImpressaoDanfe.pas"/>
+			<DCCReference Include="model\uTipoModalidade.pas"/>
+			<DCCReference Include="model\uTipoOperacao.pas"/>
+			<DCCReference Include="model\uTipoProcessamento.pas"/>
+			<DCCReference Include="model\uAliqicms.pas"/>
+			<DCCReference Include="model\uCaixa.pas"/>
+			<DCCReference Include="model\uCfop.pas"/>
+			<DCCReference Include="model\uEmpresa.pas"/>
+			<DCCReference Include="model\uEquip.pas"/>
+			<DCCReference Include="model\uEstado.pas"/>
+			<DCCReference Include="model\uHistrel.pas"/>
+			<DCCReference Include="model\uMunicipio.pas"/>
+			<DCCReference Include="model\uNcm.pas"/>
+			<DCCReference Include="model\uNcmsubst.pas"/>
+			<DCCReference Include="model\uOperacao.pas"/>
+			<DCCReference Include="model\uPagto.pas"/>
+			<DCCReference Include="model\uPagtoparc.pas"/>
+			<DCCReference Include="model\uPais.pas"/>
+			<DCCReference Include="model\uPessoa.pas"/>
+			<DCCReference Include="model\uProduto.pas"/>
+			<DCCReference Include="model\uRegrafiscal.pas"/>
+			<DCCReference Include="model\uRegrafiscalimposto.pas"/>
+			<DCCReference Include="model\uTransacao.pas"/>
+			<DCCReference Include="model\uTransdfe.pas"/>
+			<DCCReference Include="model\uTransfiscal.pas"/>
+			<DCCReference Include="model\uTransimposto.pas"/>
+			<DCCReference Include="model\uTransitem.pas"/>
+			<DCCReference Include="model\uTranspagto.pas"/>
+			<DCCReference Include="model\uTransvencto.pas"/>
+			<DCCReference Include="model\uUsuario.pas"/>
+			<DCCReference Include="repositorio\mapping\uAliqicmsMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uCaixaMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uCfopMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uEmpresaMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uEquipMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uEstadoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uHistrelMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uMunicipioMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uNcmMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uNcmsubstMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uOperacaoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uPagtoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uPagtoparcMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uPaisMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uPessoaMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uProdutoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uRegrafiscalMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uRegrafiscalImpostoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransacaoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransdfeMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransfiscalMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransimpostoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransitemMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTranspagtoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uTransvenctoMap.pas"/>
+			<DCCReference Include="repositorio\mapping\uUsuarioMap.pas"/>
+			<DCCReference Include="servico\uclsCaixaServico.pas"/>
+			<DCCReference Include="servico\uclsContingenciaServico.pas"/>
+			<DCCReference Include="servico\uclsDFeServico.pas"/>
+			<DCCReference Include="servico\uclsEmpresaServico.pas"/>
+			<DCCReference Include="servico\uclsEquipServico.pas"/>
+			<DCCReference Include="servico\uclsImpostoServico.pas"/>
+			<DCCReference Include="servico\uclsOperacaoServico.pas"/>
+			<DCCReference Include="servico\uclsPagamentoServico.pas"/>
+			<DCCReference Include="servico\uclsPessoaServico.pas"/>
+			<DCCReference Include="servico\uclsProdutoServico.pas"/>
+			<DCCReference Include="servico\uclsRegrafiscalServico.pas"/>
+			<DCCReference Include="servico\uclsTransacaoServico.pas"/>
+			<DCCReference Include="servico\uclsUsuarioServico.pas"/>
+			<DCCReference Include="repositorio\uclsContexto.pas"/>
+			<DCCReference Include="repositorio\uclsMapeamento.pas"/>
+			<DCCReference Include="repositorio\uclsMigracao.pas"/>
+			<DCCReference Include="repositorio\uclsPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsAliqicmsPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsCfopPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsEstadoPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsMunicipioPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsNcmPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsOperacaoPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsPaisPopulador.pas"/>
+			<DCCReference Include="repositorio\populador\uclsRegrafiscalPopulador.pas"/>
+			<DCCReference Include="view\uclsTestar.pas"/>
+			<DCCReference Include="view\ufrmVenda.pas">
+				<Form>F_Venda</Form>
+			</DCCReference>
+			<DCCReference Include="view\ufrmPagto.pas">
+				<Form>F_Pagto</Form>
+			</DCCReference>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">pVenda.dpr</Source>
+					</Source>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">2</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1046</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">MFG Info</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">PDV</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.0.2</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+				</Delphi.Personality>
+				<Platforms>
+					<Platform value="Win64">False</Platform>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+	</Project>
