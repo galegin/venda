@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, uPagto, uPagtoparc, StdCtrls, DB, DBClient, Grids, DBGrids,
-  mClientDataSet, mDataSet, mClasse, mFloat;
+  mClientDataSet, mDataSet, mClasse, mFloat, mField;
 
 type
   TF_Pagto = class(TForm)
@@ -64,21 +64,24 @@ uses
 { TF_Pagto }
 
 constructor TF_Pagto.Create(Aowner: TComponent);
+var
+  vFieldList : TmFieldList;
 begin
   inherited;
 
   fObj_Pagto := TPagto.Create(nil);
 
-  TmClientDataSet.SetFields(tParcelamento, TmClasse.GetProperties(TPagtoparc));
-  TmClientDataSet.SetVisible(tParcelamento, [
-    'Nr_Parcela', 'Vl_Parcela', 'Tp_Docto', 'Nr_Docto', 'Dt_Vencto', 'Ds_Adicional']);
-  TmClientDataSet.SetFieldList(tParcelamento, [
-    TmClientDataSet_Field.Create('Nr_Parcela', 'Parc', 4),
-    TmClientDataSet_Field.Create('Vl_Parcela', 'Valor', 8, 2),
-    TmClientDataSet_Field.Create('Tp_Docto', 'Tipo', 4),
-    TmClientDataSet_Field.Create('Nr_Docto', 'Numero', 4),
-    TmClientDataSet_Field.Create('Dt_Vencto', 'Vencto', 4),
-    TmClientDataSet_Field.Create('Ds_Adicional', 'Adicional', 4) ]);
+  vFieldList := TmFieldList.Create;
+  with vFieldList do begin
+    Add(TmField.Create('Nr_Parcela', 'Parc', ftInteger, 4));
+    Add(TmField.Create('Vl_Parcela', 'Valor', ftFloat, 8, 2));
+    Add(TmField.Create('Tp_Docto', 'Tipo', ftInteger, 4));
+    Add(TmField.Create('Nr_Docto', 'Numero', ftInteger, 4));
+    Add(TmField.Create('Dt_Vencto', 'Vencto', ftDateTime, 4));
+    Add(TmField.Create('Ds_Adicional', 'Adicional', ftString, 4));
+  end;
+
+  TmClientDataSet.SetFields(tParcelamento, vFieldList);
 
   EditQtdeParcela.Text := '1';  
 end;

@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, DBGrids, DB, DBClient, StdCtrls, ExtCtrls,
-  uclsTransacaoServico, uTransitem;
+  Dialogs, Grids, DBGrids, DB, DBClient, StdCtrls, ExtCtrls, ComCtrls,
+  uclsTransacaoServico, uTransitem, mListView, mField;
 
 type
   TF_Venda = class(TForm)
@@ -20,10 +20,12 @@ type
     PanelTotal: TPanel;
     EditValorTotal: TEdit;
     LabelValorTotal: TLabel;
+    ListView1: TListView;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EditProdutoExit(Sender: TObject);
   private
     fTransitem : TTransitem;
+    fFieldsList : TmFieldList;
     function GetObj_Item: TTransitem;
     procedure SetObj_Item(const Value: TTransitem);
   protected
@@ -84,21 +86,23 @@ begin
   fVendaServico:= TcTransacaoServico.Create(Self);
   fTransitem:= TTransitem.Create(nil);
 
-  TmClientDataSet.SetFields(tItem, TmClasse.GetProperties(TTransitem));
-  TmClientDataSet.SetInVisible(tItem, ['cd_dnatrans', 'u_version', 'cd_operador', 'dt_cadastro']);
-  TmClientDataSet.SetFieldList(tItem, [
-    TmClientDataSet_Field.Create('Nr_Item', 'Seq', 3),
-    TmClientDataSet_Field.Create('Cd_Barraprd', 'Barra', 8),
-    TmClientDataSet_Field.Create('Cd_Produto', 'Codigo', 8),
-    TmClientDataSet_Field.Create('Ds_Produto', 'Descricao', 20),
-    TmClientDataSet_Field.Create('Cd_Cfop', 'CFOP', 3),
-    TmClientDataSet_Field.Create('Qt_Item', 'Qtde', 3),
-    TmClientDataSet_Field.Create('Vl_Custo', 'Custo', 6),
-    TmClientDataSet_Field.Create('Vl_Unitario', 'Unit', 6),
-    TmClientDataSet_Field.Create('Vl_Item', 'Valor', 6),
-    TmClientDataSet_Field.Create('Vl_Variacao', 'Desc', 6),
-    TmClientDataSet_Field.Create('Vl_VariacaoCapa', 'Desc.Capa', 6),
-    TmClientDataSet_Field.Create('Vl_Totitem', 'Total', 6)]);
+  fFieldsList:= TmFieldList.Create;
+  with fFieldsList do begin
+    Add(TmField.Create('Nr_Item', 'Seq', ftInteger, 3));
+    Add(TmField.Create('Cd_Barraprd', 'Barra', ftString, 8));
+    Add(TmField.Create('Cd_Produto', 'Codigo', ftString, 8));
+    Add(TmField.Create('Ds_Produto', 'Descricao', ftString, 20));
+    Add(TmField.Create('Cd_Cfop', 'CFOP', ftInteger, 3));
+    Add(TmField.Create('Qt_Item', 'Qtde', ftFloat, 3));
+    Add(TmField.Create('Vl_Custo', 'Custo', ftFloat, 6));
+    Add(TmField.Create('Vl_Unitario', 'Unit', ftFloat, 6));
+    Add(TmField.Create('Vl_Item', 'Valor', ftFloat, 6));
+    Add(TmField.Create('Vl_Variacao', 'Desc', ftFloat, 6));
+    Add(TmField.Create('Vl_VariacaoCapa', 'Desc.Capa', ftFloat, 6));
+    Add(TmField.Create('Vl_Totitem', 'Total', ftFloat, 6));
+  end;
+
+  TmClientDataSet.SetFields(tItem, fFieldsList);
 
   uclsEquipServico.Instance.Salvar(
     mComputador.Instance.NumeroDisco,
@@ -107,6 +111,8 @@ begin
     mAmbienteConf.Instance.CodigoEmpresa,
     mAmbienteConf.Instance.CodigoTerminal);
   uclsEquipServico.Instance.Consultar(mComputador.Instance.NumeroDisco);
+
+  TmListView.SetColumns(ListView1, fFieldsList);
 
   uclsOperacaoServico.Instance.Consultar('VENDA_NFE');
 
@@ -140,6 +146,9 @@ begin
 
   TmDataSet.SetCollection(tItem, fVendaServico.Transacao.List_Item);
 
+  with fVendaServico.Transacao do
+    TmListView.AddItems(ListView1, fFieldsList, List_Item[List_Item.Count - 1]);
+
   EditValorTotal.Text := FormatFloat('0.00', fVendaServico.Transacao.Vl_Total);
 
   EditProduto.Text := '';
@@ -150,6 +159,7 @@ procedure TF_Venda.Limpar;
 begin
   fDevolucaoServico.LimparCapa();
   fVendaServico.LimparCapa();
+  TmListView.ClrItems(ListView1);
 end;
 
 procedure TF_Venda.Finalizar;

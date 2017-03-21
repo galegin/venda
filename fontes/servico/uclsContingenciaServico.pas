@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, StrUtils,
   pcnConversao, pcnConversaoNFe,
   mException, mInternet, mFilter,
-  uTipoProcessamento, uTransfiscal, uTransacao;
+  uTipoProcessamento, uTipoRetornoSefaz, uTransfiscal, uTransacao;
 
 type
   TTipoContingencia = (tpcSemContingencia, tpcContingencia);
@@ -16,8 +16,7 @@ type
     fObj_Fiscal : TTransfiscal;
     fTipoEmissao : TpcnTipoEmissao;
     fModeloDF : TpcnModeloDF;
-    fcStat : Integer;
-    fxMotivo : String;
+    fTipoRetorno : RTipoRetornoSefaz;
     function GetTipo: TTipoContingencia;
   public
     constructor Create(AOwner : TComponent); override;
@@ -25,8 +24,7 @@ type
   published
     property TipoEmissao : TpcnTipoEmissao read fTipoEmissao write fTipoEmissao;
     property ModeloDF : TpcnModeloDF read fModeloDF write fModeloDF;
-    property cStat : Integer read fcStat write fcStat;
-    property xMotivo : String read fxMotivo write fxMotivo;
+    property TipoRetorno : RTipoRetornoSefaz read fTipoRetorno write fTipoRetorno;
     property Tipo : TTipoContingencia read GetTipo;
   end;
 
@@ -58,7 +56,7 @@ end;
 function TcContingenciaServico.GetTipo: TTipoContingencia;
 begin
   Result := tpcSemContingencia;
-  if not TmInternet.IsConectado() or (fcStat in [108, 109]) then
+  if not TmInternet.IsConectado() or (TipoRetorno.tStatus in [tsContingencia]) then
     if (fTipoEmissao in [teNormal]) and (fModeloDF in [moNFCe]) then
       Result := tpcContingencia;
 end;
@@ -103,8 +101,7 @@ begin
         raise TmException.Create(E.Message, cDS_METHOD);
     end;
 
-    cStat := vObj_DFeServico.cStat;
-    xMotivo := vObj_DFeServico.xMotivo;
+    TipoRetorno := vObj_DFeServico.TipoRetorno;
     
   finally
     FreeAndNil(vObj_DFeServico);

@@ -1,6 +1,6 @@
 object F_Venda: TF_Venda
-  Left = 220
-  Top = 114
+  Left = 261
+  Top = 141
   Width = 710
   Height = 486
   Caption = 'F_Venda'
@@ -18,7 +18,7 @@ object F_Venda: TF_Venda
   object Bevel1: TBevel
     Left = 0
     Top = 0
-    Width = 702
+    Width = 694
     Height = 53
     Align = alTop
     Shape = bsSpacer
@@ -59,8 +59,8 @@ object F_Venda: TF_Venda
   object gItem: TDBGrid
     Left = 0
     Top = 53
-    Width = 702
-    Height = 367
+    Width = 694
+    Height = 363
     TabStop = False
     Align = alClient
     BorderStyle = bsNone
@@ -82,8 +82,8 @@ object F_Venda: TF_Venda
   end
   object PanelTotal: TPanel
     Left = 0
-    Top = 420
-    Width = 702
+    Top = 416
+    Width = 694
     Height = 32
     Align = alBottom
     BevelOuter = bvNone
@@ -109,6 +109,19 @@ object F_Venda: TF_Venda
       Text = '0'
       OnExit = EditProdutoExit
     end
+  end
+  object ListView1: TListView
+    Left = 0
+    Top = 216
+    Width = 689
+    Height = 193
+    BorderStyle = bsNone
+    Columns = <
+      item
+      end>
+    SortType = stText
+    TabOrder = 4
+    ViewStyle = vsReport
   end
   object tItem: TClientDataSet
     Aggregates = <>

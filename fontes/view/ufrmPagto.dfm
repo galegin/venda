@@ -14,8 +14,8 @@ object F_Pagto: TF_Pagto
   OldCreateOrder = False
   OnKeyDown = FormKeyDown
   DesignSize = (
-    561
-    334)
+    553
+    330)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelValorPagto: TLabel
