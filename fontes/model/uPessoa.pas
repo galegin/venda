@@ -39,6 +39,7 @@ type
     fDs_Fone: String;
     fDs_Celular: String;
     fDs_Email: String;
+    fIn_Consumidorfinal: Boolean;
 
     fObj_Municipio: TMunicipio;
   public
@@ -68,6 +69,7 @@ type
     property Ds_Fone: String read fDs_Fone write fDs_Fone;
     property Ds_Celular: String read fDs_Celular write fDs_Celular;
     property Ds_Email: String read fDs_Email write fDs_Email;
+    property In_Consumidorfinal: Boolean read fIn_Consumidorfinal write fIn_Consumidorfinal;
 
     property Obj_Municipio: TMunicipio read fObj_Municipio write fObj_Municipio;
   end;

@@ -12,15 +12,15 @@ uses
   ACBrNFeDANFeRLClass, ACBrDANFCeFortesFr,
   pcnConversao, pcnNFe, pcnConversaoNFe,
   uclsContingenciaServico, uclsEmpresaServico,
-  uTipoProcessamento, uTipoImpressaoDanfe, uTipoRetornoSefaz,
+  uTipoProcessamento, uTipoImpressaoDanfe, uTipoRetornoSefaz, uTipoPessoa,
   uTransacao, uTransfiscal;
 
 type
   TcDFeServico = class(TComponent)
   private
     fACBrNFe : TACBrNFe;
-    fACBrNFeDANFeRL : TACBrNFeDANFeRL;
-    fACBrNFeDANFCeFortes : TACBrNFeDANFCeFortes;
+    fACBrNFeDANFe : TACBrNFeDANFeRL;
+    fACBrNFeDANFCe : TACBrNFeDANFCeFortes;
 
     fObj_Transacao : TTransacao;
 
@@ -291,12 +291,6 @@ begin
 
   fACBrNFe.DANFE := nil;
 
-  (* if Assigned(fACBrNFe.DANFE) then
-    with fACBrNFe.DANFE do begin
-      TipoDANFE := fTp_DANFE;
-      Logo      := fDs_LogoMarca; // edtLogoMarca.Text;
-    end; *)
-
 end;
 
 procedure TcDFeServico.CarregarDFe;
@@ -350,7 +344,7 @@ type
 
   function GetProdEAN(AcProd, AcEAN : String) : TrProdEAN;
   begin
-    if (Length(AcEAN) <> 13) or not TmString.StartsWiths(AcEAN, '789') then
+    if not ((Length(AcEAN) = 13) and TmString.StartsWiths(AcEAN, '789')) then
       AcEAN := '';
 
     Result.cProd := AcProd;
@@ -359,6 +353,7 @@ type
 
 procedure TcDFeServico.GerarDFe;
 var
+  vTipoPessoa : TTipoPessoa;
   vProdEAN : TrProdEAN;
   vVlTotTrib : Real;
   I, J : Integer;
@@ -419,32 +414,26 @@ begin
 
 // DESTINATARIO
 
+   vTipoPessoa := StrToTipoPessoa(fObj_Transacao.Obj_Pessoa.Nr_CpfCnpj);
+
     with fObj_Transacao.Obj_Pessoa do begin
       Dest.CNPJCPF           := Nr_CpfCnpj;
 
+      if vTipoPessoa = tpJuridica then
+        Dest.IE            := Nr_Rgie; //NFC-e não aceita IE
+
       case fTp_ModeloDF of
         moNFCe : begin
-          Dest.IE        := ''; //NFC-e não aceita IE
           Dest.indIEDest := inNaoContribuinte;
         end;
 
         moNFe : begin
-          case Length(Dest.CNPJCPF) of
-            11 : begin
-              Dest.IE        := '';
-              Dest.indIEDest := inNaoContribuinte;
-            end;
-            15 : begin
-              if StrToFloatDef(Nr_Rgie,0) > 0 then begin
-                Dest.IE        := Nr_Rgie;
-                Dest.indIEDest := inContribuinte;
-              end
-              else begin
-                Dest.IE        := '';
-                Dest.indIEDest := inIsento;
-              end;
-            end;
-          end;
+          if (Nr_Rgie = '') or (In_Consumidorfinal) then
+            Dest.indIEDest := inNaoContribuinte
+          else if (Nr_Rgie = 'ISENTO') then
+            Dest.indIEDest := inIsento
+          else
+            Dest.indIEDest := inContribuinte;
         end;
       end;
 
@@ -821,6 +810,8 @@ begin
   //-- gera contingencia
   if fTp_Contingencia in [tpcContingencia] then begin
     fACBrNFe.NotasFiscais[0].NFe.Ide.tpEmis := teOffLine;
+    fACBrNFe.NotasFiscais[0].NFe.Ide.dhCont := Now;
+    fACBrNFe.NotasFiscais[0].NFe.Ide.xJust := 'Sem conexão com a internet';
     fACBrNFe.NotasFiscais.GerarNFe;
     fACBrNFe.NotasFiscais.Assinar;
     fACBrNFe.NotasFiscais.Validar;
@@ -1000,31 +991,39 @@ begin
 
   vModeloDF := StrToModeloDF(vOk, IntToStr(fACBrNFe.NotasFiscais[0].NFe.Ide.modelo));
 
+  (* if Assigned(fACBrNFe.DANFE) then
+    with fACBrNFe.DANFE do begin
+      TipoDANFE := fTp_DANFE;
+      Logo      := fDs_LogoMarca; // edtLogoMarca.Text;
+    end; *)
+
   case vModeloDF of
     moNFCe : begin
-      if not Assigned(fACBrNFeDANFCeFortes) then
-        fACBrNFeDANFCeFortes := TACBrNFeDANFCeFortes.Create(Self);
+      if not Assigned(fACBrNFeDANFCe) then
+        fACBrNFeDANFCe := TACBrNFeDANFCeFortes.Create(Self);
 
-      with fACBrNFeDANFCeFortes do begin
+      with fACBrNFeDANFCe do begin
         TipoDANFE := tiNFCe;
+        Logo := fDs_LogoMarca; // edtLogoMarca.Text;
         MostrarPreview := fIn_MostrarPreview;
         MostrarStatus := fIn_MostrarStatus;
       end;
 
-      fACBrNFe.DANFE := fACBrNFeDANFCeFortes;
+      fACBrNFe.DANFE := fACBrNFeDANFCe;
     end;
 
     moNFe : begin
-      if not Assigned(fACBrNFeDANFeRL) then
-        fACBrNFeDANFeRL := TACBrNFeDANFeRL.Create(Self);
+      if not Assigned(fACBrNFeDANFe) then
+        fACBrNFeDANFe := TACBrNFeDANFeRL.Create(Self);
 
-      with fACBrNFeDANFeRL do begin
+      with fACBrNFeDANFe do begin
         TipoDANFE := tiRetrato;
+        Logo := fDs_LogoMarca; // edtLogoMarca.Text;
         MostrarPreview := fIn_MostrarPreview;
         MostrarStatus := fIn_MostrarStatus;
       end;
 
-      fACBrNFe.DANFE := fACBrNFeDANFeRL;
+      fACBrNFe.DANFE := fACBrNFeDANFe;
     end;
   end;
 
@@ -1068,8 +1067,8 @@ begin
   idLote := 0;
 
   fACBrNFe.EventoNFe.Evento.Clear;
+  fACBrNFe.EventoNFe.idLote := 1;
 
-  //fACBrNFe.EvnvEvento.EnvEventoNFe.idLote := StrToInt(idLote) ;
   with fACBrNFe.EventoNFe.Evento.Add do begin
     infEvento.chNFe := AChave;
     infEvento.CNPJ := ACNPJ;
@@ -1115,14 +1114,8 @@ begin
   LimparRetorno;
 
   try
-    fACBrNFe.WebServices.Inutiliza(
-      ACNPJEmitente,
-      AJustificativa,
-      AAno,
-      AModelo,
-      ASerie,
-      ANumeroInicial,
-      ANumeroFinal);
+    fACBrNFe.WebServices.Inutiliza( ACNPJEmitente, AJustificativa, AAno,
+      AModelo, ASerie, ANumeroInicial, ANumeroFinal);
 
     TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.Inutilizacao);
   except
@@ -1167,29 +1160,42 @@ begin
   GerarDFe;
   EnviarDFe;
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.cStat in [100, 105, 204]) then begin
+  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
-      fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
-      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].GerarXML,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
-      fACBrNFe.WebServices.Retorno.RetornoWS);
+      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
+
+    GerarImpressaoDFe(
+      fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
 
   end else if (fTp_Contingencia in [tpcContingencia]) then begin
     GravarDFe(
       tppGerada,
-      fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
       fACBrNFe.NotasFiscais[0].GerarXML,
       Now,
       'NA',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
+    GerarImpressaoDFe(
+      fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+
+  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
+    GravarDFe(
+      tppCancelada,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].GerarXML,
+      Now,
+      'NA',
+      fACBrNFe.WebServices.Retorno.RetornoWS);
+
     raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
 
-  GerarImpressaoDFe(
-    fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+  end;
 end;
 
 procedure TcDFeServico.EmitirDFe(AObj_Transacao : TTransacao);
@@ -1218,26 +1224,27 @@ begin
   CarregarDFe;
   EnviarDFeContingencia;
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.cStat in [100, 105, 204]) then begin
+  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
-      fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
-      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].GerarXML,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
-      fACBrNFe.WebServices.Retorno.RetornoWS);
-  
-  end else if (fTp_Contingencia in [tpcSemContingencia]) and not (fTipoRetorno.cStat in [100]) then begin
+      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
+
+  end else if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsRejeicao]) then begin
     GravarDFe(
       tppCancelada,
-      fACBrNFe.NotasFiscais.Items[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
       'NA',
       Now,
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
     raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+
+  end;
 
 end;
 
@@ -1294,14 +1301,26 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  if (fTipoRetorno.tStatus in [tsRejeicao]) then
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
-
   GerarCancelamentoDFe(
     fObj_Transacao.Obj_Fiscal.Ds_Chave,
     fObj_Transacao.Nr_Cpfcnpj,
     'CANCELAMENTO AUTOMATICO',
     fObj_Transacao.Obj_Fiscal.Nr_Recibo);
+
+  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+    GravarDFe(
+      tppCancelada,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      'NA',
+      Now,
+      '0',
+      fACBrNFe.WebServices.Retorno.RetornoWS);
+
+  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
+    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+
+  end;
+
 end;
 
 procedure TcDFeServico.CancelarDFe(AObj_Transacao : TTransacao);
@@ -1329,9 +1348,6 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  if (fTipoRetorno.tStatus in [tsRejeicao]) then
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
-
   GerarInutilizacaoDFe(
     fObj_Transacao.Nr_Cpfcnpj, // ACNPJEmitente : String;
     'CANCELAMENTO AUTOMATICO', // AJustificativa : String;
@@ -1340,6 +1356,21 @@ begin
     StrToIntDef(fObj_Transacao.Obj_Fiscal.Cd_Serie, 0), // ACd_Serie : Integer;
     fObj_Transacao.Obj_Fiscal.Nr_Docfiscal, // ANumeroInicial : Integer;
     fObj_Transacao.Obj_Fiscal.Nr_Docfiscal); // ANumeroFinal : Integer);
+
+  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+    GravarDFe(
+      tppRejeitada,
+      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      'NA',
+      Now,
+      '0',
+      fACBrNFe.WebServices.Retorno.RetornoWS);
+
+  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
+    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+
+  end;
+
 end;
 
 procedure TcDFeServico.InutilizarDFe(AObj_Transacao : TTransacao);
@@ -1367,11 +1398,12 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  if (fTipoRetorno.tStatus in [tsRejeicao]) then
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
-
   GerarConsultaDFe(
     fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+
+  if (fTipoRetorno.tStatus in [tsRejeicao]) then
+    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+    
 end;
 
 procedure TcDFeServico.ConsultarDFe(AObj_Transacao : TTransacao);

@@ -33,6 +33,7 @@ uses
   uTipoImpressaoDanfe in 'model\uTipoImpressaoDanfe.pas',
   uTipoModalidade in 'model\uTipoModalidade.pas',
   uTipoOperacao in 'model\uTipoOperacao.pas',
+  uTipoPessoa in 'model\uTipoPessoa.pas',
   uTipoProcessamento in 'model\uTipoProcessamento.pas',
   uTipoRetornoSefaz in 'model\uTipoRetornoSefaz.pas',
   uAliqicms in 'model\uAliqicms.pas',

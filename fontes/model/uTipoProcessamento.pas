@@ -6,7 +6,8 @@ type
   TTipoProcessamento = (
     tppGerada,
     tppAutorizada,
-    tppCancelada);
+    tppCancelada,
+    tppRejeitada);
 
   function TipoProcessamentoToStr(const t: TTipoProcessamento): string;
   function StrToTipoProcessamento(const s: string): TTipoProcessamento;
@@ -17,7 +18,8 @@ const
   TTipoProcessamento_Codigo : array [TTipoProcessamento] of string = (
     'G',
     'A',
-    'C');
+    'C',
+    'R');
 
 function TipoProcessamentoToStr(const t: TTipoProcessamento): string;
 begin

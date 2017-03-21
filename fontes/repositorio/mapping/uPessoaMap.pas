@@ -51,6 +51,7 @@ begin
   Propert('Ds_Fone').IsRequired().MaxLength(20);
   Propert('Ds_Celular').IsRequired().MaxLength(20);
   Propert('Ds_Email').IsRequired().MaxLength(60);
+  Propert('In_Consumidorfinal').IsOptional().MaxLength(1);
 end;
 
 end.
