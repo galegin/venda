@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGrids, DB, DBClient, StdCtrls, ExtCtrls, ComCtrls,
-  uclsTransacaoServico, uTransitem, mListView, mField;
+  uclsTransacaoServico, uTransitem, mField, mGrade;
 
 type
   TF_Venda = class(TForm)
@@ -48,7 +48,7 @@ implementation
 {$R *.dfm}
 
 uses
-  mClientDataSet, mDataSet, mProperty, mClasse, mObjeto,
+  mClientDataSet, mDataSet, mValue, mClasse, mObjeto,
   mComputador, mAmbienteConf,
   uclsEquipServico, uclsOperacaoServico, ufrmPagto, uTransacao,
   uclsDFeServico;
@@ -112,7 +112,7 @@ begin
     mAmbienteConf.Instance.CodigoTerminal);
   uclsEquipServico.Instance.Consultar(mComputador.Instance.NumeroDisco);
 
-  TmListView.SetColumns(ListView1, fFieldsList);
+  TmGrade(ListView1).SetColumns(fFieldsList);
 
   uclsOperacaoServico.Instance.Consultar('VENDA_NFE');
 
@@ -147,7 +147,7 @@ begin
   TmDataSet.SetCollection(tItem, fVendaServico.Transacao.List_Item);
 
   with fVendaServico.Transacao do
-    TmListView.AddItems(ListView1, fFieldsList, List_Item[List_Item.Count - 1]);
+    TmGrade(ListView1).AddItems(fFieldsList, List_Item[List_Item.Count - 1]);
 
   EditValorTotal.Text := FormatFloat('0.00', fVendaServico.Transacao.Vl_Total);
 
@@ -159,7 +159,7 @@ procedure TF_Venda.Limpar;
 begin
   fDevolucaoServico.LimparCapa();
   fVendaServico.LimparCapa();
-  TmListView.ClrItems(ListView1);
+  TmGrade(ListView1).ClrItems();
 end;
 
 procedure TF_Venda.Finalizar;

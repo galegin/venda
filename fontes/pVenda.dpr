@@ -4,30 +4,40 @@ program pVenda;
 
 uses
   Forms,
-  mEdit,
+  mValue,
+  mTipoFormato,
+  mFormatar,
+
+  mControlIntf,
+  mControl,
+  mFormIntf,
+  mForm in '..\..\_comps\view\mForm.pas' {mForm},
+  mFrameIntf,
+  mFrame in '..\..\_comps\view\mFrame.pas' {mFrame},
+  mFormControl,
+  mTextBox,
   mComboBox,
   mCheckBox,
   mCheckListBox,
   mListBox,
-  mListView,
-  mFrame,
-  mForm,
-  mProperty,
+  mGrade,
+  mField,
+
   mObjetoJson,
   mTempoString,
   mAppException,
   mAppMessage,
   mAppSerial,
+
   mCollection,
   mCollectionItem,
   mCollectionMap,
   mCollectionSet,
-  mField,
-  mFieldControl,
-  mTipoCampo,
+
   mTipoEstilo,
   mTipoMensagem,
   mTipoParametro,
+
   uTipoDocumentoFiscal in 'model\uTipoDocumentoFiscal.pas',
   uTipoImposto in 'model\uTipoImposto.pas',
   uTipoImpressaoDanfe in 'model\uTipoImpressaoDanfe.pas',
@@ -113,15 +123,17 @@ uses
   uclsOperacaoPopulador in 'repositorio\populador\uclsOperacaoPopulador.pas',
   uclsPaisPopulador in 'repositorio\populador\uclsPaisPopulador.pas',
   uclsRegrafiscalPopulador in 'repositorio\populador\uclsRegrafiscalPopulador.pas',
-  uclsTestar in 'view\uclsTestar.pas',
   ufrmVenda in 'view\ufrmVenda.pas' {F_Venda},
-  ufrmPagto in 'view\ufrmPagto.pas' {F_Pagto};
+  ufrmPagto in 'view\ufrmPagto.pas' {F_Pagto},
+  uclsTestar in 'view\uclsTestar.pas',
+  ufrmTestar in 'view\ufrmTestar.pas' {F_Testar};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   uclsContexto.Instance;
+  TF_Testar.Execute();
   TF_Venda.Execute();
   Application.Run;
 end.
