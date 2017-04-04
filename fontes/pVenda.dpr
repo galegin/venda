@@ -7,7 +7,6 @@ uses
   mValue,
   mTipoFormato,
   mFormatar,
-
   mControlIntf,
   mControl,
   mFormIntf,
@@ -22,22 +21,18 @@ uses
   mListBox,
   mGrade,
   mField,
-
   mObjetoJson,
   mTempoString,
   mAppException,
   mAppMessage,
   mAppSerial,
-
   mCollection,
   mCollectionItem,
   mCollectionMap,
   mCollectionSet,
-
   mTipoEstilo,
   mTipoMensagem,
   mTipoParametro,
-
   uTipoDocumentoFiscal in 'model\uTipoDocumentoFiscal.pas',
   uTipoImposto in 'model\uTipoImposto.pas',
   uTipoImpressaoDanfe in 'model\uTipoImpressaoDanfe.pas',
@@ -109,7 +104,9 @@ uses
   uclsPessoaServico in 'servico\uclsPessoaServico.pas',
   uclsProdutoServico in 'servico\uclsProdutoServico.pas',
   uclsRegrafiscalServico in 'servico\uclsRegrafiscalServico.pas',
+  uclsTefServico in 'servico\uclsTefServico.pas',
   uclsTransacaoServico in 'servico\uclsTransacaoServico.pas',
+  uclsTransacaoTef in 'servico\uclsTransacaoTef.pas',
   uclsUsuarioServico in 'servico\uclsUsuarioServico.pas',
   uclsContexto in 'repositorio\uclsContexto.pas',
   uclsMapeamento in 'repositorio\uclsMapeamento.pas',

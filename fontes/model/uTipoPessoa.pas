@@ -5,15 +5,15 @@ interface
 type
   TTipoPessoa = (tpFisica, tpJuridica);
 
-  function StrToTipoPessoa(const s : string) : TTipoPessoa;
+  function StrToTipoPessoa(const pDocumento : string) : TTipoPessoa;
 
 implementation
 
-  function StrToTipoPessoa(const s : string) : TTipoPessoa;
+  function StrToTipoPessoa(const pDocumento : string) : TTipoPessoa;
   begin
     Result := TTipoPessoa(Ord(-1));
 
-    case Length(s) of
+    case Length(pDocumento) of
       11 :
         Result := tpFisica;
       14 :

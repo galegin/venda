@@ -13,8 +13,8 @@ type
     tpmVendaMaoFiscal,
     tpmDevolucaoNaoFiscal);
 
-  function TipoModalidadeToStr(const t: TTipoModalidade): string;
-  function StrToTipoModalidade(const s: string): TTipoModalidade;
+  function TipoModalidadeToStr(const pTipo : TTipoModalidade): string;
+  function StrToTipoModalidade(const pCodigo : string): TTipoModalidade;
 
 implementation
 
@@ -29,18 +29,18 @@ const
     '7',
     '8');
 
-function TipoModalidadeToStr(const t: TTipoModalidade): string;
+function TipoModalidadeToStr(const pTipo : TTipoModalidade): string;
 begin
-  Result := TTipoModalidade_Codigo[t];
+  Result := TTipoModalidade_Codigo[pTipo];
 end;
 
-function StrToTipoModalidade(const s: string): TTipoModalidade;
+function StrToTipoModalidade(const pCodigo : string): TTipoModalidade;
 var
   I : Integer;
 begin
   Result := TTipoModalidade(-1);
   for I := Ord(Low(TTipoModalidade)) to Ord(High(TTipoModalidade)) do
-    if TTipoModalidade_Codigo[TTipoModalidade(I)] = s then
+    if TTipoModalidade_Codigo[TTipoModalidade(I)] = pCodigo then
       Result := TTipoModalidade(I);
 end;
 
