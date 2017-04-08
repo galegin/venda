@@ -1193,7 +1193,7 @@ begin
       'NA',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
   end;
 end;
@@ -1242,7 +1242,7 @@ begin
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
   end;
 
@@ -1316,10 +1316,9 @@ begin
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
 
-  end;
+    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
 end;
 
@@ -1366,10 +1365,9 @@ begin
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
 
-  end;
+    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
 end;
 
@@ -1401,8 +1399,8 @@ begin
   GerarConsultaDFe(
     fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
 
-  if (fTipoRetorno.tStatus in [tsRejeicao]) then
-    raise TmException.Create(fTipoRetorno.xMotivo, cDS_METHOD);
+  if (fTipoRetorno.tStatus in [tsRejeicao]) then  
+    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
     
 end;
 

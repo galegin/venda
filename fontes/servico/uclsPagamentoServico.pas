@@ -104,11 +104,11 @@ const
   cDS_METHOD = 'TcPagamentoServico.Salvar';
 begin
   if ACd_Equip = '' then
-    raise TmException.Create('Equipamento do pagamento deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Equipamento do pagamento deve ser informado');
   if ADt_Pagto = 0 then
-    raise TmException.Create('Data do pagamento deve ser informada', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Data do pagamento deve ser informada');
   if AVl_Pagto = 0 then
-    raise TmException.Create('Valor do pagamento deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Valor do pagamento deve ser informado');
 
   if ANr_Pagto = 0 then
     ANr_Pagto := NumerarCapa(ADt_Pagto);
@@ -168,13 +168,13 @@ const
   cDS_METHOD = 'TcPagamentoServico.AdicionarParcela';
 begin
   if AVl_Parcela = 0 then
-    raise TmException.Create('Valor da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Valor da parcela deve ser informado');
   if ATp_Docto = 0 then
-    raise TmException.Create('Tipo docto da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Tipo docto da parcela deve ser informado');
   if ANr_Docto = 0 then
-    raise TmException.Create('Numero docto da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Numero docto da parcela deve ser informado');
   if ADt_Vencto = 0 then
-    raise TmException.Create('Data da parcela deve ser informado', cDS_METHOD);
+    raise TmException.Create(cDS_METHOD, 'Data da parcela deve ser informado');
 
   if ANr_Parcela = 0 then
     ANr_Parcela := NumerarParcela();

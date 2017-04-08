@@ -98,7 +98,7 @@ begin
       end;
     except
       on E : Exception do
-        raise TmException.Create(E.Message, cDS_METHOD);
+        raise TmException.Create(cDS_METHOD, E.Message);
     end;
 
     TipoRetorno := vObj_DFeServico.TipoRetorno;

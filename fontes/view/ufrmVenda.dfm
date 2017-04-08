@@ -56,30 +56,6 @@ object F_Venda: TF_Venda
     Text = '10'
     OnExit = EditProdutoExit
   end
-  object gItem: TDBGrid
-    Left = 0
-    Top = 53
-    Width = 694
-    Height = 363
-    TabStop = False
-    Align = alClient
-    BorderStyle = bsNone
-    DataSource = dItem
-    FixedColor = 12615680
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
-    ParentFont = False
-    TabOrder = 2
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWhite
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-  end
   object PanelTotal: TPanel
     Left = 0
     Top = 416
@@ -88,7 +64,7 @@ object F_Venda: TF_Venda
     Align = alBottom
     BevelOuter = bvNone
     Caption = ' '
-    TabOrder = 3
+    TabOrder = 2
     object LabelValorTotal: TLabel
       Left = 4
       Top = 4
@@ -110,28 +86,14 @@ object F_Venda: TF_Venda
       OnExit = EditProdutoExit
     end
   end
-  object ListView1: TListView
+  object gItem: TmGrade
     Left = 0
-    Top = 216
-    Width = 689
-    Height = 193
+    Top = 53
+    Width = 694
+    Height = 363
+    Align = alClient
     BorderStyle = bsNone
-    Columns = <
-      item
-      end>
-    SortType = stText
-    TabOrder = 4
-    ViewStyle = vsReport
-  end
-  object tItem: TClientDataSet
-    Aggregates = <>
-    Params = <>
-    Left = 132
-    Top = 148
-  end
-  object dItem: TDataSource
-    DataSet = tItem
-    Left = 164
-    Top = 148
+    Columns = <>
+    TabOrder = 3
   end
 end

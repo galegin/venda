@@ -4,6 +4,7 @@ program pVenda;
 
 uses
   Forms,
+  mLogger,
   mValue,
   mTipoFormato,
   mFormatar,
@@ -14,13 +15,17 @@ uses
   mFrameIntf,
   mFrame in '..\..\_comps\view\mFrame.pas' {mFrame},
   mFormControl,
+  mLabel,
+  mButton,
+  mPanel,
+  mGrade,
   mTextBox,
   mComboBox,
   mCheckBox,
   mCheckListBox,
   mListBox,
-  mGrade,
   mField,
+  mFilter,
   mObjetoJson,
   mTempoString,
   mAppException,
@@ -130,7 +135,7 @@ uses
 begin
   Application.Initialize;
   uclsContexto.Instance;
-  TF_Testar.Execute();
+  //TF_Testar.Execute();
   TF_Venda.Execute();
   Application.Run;
 end.

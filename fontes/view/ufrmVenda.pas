@@ -12,15 +12,12 @@ type
     LabelCliente: TLabel;
     EditCliente: TEdit;
     EditProduto: TEdit;
-    tItem: TClientDataSet;
-    dItem: TDataSource;
-    gItem: TDBGrid;
     LabelProduto: TLabel;
     Bevel1: TBevel;
     PanelTotal: TPanel;
     EditValorTotal: TEdit;
     LabelValorTotal: TLabel;
-    ListView1: TListView;
+    gItem: TmGrade;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EditProdutoExit(Sender: TObject);
   private
@@ -55,13 +52,13 @@ uses
 
   function TF_Venda.GetObj_Item: TTransitem;
   begin
-    TmObjeto.SetValues(fTransitem, TmDataSet.GetValues(tItem));
+    //TmObjeto.SetValues(fTransitem, TmDataSet.GetValues(tItem));
     Result := fTransitem;
   end;
 
   procedure TF_Venda.SetObj_Item(const Value: TTransitem);
   begin
-    TmDataSet.SetValues(tItem, TmObjeto.GetValues(fTransitem));
+    //TmDataSet.SetValues(tItem, TmObjeto.GetValues(fTransitem));
   end;
 
 class procedure TF_Venda.Execute;
@@ -102,7 +99,7 @@ begin
     Add(TmField.Create('Vl_Totitem', 'Total', ftFloat, 6));
   end;
 
-  TmClientDataSet.SetFields(tItem, fFieldsList);
+  //TmClientDataSet.SetFields(tItem, fFieldsList);
 
   uclsEquipServico.Instance.Salvar(
     mComputador.Instance.NumeroDisco,
@@ -112,7 +109,7 @@ begin
     mAmbienteConf.Instance.CodigoTerminal);
   uclsEquipServico.Instance.Consultar(mComputador.Instance.NumeroDisco);
 
-  TmGrade(ListView1).SetColumns(fFieldsList);
+  gItem.Fields := fFieldsList;
 
   uclsOperacaoServico.Instance.Consultar('VENDA_NFE');
 
@@ -144,10 +141,10 @@ begin
 
       fVendaServico.AdicionarItem(EditProduto.Text);
 
-  TmDataSet.SetCollection(tItem, fVendaServico.Transacao.List_Item);
+  //TmDataSet.SetCollection(tItem, fVendaServico.Transacao.List_Item);
 
   with fVendaServico.Transacao do
-    TmGrade(ListView1).AddItems(fFieldsList, List_Item[List_Item.Count - 1]);
+    gItem.Add(List_Item[List_Item.Count - 1]);
 
   EditValorTotal.Text := FormatFloat('0.00', fVendaServico.Transacao.Vl_Total);
 
@@ -159,7 +156,7 @@ procedure TF_Venda.Limpar;
 begin
   fDevolucaoServico.LimparCapa();
   fVendaServico.LimparCapa();
-  TmGrade(ListView1).ClrItems();
+  gItem.Clear();
 end;
 
 procedure TF_Venda.Finalizar;
