@@ -35,6 +35,7 @@ type
   end;
 
   function Instance : TcTefServico;
+  procedure Destroy;
 
 implementation
 
@@ -46,6 +47,12 @@ var
     if not Assigned(_instance) then
       _instance := TcTefServico.Create(nil);
     Result := _instance;
+  end;
+
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
   end;
 
 (* cTefServico *)
@@ -160,5 +167,11 @@ begin
     ATransacao.Compensacao);
 
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

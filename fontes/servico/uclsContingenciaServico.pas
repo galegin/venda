@@ -20,6 +20,8 @@ type
     function GetTipo: TTipoContingencia;
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
+
     procedure EnviarPendente;
   published
     property TipoEmissao : TpcnTipoEmissao read fTipoEmissao write fTipoEmissao;
@@ -29,6 +31,7 @@ type
   end;
 
   function Instance : TcContingenciaServico;
+  procedure Destroy;
 
 implementation
 
@@ -45,12 +48,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 { TcContingenciaServico }
 
 constructor TcContingenciaServico.Create(AOwner: TComponent);
 begin
   inherited;
+
   fObj_Fiscal := TTransfiscal.Create(nil);
+end;
+
+destructor TcContingenciaServico.Destroy;
+begin
+  FreeAndNil(fObj_Fiscal);
+
+  inherited;
 end;
 
 function TcContingenciaServico.GetTipo: TTipoContingencia;
@@ -108,5 +125,11 @@ begin
     
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

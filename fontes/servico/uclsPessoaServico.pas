@@ -13,6 +13,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TPessoaList;
 
@@ -46,10 +47,12 @@ type
   end;
 
   function Instance : TcPessoaServico;
+  procedure Destroy;
 
 implementation
 
-uses mCollectionItem;
+uses
+  mCollectionItem;
 
 var
   _instance : TcPessoaServico;
@@ -61,10 +64,24 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcPessoaServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fPessoa := TPessoa.Create(nil);
+end;
+
+destructor TcPessoaServico.Destroy;
+begin
+  FreeAndNil(fPessoa);
+
+  inherited;
 end;
 
 function TcPessoaServico.Listar;
@@ -128,5 +145,11 @@ begin
     Excluir();
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

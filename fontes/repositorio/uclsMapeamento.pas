@@ -13,10 +13,12 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
   published
   end;
 
   function Instance : TcMapeamento;
+  procedure Destroy;
 
 implementation
 
@@ -30,9 +32,28 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcMapeamento.Create(AOwner : TComponent);
 begin
   inherited;
+
 end;
+
+destructor TcMapeamento.Destroy;
+begin
+
+  inherited;
+end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

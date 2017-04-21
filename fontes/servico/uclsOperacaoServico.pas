@@ -13,6 +13,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TOperacaoList;
 
@@ -33,6 +34,7 @@ type
   end;
 
   function Instance : TcOperacaoServico;
+  procedure Destroy;
 
 implementation
 
@@ -49,10 +51,24 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcOperacaoServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fOperacao := TOperacao.Create(nil);
+end;
+
+destructor TcOperacaoServico.Destroy;
+begin
+  FreeAndNil(fOperacao);
+
+  inherited;
 end;
 
 function TcOperacaoServico.Listar;
@@ -102,5 +118,11 @@ begin
     end;
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

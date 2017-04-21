@@ -20,6 +20,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TTransacaoList;
 
@@ -76,6 +77,7 @@ type
   end;
 
   function Instance : TcTransacaoServico;
+  procedure Destroy;
 
 implementation
 
@@ -99,11 +101,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcTransacaoServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fEmpresa := TEmpresa.Create(nil);
   fTransacao := TTransacao.Create(nil);
+end;
+
+destructor TcTransacaoServico.Destroy;
+begin
+  FreeAndNil(fTransacao);
+  FreeAndNil(fEmpresa);
+
+  inherited;
 end;
 
 function TcTransacaoServico.Listar;
@@ -474,5 +491,11 @@ begin
     if Cd_Dnatrans <> '' then
       Result := Vl_Total;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

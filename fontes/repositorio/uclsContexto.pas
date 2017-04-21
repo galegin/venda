@@ -14,10 +14,12 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
   published
   end;
 
   function Instance : TcContexto;
+  procedure Destroy;
 
 implementation
 
@@ -60,6 +62,12 @@ var
     if not Assigned(_instance) then
       _instance := TcContexto.Create(nil);
     Result := _instance;
+  end;
+
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
   end;
 
 constructor TcContexto.Create(AOwner : TComponent);
@@ -120,6 +128,18 @@ begin
   TmIniFiles.Setar('', 'VERSAO', 'Cd_Versao', vVersaoExe);
 end;
 
+destructor TcContexto.Destroy;
+begin
+
+  inherited;
+end;
+
 //--
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

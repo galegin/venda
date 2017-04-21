@@ -105,6 +105,7 @@ type
 
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     procedure EmitirDFe(); overload;
     procedure EmitirDFe(AObj_Transacao : TTransacao); overload;
@@ -132,6 +133,7 @@ type
   end;
 
   function Instance : TcDFeServico;
+  procedure Destroy;
 
 implementation
 
@@ -151,11 +153,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcDFeServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fACBrNFe := TACBrNFe.Create(Self);
   fObj_Transacao := TTransacao.Create(nil);
+end;
+
+destructor TcDFeServico.Destroy;
+begin
+  FreeAndNil(fACBrNFe);
+  FreeAndNil(fObj_Transacao);
+
+  inherited;
 end;
 
 //--
@@ -1418,5 +1435,11 @@ begin
 end;
 
 //--
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

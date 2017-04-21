@@ -13,6 +13,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TCaixaList;
 
@@ -24,12 +25,13 @@ type
       ADt_Fechado : TDateTime);
 
     procedure Excluir(ACd_Dnacaixa : String);
-    
+
   published
     property Caixa : TCaixa read fCaixa write fCaixa;
   end;
 
   function Instance : TcCaixaServico;
+  procedure Destroy;
 
 implementation
 
@@ -45,10 +47,24 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcCaixaServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fCaixa := TCaixa.Create(nil);
+end;
+
+destructor TcCaixaServico.Destroy;
+begin
+  FreeAndNil(fCaixa);
+
+  inherited;
 end;
 
 function TcCaixaServico.Listar;
@@ -88,5 +104,11 @@ begin
     end;  
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

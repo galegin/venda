@@ -32,6 +32,7 @@ type
     procedure Finalizar;
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
     class procedure Execute();
   published
     property Obj_Item : TTransitem read GetObj_Item write SetObj_Item;
@@ -71,7 +72,7 @@ begin
       ShowModal;
     finally
       Free;
-    end;  
+    end;
   end;
 end;
 
@@ -79,8 +80,8 @@ constructor TF_Venda.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fDevolucaoServico:= TcTransacaoServico.Create(Self);
-  fVendaServico:= TcTransacaoServico.Create(Self);
+  fDevolucaoServico:= TcTransacaoServico.Create(nil);
+  fVendaServico:= TcTransacaoServico.Create(nil);
   fTransitem:= TTransitem.Create(nil);
 
   fFieldsList:= TmFieldList.Create;
@@ -113,6 +114,17 @@ begin
 
   uclsOperacaoServico.Instance.Consultar('VENDA_NFE');
 
+end;
+
+destructor TF_Venda.Destroy;
+begin
+  FreeAndNil(fDevolucaoServico);
+  FreeAndNil(fVendaServico);
+  FreeAndNil(fTransitem);
+
+  FreeAndNil(fFieldsList);
+
+  inherited;
 end;
 
 procedure TF_Venda.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

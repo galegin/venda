@@ -15,11 +15,14 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
+
     function Consultar(ANr_Cpfcnpj : String = '') : TEmpresa;
   published
   end;
 
   function Instance : TcEmpresaServico;
+  procedure Destroy;
 
 implementation
 
@@ -33,12 +36,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 { TcEmpresaServico }
 
 constructor TcEmpresaServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fEmpresa := TEmpresa.Create(nil);
+end;
+
+destructor TcEmpresaServico.Destroy;
+begin
+  FreeAndNil(fEmpresa);
+
+  inherited;
 end;
 
 function TcEmpresaServico.Consultar;
@@ -56,5 +73,11 @@ begin
   end;
   Result := fEmpresa;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

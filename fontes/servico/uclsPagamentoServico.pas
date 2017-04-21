@@ -13,6 +13,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TPagtoList;
 
@@ -53,6 +54,7 @@ type
   end;
 
   function Instance : TcPagamentoServico;
+  procedure Destroy;
 
 implementation
 
@@ -69,10 +71,24 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcPagamentoServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fPagto := TPagto.Create(nil);
+end;
+
+destructor TcPagamentoServico.Destroy;
+begin
+  FreeAndNil(fPagto);
+
+  inherited;
 end;
 
 function TcPagamentoServico.Listar;
@@ -201,5 +217,11 @@ begin
     end;
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

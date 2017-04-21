@@ -13,6 +13,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Listar() : TEquipList;
 
@@ -32,6 +33,7 @@ type
   end;
 
   function Instance : TcEquipServico;
+  procedure Destroy;
 
 implementation
 
@@ -48,10 +50,24 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 constructor TcEquipServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fEquip := TEquip.Create(nil);
+end;
+
+destructor TcEquipServico.Destroy;
+begin
+  FreeAndNil(fEquip);
+
+  inherited;
 end;
 
 function TcEquipServico.Listar;
@@ -106,5 +122,11 @@ begin
     end;
   end;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

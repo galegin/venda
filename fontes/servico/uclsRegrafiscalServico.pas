@@ -15,6 +15,7 @@ type
   protected
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     function Consular(
       ACd_Regrafiscal : Integer): TRegrafiscal;
@@ -23,6 +24,7 @@ type
   end;
 
   function Instance : TcRegrafiscalServico;
+  procedure Destroy;
 
 implementation
 
@@ -36,12 +38,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 { TcRegrafiscalServico }
 
 constructor TcRegrafiscalServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fRegrafiscal := TRegrafiscal.Create(nil);
+end;
+
+destructor TcRegrafiscalServico.Destroy;
+begin
+  FreeAndNil(fRegrafiscal);
+
+  inherited;
 end;
 
 function TcRegrafiscalServico.Consular;
@@ -59,5 +75,11 @@ begin
 
   Result := fRegrafiscal;
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.

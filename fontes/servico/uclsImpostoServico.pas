@@ -30,6 +30,7 @@ type
     procedure GerarIi;
   public
     constructor Create(AOwner : TComponent); override;
+    destructor Destroy; override;
 
     procedure Gerar(
       ATransacao : TTransacao;
@@ -39,6 +40,7 @@ type
   end;
 
   function Instance : TcImpostoServico;
+  procedure Destroy;
 
 implementation
 
@@ -55,12 +57,26 @@ var
     Result := _instance;
   end;
 
+  procedure Destroy;
+  begin
+    if Assigned(_instance) then
+      FreeAndNil(_instance);
+  end;
+
 { TcImpostoServico }
 
 constructor TcImpostoServico.Create(AOwner : TComponent);
 begin
   inherited;
+
   fRegrafiscal := TRegrafiscal.Create(nil);
+end;
+
+destructor TcImpostoServico.Destroy;
+begin
+  FreeAndNil(fRegrafiscal);
+
+  inherited;
 end;
 
 //--
@@ -177,5 +193,11 @@ begin
       end;
 
 end;
+
+initialization
+  //Instance();
+
+finalization
+  Destroy();
 
 end.
