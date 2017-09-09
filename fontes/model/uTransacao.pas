@@ -4,248 +4,323 @@ interface
 
 uses
   Classes, SysUtils,
-  mCollection, mCollectionItem,
-  uEmpresa, uOperacao, uPessoa, uTransitem, uTransvencto, uTranspagto,
-  uTransfiscal;
+  mMapping,
+  uEmpresa, uPessoa, uOperacao,
+  uTransfiscal, uTransitem, uTranspagto;
 
 type
-  TTransacao = class;
-  TTransacaoClass = class of TTransacao;
-
-  TTransacaoList = class;
-  TTransacaoListClass = class of TTransacaoList;
-
-  TTransacao = class(TmCollectionItem)
+  TTransacao = class(TmMapping)
   private
-    fCd_Dnatrans: String;
+    fId_Transacao: String;
     fU_Version: String;
     fCd_Operador: Integer;
     fDt_Cadastro: TDateTime;
-    fCd_Equip: String;
+    fId_Empresa: Integer;
+    fId_Pessoa: String;
+    fId_Operacao: String;
     fDt_Transacao: TDateTime;
     fNr_Transacao: Integer;
-    fNr_Cpfcnpj: String;
-    fCd_Operacao: String;
-    fCd_Dnapagto: String;
-    fDt_Canc: TDateTime;
-
-    fObj_Empresa: TEmpresa;
-    fObj_Pessoa: TPessoa;
-    fObj_Operacao: TOperacao;
-    fObj_Fiscal: TTransfiscal;
-
-    fList_Item: TTransitemList;
-    fList_Vencto: TTransvenctoList;
-    fList_Pagto: TTranspagtoList;
-
-    function GetVl_Item: Real;
-    function GetVl_Variacao: Real;
-    function GetVl_Total: Real;
-    function GetVl_Acrescimo: Real;
+    fTp_Situacao: Integer;
+    fDt_Cancelamento: TDateTime;
+    fEmpresa: TEmpresa;
+    fPessoa: TPessoa;
+    fOperacao: TOperacao;
+    fFiscal: TTransfiscal;
+    fItens: TTransitems;
+    fPagtos: TTranspagtos;
+    procedure SetId_Transacao(const Value : String);
+    procedure SetU_Version(const Value : String);
+    procedure SetCd_Operador(const Value : Integer);
+    procedure SetDt_Cadastro(const Value : TDateTime);
+    procedure SetId_Empresa(const Value : Integer);
+    procedure SetId_Pessoa(const Value : String);
+    procedure SetId_Operacao(const Value : String);
+    procedure SetDt_Transacao(const Value : TDateTime);
+    procedure SetNr_Transacao(const Value : Integer);
+    procedure SetTp_Situacao(const Value : Integer);
+    procedure SetDt_Cancelamento(const Value : TDateTime);
+    function GetVl_Baseicms: Real;
+    function GetVl_Baseicmsst: Real;
+    function GetVl_Icms: Real;
+    function GetVl_Icmsst: Real;
+    function GetVl_Cofins: Real;
     function GetVl_Desconto: Real;
     function GetVl_Frete: Real;
-    function GetVl_Despesa: Real;
-    function GetVl_Seguro: Real;
-    function GetVl_Outro: Real;
-
-    function GetVl_Baseicms: Real;
-    function GetVl_Icms: Real;
-    function GetVl_Baseicmsst: Real;
-    function GetVl_Icmsst: Real;
-    function GetVl_Ipi: Real;
-    function GetVl_Pis: Real;
-    function GetVl_Cofins: Real;
     function GetVl_Ii: Real;
+    function GetVl_Ipi: Real;
+    function GetVl_Item: Real;
+    function GetVl_Outro: Real;
+    function GetVl_Pis: Real;
+    function GetVl_Seguro: Real;
+    function GetVl_Total: Real;
   public
-    constructor Create(ACollection: TCollection); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function GetMapping() : PmMapping; override;
   published
-    property Cd_Dnatrans : String read fCd_Dnatrans write fCd_Dnatrans;
-    property U_Version : String read fU_Version write fU_Version;
-    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
-    property Cd_Equip : String read fCd_Equip write fCd_Equip;
-    property Dt_Transacao : TDateTime read fDt_Transacao write fDt_Transacao;
-    property Nr_Transacao : Integer read fNr_Transacao write fNr_Transacao;
-    property Nr_Cpfcnpj : String read fNr_Cpfcnpj write fNr_Cpfcnpj;
-    property Cd_Operacao : String read fCd_Operacao write fCd_Operacao;
-    property Cd_Dnapagto : String read fCd_Dnapagto write fCd_Dnapagto;
-    property Dt_Canc : TDateTime read fDt_Canc write fDt_Canc;
-
-    property Obj_Empresa: TEmpresa read fObj_Empresa write fObj_Empresa;
-    property Obj_Pessoa: TPessoa read fObj_Pessoa write fObj_Pessoa;
-    property Obj_Operacao: TOperacao read fObj_Operacao write fObj_Operacao;
-    property Obj_Fiscal: TTransfiscal read fObj_Fiscal write fObj_Fiscal;
-
-    property List_Item: TTransitemList read fList_Item write fList_Item;
-    property List_Vencto: TTransvenctoList read fList_Vencto write fList_Vencto;
-    property List_Pagto: TTranspagtoList read fList_Pagto write fList_Pagto;
-
-    property Vl_Item : Real read GetVl_Item;
-    property Vl_Variacao : Real read GetVl_Variacao;
-    property Vl_Total : Real read GetVl_Total;
-    property Vl_Desconto : Real read GetVl_Desconto;
-    property Vl_Acrescimo : Real read GetVl_Acrescimo;
-    property Vl_Frete : Real read GetVl_Frete;
-    property Vl_Seguro : Real read GetVl_Seguro;
-    property Vl_Despesa : Real read GetVl_Despesa;
-    property Vl_Outro : Real read GetVl_Outro;
-
+    property Id_Transacao : String read fId_Transacao write SetId_Transacao;
+    property U_Version : String read fU_Version write SetU_Version;
+    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
+    property Id_Empresa : Integer read fId_Empresa write SetId_Empresa;
+    property Id_Pessoa : String read fId_Pessoa write SetId_Pessoa;
+    property Id_Operacao : String read fId_Operacao write SetId_Operacao;
+    property Dt_Transacao : TDateTime read fDt_Transacao write SetDt_Transacao;
+    property Nr_Transacao : Integer read fNr_Transacao write SetNr_Transacao;
+    property Tp_Situacao : Integer read fTp_Situacao write SetTp_Situacao;
+    property Dt_Cancelamento : TDateTime read fDt_Cancelamento write SetDt_Cancelamento;
+    property Empresa: TEmpresa read fEmpresa write fEmpresa;
+    property Pessoa: TPessoa read fPessoa write fPessoa;
+    property Operacao: TOperacao read fOperacao write fOperacao;
+    property Fiscal : TTransfiscal read fFiscal write fFiscal;
+    property Itens : TTransitems read fItens write fItens;
+    property Pagtos : TTranspagtos read fPagtos write fPagtos;
     property Vl_Baseicms : Real read GetVl_Baseicms;
     property Vl_Icms : Real read GetVl_Icms;
     property Vl_Baseicmsst : Real read GetVl_Baseicmsst;
     property Vl_Icmsst : Real read GetVl_Icmsst;
+    property Vl_Item : Real read GetVl_Item;
+    property Vl_Frete : Real read GetVl_Frete;
+    property Vl_Seguro : Real read GetVl_Seguro;
+    property Vl_Desconto : Real read GetVl_Desconto;
+    property Vl_Ii : Real read GetVl_Ii;
     property Vl_Ipi : Real read GetVl_Ipi;
     property Vl_Pis : Real read GetVl_Pis;
     property Vl_Cofins : Real read GetVl_Cofins;
-    property Vl_Ii : Real read GetVl_Ii;
+    property Vl_Outro : Real read GetVl_Outro;
+    property Vl_Total : Real read GetVl_Total;
   end;
 
-  TTransacaoList = class(TmCollection)
-  private
-    function GetItem(Index: Integer): TTransacao;
-    procedure SetItem(Index: Integer; Value: TTransacao);
+  TTransacaos = class(TList)
   public
-    constructor Create(AOwner: TPersistent);
-    function Add: TTransacao;
-    property Items[Index: Integer]: TTransacao read GetItem write SetItem; default;
+    function Add: TTransacao; overload;
   end;
 
 implementation
 
+uses
+  mList;
+
 { TTransacao }
 
-constructor TTransacao.Create(ACollection: TCollection);
+constructor TTransacao.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fObj_Empresa:= TEmpresa.Create(nil);
-  fObj_Pessoa:= TPessoa.Create(nil);
-  fObj_Operacao:= TOperacao.Create(nil);
-  fObj_Fiscal:= TTransfiscal.Create(nil);
-
-  fList_Item:= TTransitemList.Create(nil);
-  fList_Item.IsUpdate := True;
-  fList_Vencto:= TTransvenctoList.Create(nil);
-  fList_Vencto.IsUpdate := True;
-  fList_Pagto:= TTranspagtoList.Create(nil);
-  fList_Pagto.IsUpdate := True;
+  fEmpresa:= TEmpresa.Create(nil);
+  fPessoa:= TPessoa.Create(nil);
+  fOperacao:= TOperacao.Create(nil);
+  fFiscal:= TTransfiscal.Create(nil);
+  fItens:= TTransitems.Create();
+  fPagtos:= TTranspagtos.Create();
 end;
 
 destructor TTransacao.Destroy;
 begin
+  FreeAndNil(fEmpresa);
+  FreeAndNil(fPessoa);
+  FreeAndNil(fOperacao);
+  FreeAndNil(fFiscal);
+  FreeAndNil(fItens);
+  FreeAndNil(fPagtos);
 
   inherited;
 end;
 
 //--
 
-function TTransacao.GetVl_Item: Real;
+function TTransacao.GetMapping: PmMapping;
 begin
-  Result := List_Item.Sum('Vl_Item');
+  Result := New(PmMapping);
+
+  Result.Tabela := New(PmTabela);
+  with Result.Tabela^ do begin
+    Nome := 'TRANSACAO';
+  end;
+
+  Result.Chaves := TmChaves.Create;
+  with Result.Chaves do begin
+    Add('Id_Transacao', 'ID_TRANSACAO');
+  end;
+
+  Result.Campos := TmCampos.Create;
+  with Result.Campos do begin
+    Add('Id_Transacao', 'ID_TRANSACAO');
+    Add('U_Version', 'U_VERSION');
+    Add('Cd_Operador', 'CD_OPERADOR');
+    Add('Dt_Cadastro', 'DT_CADASTRO');
+    Add('Id_Empresa', 'ID_EMPRESA');
+    Add('Id_Pessoa', 'ID_PESSOA');
+    Add('Id_Operacao', 'ID_OPERACAO');
+    Add('Dt_Transacao', 'DT_TRANSACAO');
+    Add('Nr_Transacao', 'NR_TRANSACAO');
+    Add('Tp_Situacao', 'TP_SITUACAO');
+    Add('Dt_Cancelamento', 'DT_CANCELAMENTO');
+  end;
+
+  Result.Relacoes := TmRelacoes.Create;
+  with Result.Relacoes do begin
+
+    with Add('Empresa', TEmpresa)^.Campos do begin
+      Add('Id_Empresa');
+    end;
+
+    with Add('Pessoa', TPessoa)^.Campos do begin
+      Add('Id_Pessoa');
+    end;
+
+    with Add('Operacao', TOperacao)^.Campos do begin
+      Add('Id_Operacao');
+    end;
+
+    with Add('Fiscal', TTransfiscal)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Itens', TTransitem, TTransitems)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Pagtos', TTranspagto, TTranspagtos)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+  end;
 end;
 
-function TTransacao.GetVl_Variacao: Real;
+//--
+
+procedure TTransacao.SetId_Transacao(const Value : String);
 begin
-  Result := List_Item.Sum('Vl_Variacao') + List_Item.Sum('Vl_VariacaoCapa');
+  fId_Transacao := Value;
 end;
 
-function TTransacao.GetVl_Total: Real;
+procedure TTransacao.SetU_Version(const Value : String);
 begin
-  Result := List_Item.Sum('Vl_Totitem');
+  fU_Version := Value;
 end;
 
-function TTransacao.GetVl_Acrescimo: Real;
+procedure TTransacao.SetCd_Operador(const Value : Integer);
 begin
-  Result := List_Item.Sum('Vl_Acrescimo');
+  fCd_Operador := Value;
 end;
 
-function TTransacao.GetVl_Desconto: Real;
+procedure TTransacao.SetDt_Cadastro(const Value : TDateTime);
 begin
-  Result := List_Item.Sum('Vl_Desconto');
+  fDt_Cadastro := Value;
 end;
 
-function TTransacao.GetVl_Frete: Real;
+procedure TTransacao.SetId_Empresa(const Value : Integer);
 begin
-  Result := List_Item.Sum('Vl_Frete');
+  fId_Empresa := Value;
 end;
 
-function TTransacao.GetVl_Outro: Real;
+procedure TTransacao.SetId_Pessoa(const Value : String);
 begin
-  Result := List_Item.Sum('Vl_Outro');
+  fId_Pessoa := Value;
 end;
 
-function TTransacao.GetVl_Despesa: Real;
+procedure TTransacao.SetId_Operacao(const Value : String);
 begin
-  Result := List_Item.Sum('Vl_Despesa');
+  fId_Operacao := Value;
 end;
 
-function TTransacao.GetVl_Seguro: Real;
+procedure TTransacao.SetDt_Transacao(const Value : TDateTime);
 begin
-  Result := List_Item.Sum('Vl_Seguro');
+  fDt_Transacao := Value;
+end;
+
+procedure TTransacao.SetNr_Transacao(const Value : Integer);
+begin
+  fNr_Transacao := Value;
+end;
+
+procedure TTransacao.SetTp_Situacao(const Value : Integer);
+begin
+  fTp_Situacao := Value;
+end;
+
+procedure TTransacao.SetDt_Cancelamento(const Value : TDateTime);
+begin
+  fDt_Cancelamento := Value;
 end;
 
 function TTransacao.GetVl_Baseicms: Real;
 begin
-  Result := List_Item.Sum('Vl_Baseicms');
+  Result := TmList(fItens).Sum('Vl_Baseicms');
 end;
 
 function TTransacao.GetVl_Icms: Real;
 begin
-  Result := List_Item.Sum('Vl_Icms');
+  Result := TmList(fItens).Sum('Vl_Icms');
 end;
 
 function TTransacao.GetVl_Baseicmsst: Real;
 begin
-  Result := List_Item.Sum('Vl_Baseicmsst');
+  Result := TmList(fItens).Sum('Vl_Baseicmsst');
 end;
 
 function TTransacao.GetVl_Icmsst: Real;
 begin
-  Result := List_Item.Sum('Vl_Icmsst');
-end;
-
-function TTransacao.GetVl_Ipi: Real;
-begin
-  Result := List_Item.Sum('Vl_Ipi');
-end;
-
-function TTransacao.GetVl_Pis: Real;
-begin
-  Result := List_Item.Sum('Vl_Pis');
+  Result := TmList(fItens).Sum('Vl_Icmsst');
 end;
 
 function TTransacao.GetVl_Cofins: Real;
 begin
-  Result := List_Item.Sum('Vl_Cofins');
+  Result := TmList(fItens).Sum('Vl_Cofins');
+end;
+
+function TTransacao.GetVl_Desconto: Real;
+begin
+  Result := TmList(fItens).Sum('Vl_Desconto');
+end;
+
+function TTransacao.GetVl_Frete: Real;
+begin
+  Result := TmList(fItens).Sum('Vl_Frete');
 end;
 
 function TTransacao.GetVl_Ii: Real;
 begin
-  Result := List_Item.Sum('Vl_Ii');
+  Result := TmList(fItens).Sum('Vl_Ii');
 end;
 
-{ TTransacaoList }
-
-constructor TTransacaoList.Create(AOwner: TPersistent);
+function TTransacao.GetVl_Ipi: Real;
 begin
-  inherited Create(TTransacao);
+  Result := TmList(fItens).Sum('Vl_Ipi');
 end;
 
-function TTransacaoList.Add: TTransacao;
+function TTransacao.GetVl_Item: Real;
 begin
-  Result := TTransacao(inherited Add);
-  Result.create(Self);
+  Result := TmList(fItens).Sum('Vl_Item');
 end;
 
-function TTransacaoList.GetItem(Index: Integer): TTransacao;
+function TTransacao.GetVl_Outro: Real;
 begin
-  Result := TTransacao(inherited GetItem(Index));
+  Result := TmList(fItens).Sum('Vl_Outro');
 end;
 
-procedure TTransacaoList.SetItem(Index: Integer; Value: TTransacao);
+function TTransacao.GetVl_Pis: Real;
 begin
-  inherited SetItem(Index, Value);
+  Result := TmList(fItens).Sum('Vl_Pis');
+end;
+
+function TTransacao.GetVl_Seguro: Real;
+begin
+  Result := TmList(fItens).Sum('Vl_Seguro');
+end;
+
+function TTransacao.GetVl_Total: Real;
+begin
+  Result := TmList(fItens).Sum('Vl_Total');
+end;
+
+{ TTransacaos }
+
+function TTransacaos.Add: TTransacao;
+begin
+  Result := TTransacao.Create(nil);
+  Self.Add(Result);
 end;
 
 end.

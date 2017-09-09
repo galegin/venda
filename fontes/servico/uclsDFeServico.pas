@@ -13,7 +13,7 @@ uses
   pcnConversao, pcnNFe, pcnConversaoNFe,
   uclsContingenciaServico, uclsEmpresaServico,
   uTipoProcessamento, uTipoImpressaoDanfe, uTipoRetornoSefaz, uTipoPessoa,
-  uTransacao, uTransfiscal;
+  uTransacao, uTransfiscal, uTranspagto;
 
 type
   TcDFeServico = class(TComponent)
@@ -22,7 +22,7 @@ type
     fACBrNFeDANFe : TACBrNFeDANFeRL;
     fACBrNFeDANFCe : TACBrNFeDANFCeFortes;
 
-    fObj_Transacao : TTransacao;
+    fTransacao : TTransacao;
 
     fUf_Origem : String;   // 'PR'
     fTp_Ambiente : TpcnTipoAmbiente; // 1 - Producao / 2 - Homologacao
@@ -60,11 +60,11 @@ type
 
     procedure GravarDFe(
       ATipoProcessamento : TTipoProcessamento;
-      AChave : String;
-      AXmlProt : String;
-      ADhRecibo : TDateTime;
+      ADsChaveAcesso : String;
+      ADsEnvioXml : String;
+      ADtRecebimento : TDateTime;
       ANrRecibo : String;
-      ARetornoXml : String);
+      ADsRetornoXml : String);
 
     procedure GerarDFe;
 
@@ -108,22 +108,22 @@ type
     destructor Destroy; override;
 
     procedure EmitirDFe(); overload;
-    procedure EmitirDFe(AObj_Transacao : TTransacao); overload;
+    procedure EmitirDFe(ATransacao : TTransacao); overload;
 
     procedure EmitirDFeContingencia(); overload;
-    procedure EmitirDFeContingencia(AObj_Fiscal : TTransfiscal); overload;
+    procedure EmitirDFeContingencia(ATransfiscal : TTransfiscal); overload;
 
     procedure ImprimirDFe(); overload;
-    procedure ImprimirDFe(AObj_Transacao : TTransacao); overload;
+    procedure ImprimirDFe(ATransacao : TTransacao); overload;
 
     procedure CancelarDFe(); overload;
-    procedure CancelarDFe(AObj_Transacao : TTransacao); overload;
+    procedure CancelarDFe(ATransacao : TTransacao); overload;
 
     procedure InutilizarDFe(); overload;
-    procedure InutilizarDFe(AObj_Transacao : TTransacao); overload;
+    procedure InutilizarDFe(ATransacao : TTransacao); overload;
 
     procedure ConsultarDFe(); overload;
-    procedure ConsultarDFe(AObj_Transacao : TTransacao); overload;
+    procedure ConsultarDFe(ATransacao : TTransacao); overload;
   published
     property TipoRetorno : RTipoRetornoSefaz read fTipoRetorno write SetTipoRetorno;
     property cStat : Integer read fTipoRetorno.cStat;
@@ -141,7 +141,8 @@ uses
   uTipoImposto,
   uMunicipio, uPessoa, uTransdfe, uTransitem, uTransimposto,
   mPath, mProxy, mTipoMensagem, mTipoParametro, mString, mException,
-  TypInfo, ACBrDFeConfiguracoes;
+  TypInfo, ACBrDFeConfiguracoes,
+  mContexto;
 
 var
   _instance : TcDFeServico;
@@ -164,13 +165,13 @@ begin
   inherited;
 
   fACBrNFe := TACBrNFe.Create(Self);
-  fObj_Transacao := TTransacao.Create(nil);
+  fTransacao := TTransacao.Create(nil);
 end;
 
 destructor TcDFeServico.Destroy;
 begin
   FreeAndNil(fACBrNFe);
-  FreeAndNil(fObj_Transacao);
+  FreeAndNil(fTransacao);
 
   inherited;
 end;
@@ -183,28 +184,26 @@ const
 var
   I : Integer;
 begin
-  if not Assigned(fObj_Transacao) then
+  if not Assigned(fTransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao.Obj_Empresa := uclsEmpresaServico.Instance.Consultar();
-
-  if not Assigned(fObj_Transacao.Obj_Empresa) then
+  if not Assigned(fTransacao.Empresa) then
     raise Exception.Create('Empresa deve ser informada / ' + cDS_METHOD);
-  if not Assigned(fObj_Transacao.Obj_Empresa.Obj_Pessoa) then
+  if not Assigned(fTransacao.Empresa.Pessoa) then
     raise Exception.Create('Pessoa da empresa deve ser informada / ' + cDS_METHOD);
-  if not Assigned(fObj_Transacao.Obj_Pessoa) then
+  if not Assigned(fTransacao.Pessoa) then
     raise Exception.Create('Pessoa deve ser informada / ' + cDS_METHOD);
-  if not Assigned(fObj_Transacao.Obj_Operacao) then
+  if not Assigned(fTransacao.Operacao) then
     raise Exception.Create('Operacao deve ser informada / ' + cDS_METHOD);
-  if not Assigned(fObj_Transacao.Obj_Fiscal) then
+  if not Assigned(fTransacao.Fiscal) then
     raise Exception.Create('Fiscal deve ser informado / ' + cDS_METHOD);
 
-  if fObj_Transacao.List_Item.Count = 0 then
+  if fTransacao.Itens.Count = 0 then
     raise Exception.Create('Item deve ser informado / ' + cDS_METHOD);
 
-  for I := 0 to fObj_Transacao.List_Item.Count - 1 do
-    with fObj_Transacao.List_Item[I] do
-      if List_Imposto.Count = 0 then
+  for I := 0 to fTransacao.Itens.Count - 1 do
+    with TTransitem(fTransacao.Itens[I]) do
+      if Impostos.Count = 0 then
         raise Exception.Create('Imposto do item ' + FloatToStr(Nr_Item) + ' deve ser informado / ' + cDS_METHOD);
 end;
 
@@ -312,8 +311,8 @@ end;
 
 procedure TcDFeServico.CarregarDFe;
 begin
-  with fObj_Transacao.Obj_Fiscal.List_DFe.Items[0] do begin
-    fACBrNFe.NotasFiscais.LoadFromString(Ds_Xml);
+  with TTransdfe(fTransacao.Fiscal.Eventos.Items[0]) do begin
+    fACBrNFe.NotasFiscais.LoadFromString(Ds_Envioxml);
   end;
 end;
 
@@ -321,32 +320,32 @@ procedure TcDFeServico.GravarDFe;
 const
   cDS_METHOD = 'TcDFeServico.GravarDFe()';
 begin
-  if AChave = '' then
+  if ADsChaveAcesso = '' then
     raise Exception.Create('Chave deve ser informado / ' + cDS_METHOD);
-  if AXmlProt = '' then
+  if ADsEnvioXml = '' then
     raise Exception.Create('Xml protocolado deve ser informado / ' + cDS_METHOD);
-  if ADhRecibo = 0 then
+  if ADtRecebimento = 0 then
     raise Exception.Create('Data recibo deve ser informado / ' + cDS_METHOD);
   if ANrRecibo = '' then
     raise Exception.Create('Numero recibo deve ser informado / ' + cDS_METHOD);
-  if ARetornoXml = '' then
+  if ADsRetornoXml = '' then
     raise Exception.Create('Retorno xml deve ser informado / ' + cDS_METHOD);
 
-  with fObj_Transacao.Obj_Fiscal do begin
-    Ds_Chave := AnsiReplaceStr(AChave, 'NFe', '');
+  with fTransacao.Fiscal do begin
+    Ds_Chaveacesso := AnsiReplaceStr(ADsChaveAcesso, 'NFe', '');
     Nr_Recibo := ANrRecibo;
-    Dh_Recibo := ADhRecibo;
+    Dt_Recebimento := ADtRecebimento;
     Tp_Processamento := TipoProcessamentoToStr(ATipoProcessamento);
 
-    with List_DFe.Add do begin
-      Cd_Dnatrans := fObj_Transacao.Cd_Dnatrans;
+    with Eventos.Add do begin
+      Id_Transacao := fTransacao.Id_Transacao;
 
       U_Version := '';
       Cd_Operador := 1;
       Dt_Cadastro := Now;
 
-      Ds_Xml := AXmlProt;
-      Ds_RetornoXml := ARetornoXml;
+      Ds_Envioxml := ADsEnvioXml;
+      Ds_RetornoXml := ADsRetornoXml;
     end;
   end;
 end;
@@ -380,20 +379,20 @@ begin
 
 // IDENTIFICACAO
 
-    Ide.cNF       := fObj_Transacao.Nr_Transacao; //Caso não seja preenchido será gerado um número aleatório pelo componente
-    Ide.natOp     := fObj_Transacao.Obj_Operacao.Ds_Operacao;
+    Ide.cNF       := fTransacao.Nr_Transacao; //Caso não seja preenchido será gerado um número aleatório pelo componente
+    Ide.natOp     := fTransacao.Operacao.Ds_Operacao;
     Ide.indPag    := ipVista;
-    Ide.modelo    := fObj_Transacao.Obj_Fiscal.Tp_Docfiscal;
-    Ide.serie     := StrToIntDef(fObj_Transacao.Obj_Fiscal.Cd_Serie, 1);
-    Ide.nNF       := fObj_Transacao.Obj_Fiscal.Nr_Docfiscal;
+    Ide.modelo    := fTransacao.Fiscal.Tp_Modelonf;
+    Ide.serie     := StrToIntDef(fTransacao.Fiscal.Cd_Serie, 1);
+    Ide.nNF       := fTransacao.Fiscal.Nr_Nf;
     Ide.dEmi      := now;
     Ide.dSaiEnt   := now;
     Ide.hSaiEnt   := now;
-    Ide.tpNF      := StrToTpNF(vOk, IntToStr(fObj_Transacao.Obj_Fiscal.Tp_Operacao));
+    Ide.tpNF      := StrToTpNF(vOk, IntToStr(fTransacao.Fiscal.Tp_Operacao));
     Ide.tpEmis    := fTp_Emissao;
     Ide.tpAmb     := fTp_Ambiente; //Lembre-se de trocar esta variável quando for para ambiente de produção
     Ide.cUF       := UFtoCUF(fUf_Origem);
-    Ide.cMunFG    := fObj_Transacao.Obj_Empresa.Obj_Pessoa.Obj_Municipio.Cd_Municipio;
+    Ide.cMunFG    := fTransacao.Empresa.Pessoa.Cd_Municipio;
     Ide.finNFe    := fnNormal;
     Ide.tpImp     := fTp_DANFE; // tiSemGeracao;
     Ide.indFinal  := cfConsumidorFinal;
@@ -404,7 +403,7 @@ begin
 
 // EMITENTE
 
-    with fObj_Transacao.Obj_Empresa.Obj_Pessoa do begin
+    with fTransacao.Empresa.Pessoa do begin
       Emit.CNPJCPF           := Nr_CpfCnpj;
       Emit.IE                := Nr_Rgie;
       Emit.xNome             := Nm_Pessoa;
@@ -431,9 +430,9 @@ begin
 
 // DESTINATARIO
 
-   vTipoPessoa := StrToTipoPessoa(fObj_Transacao.Obj_Pessoa.Nr_CpfCnpj);
+   vTipoPessoa := StrToTipoPessoa(fTransacao.Pessoa.Nr_CpfCnpj);
 
-    with fObj_Transacao.Obj_Pessoa do begin
+    with fTransacao.Pessoa do begin
       Dest.CNPJCPF           := Nr_CpfCnpj;
 
       if vTipoPessoa = tpJuridica then
@@ -445,7 +444,7 @@ begin
         end;
 
         moNFe : begin
-          if (Nr_Rgie = '') or (In_Consumidorfinal) then
+          if (Nr_Rgie = '') or (In_Consumidorfinal = 'T') then
             Dest.indIEDest := inNaoContribuinte
           else if (Nr_Rgie = 'ISENTO') then
             Dest.indIEDest := inIsento
@@ -496,10 +495,10 @@ begin
 
     vVlTotTrib := 0;
 
-    for I := 0 to fObj_Transacao.List_Item.Count - 1 do begin
-      with Det.Add, fObj_Transacao.List_Item[I] do begin
+    for I := 0 to fTransacao.Itens.Count - 1 do begin
+      with Det.Add, TTransitem(fTransacao.Itens[I]) do begin
 
-        vProdEAN := GetProdEAN(IntToStr(Cd_Produto), Cd_Barraprd);
+        vProdEAN := GetProdEAN(IntToStr(Cd_Produto), Id_Produto);
 
         Prod.nItem    := Nr_Item; // Número sequencial, para cada item deve ser incrementado
         Prod.cProd    := vProdEAN.cProd;
@@ -529,9 +528,9 @@ begin
 
 // IMPOSTO
 
-        for J := 0 to List_Imposto.Count - 1 do begin
+        for J := 0 to Impostos.Count - 1 do begin
 
-          with Imposto, List_Imposto[J] do begin
+          with Imposto, TTransimposto(Impostos[J]) do begin
 
             // lei da transparencia nos impostos
             vVlTotTrib := vVlTotTrib + Vl_Imposto;
@@ -695,21 +694,21 @@ begin
 
 // TOTAL
 
-    Total.ICMSTot.vBC      := fObj_Transacao.Vl_Baseicms;
-    Total.ICMSTot.vICMS    := fObj_Transacao.Vl_Icms;
-    Total.ICMSTot.vBCST    := fObj_Transacao.Vl_Baseicmsst;
-    Total.ICMSTot.vST      := fObj_Transacao.Vl_Icmsst;
-    Total.ICMSTot.vProd    := fObj_Transacao.Vl_Item;
-    Total.ICMSTot.vFrete   := fObj_Transacao.Vl_Frete;
-    Total.ICMSTot.vSeg     := fObj_Transacao.Vl_Seguro;
-    Total.ICMSTot.vDesc    := fObj_Transacao.Vl_Desconto;
-    Total.ICMSTot.vII      := fObj_Transacao.Vl_Ii;
-    Total.ICMSTot.vIPI     := fObj_Transacao.Vl_Ipi;
-    Total.ICMSTot.vPIS     := fObj_Transacao.Vl_Pis;
-    Total.ICMSTot.vCOFINS  := fObj_Transacao.Vl_Cofins;
-    Total.ICMSTot.vOutro   := fObj_Transacao.Vl_Outro;
-    Total.ICMSTot.vNF      := fObj_Transacao.Vl_Total;
-	Total.ICMSTot.vTotTrib := vVlTotTrib;
+    Total.ICMSTot.vBC      := fTransacao.Vl_Baseicms;
+    Total.ICMSTot.vICMS    := fTransacao.Vl_Icms;
+    Total.ICMSTot.vBCST    := fTransacao.Vl_Baseicmsst;
+    Total.ICMSTot.vST      := fTransacao.Vl_Icmsst;
+    Total.ICMSTot.vProd    := fTransacao.Vl_Item;
+    Total.ICMSTot.vFrete   := fTransacao.Vl_Frete;
+    Total.ICMSTot.vSeg     := fTransacao.Vl_Seguro;
+    Total.ICMSTot.vDesc    := fTransacao.Vl_Desconto;
+    Total.ICMSTot.vII      := fTransacao.Vl_Ii;
+    Total.ICMSTot.vIPI     := fTransacao.Vl_Ipi;
+    Total.ICMSTot.vPIS     := fTransacao.Vl_Pis;
+    Total.ICMSTot.vCOFINS  := fTransacao.Vl_Cofins;
+    Total.ICMSTot.vOutro   := fTransacao.Vl_Outro;
+    Total.ICMSTot.vNF      := fTransacao.Vl_Total;
+    Total.ICMSTot.vTotTrib := vVlTotTrib;
 
     // partilha do icms e fundo de probreza
     Total.ICMSTot.vFCPUFDest   := 0.00;
@@ -740,10 +739,10 @@ begin
 
       moNFCe: begin
         pag.Clear();
-        for I := 0 to fObj_Transacao.List_Pagto.Count - 1 do begin
-          with pag.Add, fObj_Transacao.List_Pagto[I] do begin
-            tPag := StrToFormaPagamento(vOk, IntToStr(Tp_Pagto));
-            vPag := Vl_Pagto;
+        for I := 0 to fTransacao.Pagtos.Count - 1 do begin
+          with pag.Add, TTranspagto(fTransacao.Pagtos[I]) do begin
+            tPag := StrToFormaPagamento(vOk, IntToStr(Tp_Documento));
+            vPag := Vl_Documento;
           end;
         end;
       end;
@@ -753,18 +752,18 @@ begin
       moNFe: begin
         with Cobr do begin
           with Fat do begin
-            nFat  := IntToStr(fObj_Transacao.Obj_Fiscal.Nr_Docfiscal);
-            vOrig := fObj_Transacao.Vl_Item;
-            vDesc := fObj_Transacao.Vl_Desconto;
-            vLiq  := fObj_Transacao.Vl_Total;
+            nFat  := IntToStr(fTransacao.Fiscal.Nr_Nf);
+            vOrig := fTransacao.Vl_Item;
+            vDesc := fTransacao.Vl_Desconto;
+            vLiq  := fTransacao.Vl_Total;
           end;
 
           Dup.Clear();
-          for I := 0 to fObj_Transacao.List_Vencto.Count - 1 do begin
-            with Dup.Add, fObj_Transacao.List_Vencto[I] do begin
+          for I := 0 to fTransacao.Pagtos.Count - 1 do begin
+            with Dup.Add, TTranspagto(fTransacao.Pagtos[I]) do begin
               nDup  := IntToStr(Nr_Parcela);
-              dVenc := Dt_Parcela;
-              vDup  := Vl_Parcela;
+              dVenc := Dt_Vencimento;
+              vDup  := Vl_Documento;
             end;
           end;
         end;
@@ -1187,7 +1186,7 @@ begin
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
 
     GerarImpressaoDFe(
-      fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+      TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
   end else if (fTp_Contingencia in [tpcContingencia]) then begin
     GravarDFe(
@@ -1199,7 +1198,7 @@ begin
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
     GerarImpressaoDFe(
-      fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+      TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
   end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
     GravarDFe(
@@ -1215,16 +1214,16 @@ begin
   end;
 end;
 
-procedure TcDFeServico.EmitirDFe(AObj_Transacao : TTransacao);
+procedure TcDFeServico.EmitirDFe(ATransacao : TTransacao);
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFe()';
 begin
-  if not Assigned(AObj_Transacao) then
+  if not Assigned(ATransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao := AObj_Transacao;
+  fTransacao := ATransacao;
 
-  if AObj_Transacao.Nr_Transacao > 0 then
+  if ATransacao.Nr_Transacao > 0 then
     EmitirDFe;
 end;
 
@@ -1265,17 +1264,15 @@ begin
 
 end;
 
-procedure TcDFeServico.EmitirDFeContingencia(AObj_Fiscal : TTransfiscal);
+procedure TcDFeServico.EmitirDFeContingencia(ATransfiscal : TTransfiscal);
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFeContingencia()';
 begin
-  if not Assigned(AObj_Fiscal) then
+  if not Assigned(ATransfiscal) then
     raise Exception.Create('Fiscal deve ser informado / ' + cDS_METHOD);
 
-  fObj_Transacao.Limpar();
-  fObj_Transacao.Cd_Dnatrans := AObj_Fiscal.Cd_Dnatrans;
-  fObj_Transacao.Consultar(nil);
-  if fObj_Transacao.Nr_Transacao > 0 then
+  fTransacao := mContexto.Instance.GetObjeto(TTransacao, 'Id_Transacao = ''' + ATransfiscal.Id_Transacao + '''') as TTransacao;
+  if fTransacao.Nr_Transacao > 0 then
     EmitirDFeContingencia();
 end;
 
@@ -1290,19 +1287,19 @@ begin
   CarregarDFe;
 
   GerarImpressaoDFe(
-    fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+    TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 end;
 
-procedure TcDFeServico.ImprimirDFe(AObj_Transacao : TTransacao);
+procedure TcDFeServico.ImprimirDFe(ATransacao : TTransacao);
 const
   cDS_METHOD = 'TcDFeServico.ImprimirDFe()';
 begin
-  if not Assigned(AObj_Transacao) then
+  if not Assigned(ATransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao := AObj_Transacao;
+  fTransacao := ATransacao;
 
-  if AObj_Transacao.Nr_Transacao > 0 then
+  if ATransacao.Nr_Transacao > 0 then
     ImprimirDFe;
 end;
 
@@ -1319,10 +1316,10 @@ begin
   CarregarDFe;
 
   GerarCancelamentoDFe(
-    fObj_Transacao.Obj_Fiscal.Ds_Chave,
-    fObj_Transacao.Nr_Cpfcnpj,
+    fTransacao.Fiscal.Ds_Chaveacesso,
+    fTransacao.Pessoa.Nr_Cpfcnpj,
     'CANCELAMENTO AUTOMATICO',
-    fObj_Transacao.Obj_Fiscal.Nr_Recibo);
+    fTransacao.Fiscal.Nr_Recibo);
 
   if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
@@ -1339,16 +1336,16 @@ begin
 
 end;
 
-procedure TcDFeServico.CancelarDFe(AObj_Transacao : TTransacao);
+procedure TcDFeServico.CancelarDFe(ATransacao : TTransacao);
 const
   cDS_METHOD = 'TcDFeServico.CancelarDFe()';
 begin
-  if not Assigned(AObj_Transacao) then
+  if not Assigned(ATransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao := AObj_Transacao;
+  fTransacao := ATransacao;
 
-  if AObj_Transacao.Nr_Transacao > 0 then
+  if ATransacao.Nr_Transacao > 0 then
     CancelarDFe;
 end;
 
@@ -1365,13 +1362,13 @@ begin
   CarregarDFe;
 
   GerarInutilizacaoDFe(
-    fObj_Transacao.Nr_Cpfcnpj, // ACNPJEmitente : String;
+    fTransacao.Pessoa.Nr_Cpfcnpj, // ACNPJEmitente : String;
     'CANCELAMENTO AUTOMATICO', // AJustificativa : String;
-    StrToIntDef(FormatDateTime('yyyy', fObj_Transacao.Dt_Transacao), 0), // AAno : Integer;
-    fObj_Transacao.Obj_Fiscal.Tp_Docfiscal, // AModelo : Integer;
-    StrToIntDef(fObj_Transacao.Obj_Fiscal.Cd_Serie, 0), // ACd_Serie : Integer;
-    fObj_Transacao.Obj_Fiscal.Nr_Docfiscal, // ANumeroInicial : Integer;
-    fObj_Transacao.Obj_Fiscal.Nr_Docfiscal); // ANumeroFinal : Integer);
+    StrToIntDef(FormatDateTime('yyyy', fTransacao.Dt_Transacao), 0), // AAno : Integer;
+    fTransacao.Fiscal.Tp_Modelonf, // AModelo : Integer;
+    StrToIntDef(fTransacao.Fiscal.Cd_Serie, 0), // ACd_Serie : Integer;
+    fTransacao.Fiscal.Nr_Nf, // ANumeroInicial : Integer;
+    fTransacao.Fiscal.Nr_Nf); // ANumeroFinal : Integer);
 
   if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
@@ -1388,16 +1385,16 @@ begin
 
 end;
 
-procedure TcDFeServico.InutilizarDFe(AObj_Transacao : TTransacao);
+procedure TcDFeServico.InutilizarDFe(ATransacao : TTransacao);
 const
   cDS_METHOD = 'TcDFeServico.InutilizarDFe()';
 begin
-  if not Assigned(AObj_Transacao) then
+  if not Assigned(ATransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao := AObj_Transacao;
+  fTransacao := ATransacao;
 
-  if AObj_Transacao.Nr_Transacao > 0 then
+  if ATransacao.Nr_Transacao > 0 then
     InutilizarDFe;
 end;
 
@@ -1414,23 +1411,23 @@ begin
   CarregarDFe;
 
   GerarConsultaDFe(
-    fObj_Transacao.Obj_Fiscal.List_DFe.Items[0].Ds_Xml);
+    TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
   if (fTipoRetorno.tStatus in [tsRejeicao]) then  
     raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
     
 end;
 
-procedure TcDFeServico.ConsultarDFe(AObj_Transacao : TTransacao);
+procedure TcDFeServico.ConsultarDFe(ATransacao : TTransacao);
 const
   cDS_METHOD = 'TcDFeServico.ConsultarDFe()';
 begin
-  if not Assigned(AObj_Transacao) then
+  if not Assigned(ATransacao) then
     raise Exception.Create('Transacao deve ser informada / ' + cDS_METHOD);
 
-  fObj_Transacao := AObj_Transacao;
+  fTransacao := ATransacao;
 
-  if AObj_Transacao.Nr_Transacao > 0 then
+  if ATransacao.Nr_Transacao > 0 then
     ConsultarDFe;
 end;
 

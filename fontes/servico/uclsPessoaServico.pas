@@ -15,9 +15,9 @@ type
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    function Listar() : TPessoaList;
+    function Listar() : TPessoas;
 
-    function Consultar(ANr_Cpfcnpj: String) : TPessoa;
+    function Consultar(AId_Pessoa: String) : TPessoa;
 
     procedure Salvar(
       ANr_Cpfcnpj: String;
@@ -40,10 +40,9 @@ type
       ADs_Celular: String;
       ADs_Email: String);
 
-    procedure Excluir(ANr_Cpfcnpj: String);
+    procedure Excluir(AId_Pessoa: String);
 
   published
-    property Pessoa : TPessoa read fPessoa write fPessoa;
   end;
 
   function Instance : TcPessoaServico;

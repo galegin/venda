@@ -1,0 +1,215 @@
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 17:56:12
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 17:59:20
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:05:50
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:06:16
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:07:54
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:09:19
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:11:52
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:12:31
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:13:27
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:14:28
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:18:26
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:21:30
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:21:46
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:24:35
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:25:06
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:36:13
+Exception code: 3260767839
+Exception flags: 4287299604
+Number of parameters: 13823
+(no debug info) Find error: 64520C75
+call stack - 0 : Module pVenda.dpr Routine initialization Line 151 Find error: 008114C3
+call stack - 1 : (no debug info) Find error: 76CF1170
+call stack - 2 : (no debug info) Find error: 77B6B3F1
+call stack - 3 : (no debug info) Find error: 77B6B3C4
+call stack - 4 : (no debug info) Find error: FFFFFFFC
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:36:16
+Exception code: 3221225477
+Exception flags: 2
+Number of parameters: 2
+ Routine @System@TObject@Free Find error: 00404720
+call stack - 0 :  Routine @System@FinalizeUnits Find error: 00405230
+call stack - 1 :  Routine @System@@Halt0 Find error: 004054FA
+call stack - 2 : (no debug info) Find error: 77B565C7
+call stack - 3 : (no debug info) Find error: 77B56453
+call stack - 4 : Module pVenda.dpr Routine initialization Line 151 Find error: 008114C3
+call stack - 5 : (no debug info) Find error: 76CF1170
+call stack - 6 : (no debug info) Find error: 77B6B3F1
+call stack - 7 : (no debug info) Find error: 77B6B3C4
+call stack - 8 : (no debug info) Find error: FFFFFFFC
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:36:16
+Exception code: 3221225477
+Exception flags: 2
+Number of parameters: 2
+(no debug info) Find error: 00000000
+call stack - 0 :  Routine @System@FinalizeUnits Find error: 00405230
+call stack - 1 :  Routine @System@FinalizeUnits Find error: 00405248
+call stack - 2 :  Routine @System@@Halt0 Find error: 004054FA
+call stack - 3 : (no debug info) Find error: 77B565C7
+call stack - 4 : (no debug info) Find error: 77B56453
+call stack - 5 : Module pVenda.dpr Routine initialization Line 151 Find error: 008114C3
+call stack - 6 : (no debug info) Find error: 76CF1170
+call stack - 7 : (no debug info) Find error: 77B6B3F1
+call stack - 8 : (no debug info) Find error: 77B6B3C4
+call stack - 9 : (no debug info) Find error: FFFFFFFC
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:36:16
+Exception code: 3221225477
+Exception flags: 2
+Number of parameters: 2
+(no debug info) Find error: 00000026
+call stack - 0 :  Routine @System@FinalizeUnits Find error: 00405230
+call stack - 1 :  Routine @System@FinalizeUnits Find error: 00405248
+call stack - 2 :  Routine @System@FinalizeUnits Find error: 00405248
+call stack - 3 :  Routine @System@@Halt0 Find error: 004054FA
+call stack - 4 : (no debug info) Find error: 77B565C7
+call stack - 5 : (no debug info) Find error: 77B56453
+call stack - 6 : Module pVenda.dpr Routine initialization Line 151 Find error: 008114C3
+call stack - 7 : (no debug info) Find error: 76CF1170
+call stack - 8 : (no debug info) Find error: 77B6B3F1
+call stack - 9 : (no debug info) Find error: 77B6B3C4
+call stack - 10 : (no debug info) Find error: FFFFFFFC
+
+
+--------------------------------------------------------
+New exception:
+Date/Time: 2017/04/21 18:36:16
+Exception code: 3221225477
+Exception flags: 2
+Number of parameters: 2
+ Routine @System@@LStrClr Find error: 00405640
+
+

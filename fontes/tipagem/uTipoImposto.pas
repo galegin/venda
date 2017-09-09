@@ -16,6 +16,8 @@ type
     tpiISSQN,
     tpiII);
 
+  function TipoImpostoToInt(const pTipo : TTipoImposto): integer;
+  function IntToTipoImposto(const pCodigo : integer): TTipoImposto;
   function TipoImpostoToStr(const pTipo : TTipoImposto): string;
   function StrToTipoImposto(const pCodigo : string): TTipoImposto;
 
@@ -34,6 +36,34 @@ const
     'COFINSST',
     'ISSQN',
     'II');
+
+  TTipoImposto_Int : Array [TTipoImposto] of Integer = (
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10);
+
+function TipoImpostoToInt(const pTipo : TTipoImposto): integer;
+begin
+  Result := TTipoImposto_Int[pTipo];
+end;
+
+function IntToTipoImposto(const pCodigo : integer): TTipoImposto;
+var
+  I : Integer;
+begin
+  Result := TTipoImposto(-1);
+  for I := Ord(Low(TTipoImposto)) to Ord(High(TTipoImposto)) do
+    if TTipoImposto_Int[TTipoImposto(I)] = pCodigo then
+      Result := TTipoImposto(I);
+end;
 
 function TipoImpostoToStr(const pTipo : TTipoImposto): string;
 begin

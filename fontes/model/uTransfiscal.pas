@@ -1,116 +1,218 @@
 unit uTransfiscal;
 
-(* classe modelagem *)
-
 interface
 
 uses
   Classes, SysUtils,
-  mCollection, mCollectionItem,
-  uTransdfe;
+  mMapping,
+  uTransdfe, uTranscont, uTransinut;
 
 type
-  TTransfiscal = class;
-  TTransfiscalClass = class of TTransfiscal;
-
-  TTransfiscalList = class;
-  TTransfiscalListClass = class of TTransfiscalList;
-
-  TTransfiscal = class(TmCollectionItem)
+  TTransfiscal = class(TmMapping)
   private
-    fCd_Dnatrans: String;
+    fId_Transacao: String;
     fU_Version: String;
     fCd_Operador: Integer;
     fDt_Cadastro: TDateTime;
-    fTp_Ambiente: Integer;
-    fTp_Emissao: Integer;
-    fTp_Modalidade: Integer;
     fTp_Operacao: Integer;
-    fTp_Docfiscal: Integer;
-    fNr_Docfiscal: Integer;
+    fTp_Modalidade: Integer;
+    fTp_Modelonf: Integer;
     fCd_Serie: String;
-    fDh_Emissao: TDateTime;
-    fDh_EntradaSaida: TDateTime;
-    fDs_Chave: String;
-    fDh_Recibo: TDateTime;
-    fNr_Recibo: String;
+    fNr_Nf: Integer;
     fTp_Processamento: String;
-
-    fList_DFe: TTransdfeList;
+    fDs_Chaveacesso: String;
+    fDt_Recebimento: TDateTime;
+    fNr_Recibo: String;
+    fEventos: TTransdfes;
+    fContingencia: TTranscont;
+    fInutilizacao: TTransinut;
+    procedure SetId_Transacao(const Value : String);
+    procedure SetU_Version(const Value : String);
+    procedure SetCd_Operador(const Value : Integer);
+    procedure SetDt_Cadastro(const Value : TDateTime);
+    procedure SetTp_Operacao(const Value : Integer);
+    procedure SetTp_Modalidade(const Value : Integer);
+    procedure SetTp_Modelonf(const Value : Integer);
+    procedure SetCd_Serie(const Value : String);
+    procedure SetNr_Nf(const Value : Integer);
+    procedure SetTp_Processamento(const Value : String);
+    procedure SetDs_Chaveacesso(const Value: String);
+    procedure SetDt_Recebimento(const Value : TDateTime);
+    procedure SetNr_Recibo(const Value : String);
   public
-    constructor Create(ACollection: TCollection); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function GetMapping() : PmMapping; override;
   published
-    property Cd_Dnatrans: String read fCd_Dnatrans write fCd_Dnatrans;
-    property U_Version: String read fU_Version write fU_Version;
-    property Cd_Operador: Integer read fCd_Operador write fCd_Operador;
-    property Dt_Cadastro: TDateTime read fDt_Cadastro write fDt_Cadastro;
-    property Tp_Ambiente: Integer read fTp_Ambiente write fTp_Ambiente;
-    property Tp_Emissao: Integer read fTp_Emissao write fTp_Emissao;
-    property Tp_Modalidade: Integer read fTp_Modalidade write fTp_Modalidade;
-    property Tp_Operacao: Integer read fTp_Operacao write fTp_Operacao;
-    property Tp_Docfiscal: Integer read fTp_Docfiscal write fTp_Docfiscal;
-    property Nr_Docfiscal: Integer read fNr_Docfiscal write fNr_Docfiscal;
-    property Cd_Serie: String read fCd_Serie write fCd_Serie;
-    property Dh_Emissao: TDateTime read fDh_Emissao write fDh_Emissao;
-    property Dh_EntradaSaida: TDateTime read fDh_EntradaSaida write fDh_EntradaSaida;
-    property Ds_Chave: String read fDs_Chave write fDs_Chave;
-    property Dh_Recibo: TDateTime read fDh_Recibo write fDh_Recibo;
-    property Nr_Recibo: String read fNr_Recibo write fNr_Recibo;
-    property Tp_Processamento: String read fTp_Processamento write fTp_Processamento;
-
-    property List_DFe: TTransdfeList read fList_DFe write fList_DFe;
+    property Id_Transacao : String read fId_Transacao write SetId_Transacao;
+    property U_Version : String read fU_Version write SetU_Version;
+    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
+    property Tp_Operacao : Integer read fTp_Operacao write SetTp_Operacao;
+    property Tp_Modalidade : Integer read fTp_Modalidade write SetTp_Modalidade;
+    property Tp_Modelonf : Integer read fTp_Modelonf write SetTp_Modelonf;
+    property Cd_Serie : String read fCd_Serie write SetCd_Serie;
+    property Nr_Nf : Integer read fNr_Nf write SetNr_Nf;
+    property Tp_Processamento : String read fTp_Processamento write SetTp_Processamento;
+    property Ds_Chaveacesso : String read FDs_Chaveacesso write SetDs_Chaveacesso;
+    property Dt_Recebimento : TDateTime read fDt_Recebimento write SetDt_Recebimento;
+    property Nr_Recibo : String read fNr_Recibo write SetNr_Recibo;
+    property Eventos: TTransdfes read fEventos write fEventos;
+    property Contingencia: TTranscont read fContingencia write fContingencia;
+    property Inutilizacao: TTransinut read fInutilizacao write fInutilizacao;
   end;
 
-  TTransfiscalList = class(TmCollection)
-  private
-    function GetItem(Index: Integer): TTransfiscal;
-    procedure SetItem(Index: Integer; Value: TTransfiscal);
+  TTransfiscals = class(TList)
   public
-    constructor Create(AOwner: TPersistent);
-    function Add: TTransfiscal;
-    property Items[Index: Integer]: TTransfiscal read GetItem write SetItem; default;
+    function Add: TTransfiscal; overload;
   end;
 
 implementation
 
 { TTransfiscal }
 
-constructor TTransfiscal.Create(ACollection: TCollection);
+constructor TTransfiscal.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fList_DFe:= TTransdfeList.Create(nil);
-  fList_DFe.IsUpdate := True;
+  fEventos:= TTransdfes.Create;
+  fContingencia:= TTranscont.Create(nil);
+  fInutilizacao:= TTransinut.Create(nil);
 end;
 
 destructor TTransfiscal.Destroy;
 begin
+  FreeAndNil(fEventos);
+  FreeAndNil(fContingencia);
+  FreeAndNil(fInutilizacao);
 
   inherited;
 end;
 
-{ TTransfiscalList }
+//--
 
-constructor TTransfiscalList.Create(AOwner: TPersistent);
+function TTransfiscal.GetMapping: PmMapping;
 begin
-  inherited Create(TTransfiscal);
+  Result := New(PmMapping);
+
+  Result.Tabela := New(PmTabela);
+  with Result.Tabela^ do begin
+    Nome := 'TRANSFISCAL';
+  end;
+
+  Result.Chaves := TmChaves.Create;
+  with Result.Chaves do begin
+    Add('Id_Transacao', 'ID_TRANSACAO');
+  end;
+
+  Result.Campos := TmCampos.Create;
+  with Result.Campos do begin
+    Add('Id_Transacao', 'ID_TRANSACAO');
+    Add('U_Version', 'U_VERSION');
+    Add('Cd_Operador', 'CD_OPERADOR');
+    Add('Dt_Cadastro', 'DT_CADASTRO');
+    Add('Tp_Operacao', 'TP_OPERACAO');
+    Add('Tp_Modalidade', 'TP_MODALIDADE');
+    Add('Tp_Modelonf', 'TP_MODELONF');
+    Add('Cd_Serie', 'CD_SERIE');
+    Add('Nr_Nf', 'NR_NF');
+    Add('Tp_Processamento', 'TP_PROCESSAMENTO');
+    Add('Ds_Chaveacesso', 'DS_CHAVEACESSO');
+    Add('Dt_Recebimento', 'DT_RECEBIMENTO');
+    Add('Nr_Recibo', 'NR_RECIBO');
+  end;
+
+  Result.Relacoes := TmRelacoes.Create;
+  with Result.Relacoes do begin
+
+    with Add('Eventos', TTransdfe, TTransdfes)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Contingencia', TTranscont)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Inutilizacao', TTransinut)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+  end;
 end;
 
-function TTransfiscalList.Add: TTransfiscal;
+//--
+
+procedure TTransfiscal.SetId_Transacao(const Value : String);
 begin
-  Result := TTransfiscal(inherited Add);
-  Result.create(Self);
+  fId_Transacao := Value;
 end;
 
-function TTransfiscalList.GetItem(Index: Integer): TTransfiscal;
+procedure TTransfiscal.SetU_Version(const Value : String);
 begin
-  Result := TTransfiscal(inherited GetItem(Index));
+  fU_Version := Value;
 end;
 
-procedure TTransfiscalList.SetItem(Index: Integer; Value: TTransfiscal);
+procedure TTransfiscal.SetCd_Operador(const Value : Integer);
 begin
-  inherited SetItem(Index, Value);
+  fCd_Operador := Value;
+end;
+
+procedure TTransfiscal.SetDt_Cadastro(const Value : TDateTime);
+begin
+  fDt_Cadastro := Value;
+end;
+
+procedure TTransfiscal.SetTp_Operacao(const Value : Integer);
+begin
+  fTp_Operacao := Value;
+end;
+
+procedure TTransfiscal.SetTp_Modalidade(const Value : Integer);
+begin
+  fTp_Modalidade := Value;
+end;
+
+procedure TTransfiscal.SetTp_Modelonf(const Value : Integer);
+begin
+  fTp_Modelonf := Value;
+end;
+
+procedure TTransfiscal.SetCd_Serie(const Value : String);
+begin
+  fCd_Serie := Value;
+end;
+
+procedure TTransfiscal.SetNr_Nf(const Value : Integer);
+begin
+  fNr_Nf := Value;
+end;
+
+procedure TTransfiscal.SetDs_Chaveacesso(const Value: String);
+begin
+  FDs_Chaveacesso := Value;
+end;
+
+procedure TTransfiscal.SetTp_Processamento(const Value : String);
+begin
+  fTp_Processamento := Value;
+end;
+
+procedure TTransfiscal.SetDt_Recebimento(const Value : TDateTime);
+begin
+  fDt_Recebimento := Value;
+end;
+
+procedure TTransfiscal.SetNr_Recibo(const Value : String);
+begin
+  fNr_Recibo := Value;
+end;
+
+{ TTransfiscals }
+
+function TTransfiscals.Add: TTransfiscal;
+begin
+  Result := TTransfiscal.Create(nil);
+  Self.Add(Result);
 end;
 
 end.

@@ -16,8 +16,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
-    function Consultar(ANr_Cpfcnpj : String = '') : TEmpresa;
+    function Consultar(AId_Empresa : Integer) : TEmpresa;
   published
   end;
 
@@ -25,6 +24,9 @@ type
   procedure Destroy;
 
 implementation
+
+uses
+  mContexto;
 
 var
   _instance : TcEmpresaServico;
@@ -59,18 +61,16 @@ begin
 end;
 
 function TcEmpresaServico.Consultar;
+const
+  cDS_METHOD = 'TcEmpresaServico.Consular';
 begin
-  fEmpresa.Limpar();
-  if ANr_Cpfcnpj <> '' then
-    fEmpresa.Nr_CpfCnpj := ANr_Cpfcnpj;
-  fEmpresa.ConsultarAll(nil);
-  if fEmpresa.Nr_Cpfcnpj <> '' then begin
-    with fEmpresa do begin
-      Obj_Pessoa.Limpar();
-      Obj_Pessoa.Nr_Cpfcnpj := fEmpresa.Nr_Cpfcnpj;
-      Obj_Pessoa.Consultar(nil);
-    end;
-  end;
+  if AId_Empresa = 0 then
+    raise Exception.Create('Código empresa deve ser informada / ' + cDS_METHOD);
+
+  fEmpresa := mContexto.Instance.GetObjeto(TEmpresa, 'Id_Empresa = ' + IntToStr(AId_Empresa)) as TEmpresa;
+  if fEmpresa.Id_Empresa = 0 then
+    raise Exception.Create('Empresa ' + FloatToStr(AId_Empresa) + ' nao encontrada / ' + cDS_METHOD);
+
   Result := fEmpresa;
 end;
 

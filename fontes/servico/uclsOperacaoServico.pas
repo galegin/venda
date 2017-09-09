@@ -15,19 +15,19 @@ type
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    function Listar() : TOperacaoList;
+    function Listar() : TOperacaos;
 
-    function Consultar(ACd_Operacao: String) : TOperacao;
+    function Consultar(AId_Operacao: String) : TOperacao;
 
     procedure Salvar(
-      ACd_Operacao : String;
+      AId_Operacao : String;
       ADs_Operacao : String;
-      ATp_Docfiscal: Integer;
-      ATp_Modalidade: Integer;
-      ATp_Operacao: Integer;
-      ACd_Serie: String);
+      ATp_Modelonf : Integer;
+      ATp_Modalidade : Integer;
+      ATp_Operacao : Integer;
+      ACd_Serie : String);
 
-    procedure Excluir(ACd_Operacao : String);
+    procedure Excluir(AId_Operacao : String);
 
   published
     property Operacao : TOperacao read fOperacao write fOperacao;
@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  mCollectionItem;
+  mContexto;
 
 var
   _instance : TcOperacaoServico;
@@ -73,48 +73,43 @@ end;
 
 function TcOperacaoServico.Listar;
 begin
-  Result := TOperacaoList(fOperacao.Listar(nil));
+  Result := mContexto.Instance.GetLista(TOperacao, '', TOperacaos) as TOperacaos;
 end;
 
 function TcOperacaoServico.Consultar;
 begin
-  with fOperacao do begin
-    Limpar();
-    if ACd_Operacao <> '' then begin
-      Cd_Operacao := ACd_Operacao;
-      Consultar(nil);
-      Result := fOperacao;
-    end else begin
-      Result := nil;
-    end;
+  if AId_Operacao <> '' then begin
+    fOperacao := mContexto.Instance.GetObjeto(TOperacao, 'Id_Operacao = ''' + AId_Operacao + '''') as TOperacao;
+    Result := fOperacao;
+  end else begin
+    Result := nil;
   end;
 end;
 
 procedure TcOperacaoServico.Salvar;
 begin
   with fOperacao do begin
-    Cd_Operacao := ACd_Operacao;
+    Id_Operacao := AId_Operacao;
 
     U_Version := '';
     Cd_Operador := 1;
     Dt_Cadastro := Now;
 
-    Tp_Docfiscal := ATp_Docfiscal;
+    Tp_Modelonf := ATp_Modelonf;
     Tp_Modalidade := ATp_Modalidade;
     Tp_Operacao := ATp_Operacao;
     Cd_Serie := ACd_Serie;
-
-    Salvar();
   end;
+
+  mContexto.Instance.SetObjeto(fOperacao);
 end;
 
 procedure TcOperacaoServico.Excluir;
 begin
   with fOperacao do begin
-    Limpar();
-    if ACd_Operacao <> '' then begin
-      Cd_Operacao := ACd_Operacao;
-      Excluir();
+    if AId_Operacao <> '' then begin
+      Id_Operacao := AId_Operacao;
+      mContexto.Instance.RemObjeto(fOperacao);
     end;
   end;
 end;

@@ -5,15 +5,14 @@ interface
 uses
   Classes, SysUtils, StrUtils,
   pcnConversao, pcnConversaoNFe,
-  mException, mInternet, mFilter,
-  uTipoProcessamento, uTipoRetornoSefaz, uTransfiscal, uTransacao;
+  mException, mInternet,
+  uTipoProcessamento, uTipoRetornoSefaz, uTransacao, uTransfiscal, uTranscont;
 
 type
   TTipoContingencia = (tpcSemContingencia, tpcContingencia);
 
   TcContingenciaServico = class(TComponent)
   private
-    fObj_Fiscal : TTransfiscal;
     fTipoEmissao : TpcnTipoEmissao;
     fModeloDF : TpcnModeloDF;
     fTipoRetorno : RTipoRetornoSefaz;
@@ -36,7 +35,8 @@ type
 implementation
 
 uses
-  uclsDFeServico;
+  uclsDFeServico,
+  mContexto;
 
 var
   _instance : TcContingenciaServico;
@@ -60,12 +60,10 @@ constructor TcContingenciaServico.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fObj_Fiscal := TTransfiscal.Create(nil);
 end;
 
 destructor TcContingenciaServico.Destroy;
 begin
-  FreeAndNil(fObj_Fiscal);
 
   inherited;
 end;
@@ -82,35 +80,35 @@ procedure TcContingenciaServico.EnviarPendente;
 const
   cDS_METHOD = 'TcContingenciaServico.EnviarPendente';
 var
-  vObj_DFeServico : TcDFeServico;
-  vLst_Filter : TmFilterList;
-  vLst_Fiscal : TList;
-  vDt_Emissao : TDateTime;
+  vDFeServico : TcDFeServico;
+  vTranscont : TTranscont;
+  vTransconts : TTransconts;
+  vTransfiscal : TTransfiscal;
+  vDtEmissao : TDateTime;
+  vWhere : String;
   I : Integer;
 begin
   if not TmInternet.IsConectado() then
     Exit;
 
-  vDt_Emissao := Date - 1;
+  vDtEmissao := Date - 1;
 
-  vLst_Filter := TmFilterList.Create;
-  with vLst_Filter do begin
-    Add(TmFilter.CreateS('Tp_Processamento', TipoProcessamentoToStr(tppGerada)));
-    Add(TmFilter.CreateD('Dh_Emissao', tpfMaiorIgual, vDt_Emissao));
-  end;
+  vWhere := 'Tp_Situacao = 1';
 
-  fObj_Fiscal.Limpar();
-  vLst_Fiscal := fObj_Fiscal.Listar(vLst_Filter);
-  if not Assigned(vLst_Fiscal) or (vLst_Fiscal.Count = 0) then
+  vTransconts := mContexto.Instance.GetLista(TTranscont, vWhere, TTransconts) as TTransconts;
+  if not Assigned(vTransconts) or (vTransconts.Count = 0) then
     Exit;
 
   try
-    vObj_DFeServico := TcDFeServico.Create(nil);
+    vDFeServico := TcDFeServico.Create(nil);
 
     try
-      for I := 0 to vLst_Fiscal.Count - 1 do begin
-        vObj_DFeServico.EmitirDFeContingencia(TTransfiscal(vLst_Fiscal));
-        if vObj_DFeServico.cStat in [108, 109] then
+      for I := 0 to vTransconts.Count - 1 do begin
+        vTranscont := TTranscont(vTransconts.Items[I]);
+        vWhere := 'Id_Transacao = ''' + vTranscont.Id_Transacao;
+        vTransfiscal := mContexto.Instance.GetObjeto(TTransfiscal, vWhere) as TTransfiscal;
+        vDFeServico.EmitirDFeContingencia(vTransfiscal);
+        if vDFeServico.cStat in [108, 109] then
           Break;
       end;
     except
@@ -118,10 +116,10 @@ begin
         raise TmException.Create(cDS_METHOD, E.Message);
     end;
 
-    TipoRetorno := vObj_DFeServico.TipoRetorno;
+    TipoRetorno := vDFeServico.TipoRetorno;
     
   finally
-    FreeAndNil(vObj_DFeServico);
+    FreeAndNil(vDFeServico);
     
   end;
 end;

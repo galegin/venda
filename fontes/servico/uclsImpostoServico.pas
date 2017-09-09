@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, StrUtils, Math,
   uEmpresa, uTransacao, uTransitem,
-  uRegrafiscal, uRegrafiscalimposto,
+  uRegrafiscal, uRegraimposto,
   uTipoImposto;
 
 type
@@ -16,7 +16,7 @@ type
     fTransacao : TTransacao;
     fTransitem : TTransitem;
     fRegrafiscal : TRegrafiscal;
-    fRegrafiscalImposto : TRegrafiscalImposto;
+    fRegraimposto : TRegraimposto;
   protected
     procedure GerarIcms;
     procedure GerarIcmsSt;
@@ -83,26 +83,26 @@ end;
 
 procedure TcImpostoServico.GerarIcms;
 begin
-  with fTransitem.List_Imposto.Add do begin
-    Cd_Dnatrans := fTransitem.Cd_Dnatrans;
+  with fTransitem.Impostos.Add do begin
+    Id_Transacao := fTransitem.Id_Transacao;
     Nr_Item := fTransitem.Nr_Item;
-    Cd_Imposto := fRegrafiscalImposto.Cd_Imposto;
+    Cd_Imposto := fRegraimposto.Cd_Imposto;
 
     U_Version := '';
     Cd_Operador := 1;
     Dt_Cadastro := Now;
 
     Vl_Basecalculo := fTransitem.Vl_Totitem;
-    Pr_Basecalculo := fRegrafiscalImposto.Pr_Basecalculo;
-    Pr_Aliquota := fRegrafiscalImposto.Pr_Aliquota;
-    Cd_Cst := fRegrafiscalImposto.Cd_Cst;
-    Cd_Csosn := fRegrafiscalImposto.Cd_Csosn;
+    Pr_Basecalculo := fRegraimposto.Pr_Basecalculo;
+    Pr_Aliquota := fRegraimposto.Pr_Aliquota;
+    Cd_Cst := fRegraimposto.Cd_Cst;
+    Cd_Csosn := fRegraimposto.Cd_Csosn;
     Vl_Imposto := TmFloat.Rounded(Vl_Basecalculo * (Pr_Aliquota / 100) * (Pr_Basecalculo / 100), 2);
 
-    if fRegrafiscalImposto.In_Isento then begin
+    if fRegraimposto.In_Isento = 'T' then begin
       Vl_Isento := Vl_Imposto;
       Vl_Imposto := 0;
-    end else if fRegrafiscalImposto.In_Outro then begin
+    end else if fRegraimposto.In_Outro = 'T' then begin
       Vl_Outro := Vl_Imposto;
       Vl_Imposto := 0;
     end;
@@ -162,35 +162,34 @@ begin
     raise Exception.Create('Item da transacao deve ser informada / ' + cDS_METHOD);
 
   fRegrafiscal := uclsRegrafiscalServico.Instance.Consular(
-    fTransacao.Obj_Operacao.Cd_Regrafiscal);
+    fTransacao.Operacao.Id_Regrafiscal);
 
   if not Assigned(fRegrafiscal) then
     raise Exception.Create('Regra fiscal deve ser informada / ' + cDS_METHOD);
 
-  if fRegrafiscal.Cd_Regrafiscal = 0 then
+  if fRegrafiscal.Id_Regrafiscal = 0 then
     raise Exception.Create('Regra fiscal deve ser informada / ' + cDS_METHOD);
-  if fRegrafiscal.In_Calcimposto then
-    if fRegrafiscal.List_Imposto.Count = 0 then
-      raise Exception.Create('Imposto da regra fiscal ' + FloatToStr(fRegrafiscal.Cd_Regrafiscal) + ' deve ser configurado / ' + cDS_METHOD);
+  if fRegrafiscal.In_Calcimposto = 'T' then
+    if fRegrafiscal.Impostos.Count = 0 then
+      raise Exception.Create('Imposto da regra fiscal ' + FloatToStr(fRegrafiscal.Id_Regrafiscal) + ' deve ser configurado / ' + cDS_METHOD);
 
   with fRegrafiscal do
-    for I := 0 to List_Imposto.Count - 1 do
-      with List_Imposto[I] do begin
-        fRegrafiscalImposto := List_Imposto[I];
+    for I := 0 to Impostos.Count - 1 do begin
+      fRegraimposto := TRegraimposto(Impostos[I]);
 
-        case TTipoImposto(Ord(Cd_Imposto)) of
-          tpiIcms : GerarIcms();
-          tpiIcmsSt : GerarIcmsSt();
-          tpiIcmsUf : GerarIcmsUf();
-          tpiIpi : GerarIpi();
-          tpiPis : GerarPis();
-          tpiPisSt : GerarPisSt();
-          tpiCofins : GerarCofins();
-          tpiCofinsSt : GerarCofinsSt();
-          tpiIssqn : GerarIssqn();
-          tpiIi : GerarIi();
-        end;
+      case IntToTipoImposto(fRegraimposto.Cd_Imposto) of
+        tpiIcms : GerarIcms();
+        tpiIcmsSt : GerarIcmsSt();
+        tpiIcmsUf : GerarIcmsUf();
+        tpiIpi : GerarIpi();
+        tpiPis : GerarPis();
+        tpiPisSt : GerarPisSt();
+        tpiCofins : GerarCofins();
+        tpiCofinsSt : GerarCofinsSt();
+        tpiIssqn : GerarIssqn();
+        tpiIi : GerarIi();
       end;
+    end;
 
 end;
 

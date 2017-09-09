@@ -14,28 +14,13 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
-
-    function Listar() : TCaixaList;
-
-    procedure Salvar(
-      ACd_Equip : String;
-      ADt_Caixa : TDateTime;
-      ANr_Seq : Integer;
-      AVl_Abertura : Real;
-      ADt_Fechado : TDateTime);
-
-    procedure Excluir(ACd_Dnacaixa : String);
-
   published
-    property Caixa : TCaixa read fCaixa write fCaixa;
   end;
 
   function Instance : TcCaixaServico;
   procedure Destroy;
 
 implementation
-
-uses mCollectionItem;
 
 var
   _instance : TcCaixaServico;
@@ -65,44 +50,6 @@ begin
   FreeAndNil(fCaixa);
 
   inherited;
-end;
-
-function TcCaixaServico.Listar;
-begin
-  Result := TCaixaList(fCaixa.Listar(nil));
-end;
-
-procedure TcCaixaServico.Salvar;
-begin
-  with fCaixa do begin
-    Cd_Dnacaixa :=
-      ACd_Equip + '#' +
-      FormatDateTime('yyyymmdd', Dt_Caixa) + '#' +
-      IntToStr(ANr_Seq);
-
-    U_Version := '';
-    Cd_Operador := 1;
-    Dt_Cadastro := Now;
-
-    Cd_Equip := ACd_Equip;
-    Dt_Caixa := ADt_Caixa;
-    Nr_Seq := ANr_Seq;
-    Vl_Abertura := AVl_Abertura;
-    Dt_Fechado := ADt_Fechado;
-
-    Salvar();
-  end;
-end;
-
-procedure TcCaixaServico.Excluir;
-begin
-  with fCaixa do begin
-    Limpar();
-    if ACd_Dnacaixa <> '' then begin
-      Cd_Dnacaixa := ACd_Dnacaixa;
-      Excluir();
-    end;  
-  end;
 end;
 
 initialization

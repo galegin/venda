@@ -4,88 +4,204 @@ interface
 
 uses
   Classes, SysUtils,
-  mCollection, mCollectionItem;
+  mMapping,
+  uEmpresa, uTerminal,
+  uCaixacont, uCaixamov,
+  uTranspagto;
 
 type
-  TCaixa = class;
-  TCaixaClass = class of TCaixa;
-
-  TCaixaList = class;
-  TCaixaListClass = class of TCaixaList;
-
-  TCaixa = class(TmCollectionItem)
+  TCaixa = class(TmMapping)
   private
-    fCd_Dnacaixa: String;
+    fId_Caixa: Integer;
     fU_Version: String;
     fCd_Operador: Integer;
     fDt_Cadastro: TDateTime;
-    fCd_Equip: String;
-    fDt_Caixa: TDateTime;
-    fNr_Seq: Integer;
+    fId_Empresa: Integer;
+    fId_Terminal: Integer;
+    fDt_Abertura: TDateTime;
     fVl_Abertura: Real;
+    fIn_Fechado: String;
     fDt_Fechado: TDateTime;
+    fEmpresa: TEmpresa;
+    fTerminal: TTerminal;
+    fContagens: TCaixaconts;
+    fMovtos: TCaixamovs;
+    fPagtos: TTranspagtos;
+    procedure SetId_Caixa(const Value : Integer);
+    procedure SetU_Version(const Value : String);
+    procedure SetCd_Operador(const Value : Integer);
+    procedure SetDt_Cadastro(const Value : TDateTime);
+    procedure SetId_Empresa(const Value : Integer);
+    procedure SetId_Terminal(const Value : Integer);
+    procedure SetDt_Abertura(const Value : TDateTime);
+    procedure SetVl_Abertura(const Value : Real);
+    procedure SetIn_Fechado(const Value : String);
+    procedure SetDt_Fechado(const Value : TDateTime);
   public
-    constructor Create(ACollection: TCollection); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function GetMapping() : PmMapping; override;
   published
-    property Cd_Dnacaixa: String read fCd_Dnacaixa write fCd_Dnacaixa;
-    property U_Version: String read fU_Version write fU_Version;
-    property Cd_Operador: Integer read fCd_Operador write fCd_Operador;
-    property Dt_Cadastro: TDateTime read fDt_Cadastro write fDt_Cadastro;
-    property Cd_Equip: String read fCd_Equip write fCd_Equip;
-    property Dt_Caixa: TDateTime read fDt_Caixa write fDt_Caixa;
-    property Nr_Seq: Integer read fNr_Seq write fNr_Seq;
-    property Vl_Abertura: Real read fVl_Abertura write fVl_Abertura;
-    property Dt_Fechado: TDateTime read fDt_Fechado write fDt_Fechado;
+    property Id_Caixa : Integer read fId_Caixa write SetId_Caixa;
+    property U_Version : String read fU_Version write SetU_Version;
+    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
+    property Id_Empresa : Integer read fId_Empresa write SetId_Empresa;
+    property Id_Terminal : Integer read fId_Terminal write SetId_Terminal;
+    property Dt_Abertura : TDateTime read fDt_Abertura write SetDt_Abertura;
+    property Vl_Abertura : Real read fVl_Abertura write SetVl_Abertura;
+    property In_Fechado : String read fIn_Fechado write SetIn_Fechado;
+    property Dt_Fechado : TDateTime read fDt_Fechado write SetDt_Fechado;
+    property Empresa : TEmpresa read fEmpresa write fEmpresa;
+    property Terminal : TTerminal read fTerminal write fTerminal;
+    property Contagens : TCaixaconts read fContagens write fContagens;
+    property Movtos : TCaixamovs read fMovtos write fMovtos;
+    property Pagtos : TTranspagtos read fPagtos write fPagtos;
   end;
 
-  TCaixaList = class(TmCollection)
-  private
-    function GetItem(Index: Integer): TCaixa;
-    procedure SetItem(Index: Integer; Value: TCaixa);
+  TCaixas = class(TList)
   public
-    constructor Create(AOwner: TPersistent);
-    function Add: TCaixa;
-    property Items[Index: Integer]: TCaixa read GetItem write SetItem; default;
+    function Add: TCaixa; overload;
   end;
-  
+
 implementation
 
 { TCaixa }
 
-constructor TCaixa.Create(ACollection: TCollection);
+constructor TCaixa.Create(AOwner: TComponent);
 begin
   inherited;
 
+  fEmpresa:= TEmpresa.Create(nil);
+  fTerminal:= TTerminal.Create(nil);
+  fContagens:= TCaixaconts.Create;
+  fMovtos:= TCaixamovs.Create;
+  fPagtos:= TTranspagtos.Create;
 end;
 
 destructor TCaixa.Destroy;
 begin
+  FreeAndNil(fTerminal);
+  FreeAndNil(fContagens);
+  FreeAndNil(fMovtos);
+  FreeAndNil(fPagtos);
 
   inherited;
 end;
 
-{ TCaixaList }
+//--
 
-constructor TCaixaList.Create(AOwner: TPersistent);
+function TCaixa.GetMapping: PmMapping;
 begin
-  inherited Create(TCaixa);
+  Result := New(PmMapping);
+
+  Result.Tabela := New(PmTabela);
+  with Result.Tabela^ do begin
+    Nome := 'CAIXA';
+  end;
+
+  Result.Chaves := TmChaves.Create;
+  with Result.Chaves do begin
+    Add('Id_Caixa', 'ID_CAIXA');
+  end;
+
+  Result.Campos := TmCampos.Create;
+  with Result.Campos do begin
+    Add('Id_Caixa', 'ID_CAIXA');
+    Add('U_Version', 'U_VERSION');
+    Add('Cd_Operador', 'CD_OPERADOR');
+    Add('Dt_Cadastro', 'DT_CADASTRO');
+    Add('Cd_Terminal', 'CD_TERMINAL');
+    Add('Dt_Abertura', 'DT_ABERTURA');
+    Add('Vl_Abertura', 'VL_ABERTURA');
+    Add('In_Fechado', 'IN_FECHADO');
+    Add('Dt_Fechado', 'DT_FECHADO');
+  end;
+
+  Result.Relacoes := TmRelacoes.Create;
+  with Result.Relacoes do begin
+
+    with Add('Empresa', TEmpresa)^.Campos do begin
+      Add('Id_Empresa');
+    end;
+
+    with Add('Terminal', TTerminal)^.Campos do begin
+      Add('Id_Terminal');
+    end;
+
+    with Add('Contagens', TCaixacont, TCaixaconts)^.Campos do begin
+      Add('Id_Caixa');
+    end;
+
+    with Add('Movtos', TCaixamov, TCaixamovs)^.Campos do begin
+      Add('Id_Caixa');
+    end;
+
+    with Add('Pagtos', TTranspagto, TTranspagtos)^.Campos do begin
+      Add('Id_Caixa');
+    end;
+
+  end;
 end;
 
-function TCaixaList.Add: TCaixa;
+//--
+
+procedure TCaixa.SetId_Caixa(const Value : Integer);
 begin
-  Result := TCaixa(inherited Add);
-  Result.create(Self);
+  fId_Caixa := Value;
 end;
 
-function TCaixaList.GetItem(Index: Integer): TCaixa;
+procedure TCaixa.SetU_Version(const Value : String);
 begin
-  Result := TCaixa(inherited GetItem(Index));
+  fU_Version := Value;
 end;
 
-procedure TCaixaList.SetItem(Index: Integer; Value: TCaixa);
+procedure TCaixa.SetCd_Operador(const Value : Integer);
 begin
-  inherited SetItem(Index, Value);
+  fCd_Operador := Value;
+end;
+
+procedure TCaixa.SetDt_Cadastro(const Value : TDateTime);
+begin
+  fDt_Cadastro := Value;
+end;
+
+procedure TCaixa.SetId_Empresa(const Value : Integer);
+begin
+  fId_Empresa := Value;
+end;
+
+procedure TCaixa.SetId_Terminal(const Value : Integer);
+begin
+  fId_Terminal := Value;
+end;
+
+procedure TCaixa.SetDt_Abertura(const Value : TDateTime);
+begin
+  fDt_Abertura := Value;
+end;
+
+procedure TCaixa.SetVl_Abertura(const Value : Real);
+begin
+  fVl_Abertura := Value;
+end;
+
+procedure TCaixa.SetIn_Fechado(const Value : String);
+begin
+  fIn_Fechado := Value;
+end;
+
+procedure TCaixa.SetDt_Fechado(const Value : TDateTime);
+begin
+  fDt_Fechado := Value;
+end;
+
+{ TCaixas }
+
+function TCaixas.Add: TCaixa;
+begin
+  Result := TCaixa.Create(nil);
+  Self.Add(Result);
 end;
 
 end.
