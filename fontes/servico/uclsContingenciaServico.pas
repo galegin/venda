@@ -6,27 +6,17 @@ uses
   Classes, SysUtils, StrUtils,
   pcnConversao, pcnConversaoNFe,
   mException, mInternet,
-  uTipoProcessamento, uTipoRetornoSefaz, uTransacao, uTransfiscal, uTranscont;
+  uTipoProcessamento, uTipoRetornoSefaz, uTransacao, uTranscont;
 
 type
-  TTipoContingencia = (tpcSemContingencia, tpcContingencia);
-
   TcContingenciaServico = class(TComponent)
   private
-    fTipoEmissao : TpcnTipoEmissao;
-    fModeloDF : TpcnModeloDF;
-    fTipoRetorno : RTipoRetornoSefaz;
-    function GetTipo: TTipoContingencia;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
     procedure EnviarPendente;
   published
-    property TipoEmissao : TpcnTipoEmissao read fTipoEmissao write fTipoEmissao;
-    property ModeloDF : TpcnModeloDF read fModeloDF write fModeloDF;
-    property TipoRetorno : RTipoRetornoSefaz read fTipoRetorno write fTipoRetorno;
-    property Tipo : TTipoContingencia read GetTipo;
   end;
 
   function Instance : TcContingenciaServico;
@@ -68,14 +58,6 @@ begin
   inherited;
 end;
 
-function TcContingenciaServico.GetTipo: TTipoContingencia;
-begin
-  Result := tpcSemContingencia;
-  if not TmInternet.IsConectado() or (TipoRetorno.tStatus in [tsContingencia]) then
-    if (fTipoEmissao in [teNormal]) and (fModeloDF in [moNFCe]) then
-      Result := tpcContingencia;
-end;
-
 procedure TcContingenciaServico.EnviarPendente;
 const
   cDS_METHOD = 'TcContingenciaServico.EnviarPendente';
@@ -83,7 +65,7 @@ var
   vDFeServico : TcDFeServico;
   vTranscont : TTranscont;
   vTransconts : TTransconts;
-  vTransfiscal : TTransfiscal;
+  vTransacao : TTransacao;
   vDtEmissao : TDateTime;
   vWhere : String;
   I : Integer;
@@ -106,8 +88,8 @@ begin
       for I := 0 to vTransconts.Count - 1 do begin
         vTranscont := TTranscont(vTransconts.Items[I]);
         vWhere := 'Id_Transacao = ''' + vTranscont.Id_Transacao;
-        vTransfiscal := mContexto.Instance.GetObjeto(TTransfiscal, vWhere) as TTransfiscal;
-        vDFeServico.EmitirDFeContingencia(vTransfiscal);
+        vTransacao := mContexto.Instance.GetObjeto(TTransacao, vWhere) as TTransacao;
+        vDFeServico.EmitirDFeContingencia(vTransacao);
         if vDFeServico.cStat in [108, 109] then
           Break;
       end;
@@ -116,8 +98,6 @@ begin
         raise TmException.Create(cDS_METHOD, E.Message);
     end;
 
-    TipoRetorno := vDFeServico.TipoRetorno;
-    
   finally
     FreeAndNil(vDFeServico);
     

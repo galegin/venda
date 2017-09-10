@@ -43,12 +43,11 @@ type
     fIn_MostrarPreview : Boolean;
     fIn_MostrarStatus : Boolean;
 
-    fTipoRetorno : RTipoRetornoSefaz;
-
-    fTp_Contingencia : TTipoContingencia;
     fTp_ImpressaoDanfe : TTipoImpressaoDanfe;
-    
-    procedure SetTipoRetorno(const Value: RTipoRetornoSefaz);
+
+    procedure AnalisaRetorno(ATipoRetornoSefaz : RTipoRetornoSefaz);
+    function EmitirDFeGerada(
+      ATransfiscal: TTransfiscal): RTipoRetornoSefaz;
 
   protected
     procedure ValidarParametro;
@@ -68,68 +67,52 @@ type
 
     procedure GerarDFe;
 
-    procedure EnviarDFe;
-
-    procedure EnviarDFeContingencia;
-
-    procedure LimparRetorno;
-
-    procedure TratarRetorno(
-      AMetodo : String;
-      ANFeWebService : TNFeWebService);
-
-    procedure ExceptionRetorno(
-      AMetodo : String;
-      AException : Exception);
+    function GerarEnvioDFe(
+      AXml : String) : RTipoRetornoSefaz;
 
     procedure GerarImpressaoDFe(
       AXml : String);
 
-    procedure GerarCancelamentoDFe(
+    function GerarCancelamentoDFe(
       AChave : String;
       ACNPJ : String;
       AJustificativa : String;
-      AProtocolo : String);
+      AProtocolo : String) : RTipoRetornoSefaz;
 
-    procedure GerarInutilizacaoDFe(
+    function GerarInutilizacaoDFe(
       ACNPJEmitente : String;
       AJustificativa : String;
       AAno : Integer;
       AModelo : Integer;
       ASerie : Integer;
       ANumeroInicial : Integer;
-      ANumeroFinal : Integer);
+      ANumeroFinal : Integer) : RTipoRetornoSefaz;
 
-    procedure GerarConsultaDFe(
-      AXml : String);
+    function GerarConsultaDFe(
+      AXml : String) : RTipoRetornoSefaz;
 
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    procedure EmitirDFe(); overload;
-    procedure EmitirDFe(ATransacao : TTransacao); overload;
+    function EmitirDFe() : RTipoRetornoSefaz; overload;
+    function EmitirDFe(ATransacao : TTransacao) : RTipoRetornoSefaz; overload;
 
-    procedure EmitirDFeContingencia(); overload;
-    procedure EmitirDFeContingencia(ATransfiscal : TTransfiscal); overload;
+    function EmitirDFeGerada() : RTipoRetornoSefaz; overload;
+    function EmitirDFeGerada(ATransacao : TTransacao) : RTipoRetornoSefaz; overload;
 
     procedure ImprimirDFe(); overload;
     procedure ImprimirDFe(ATransacao : TTransacao); overload;
 
-    procedure CancelarDFe(); overload;
-    procedure CancelarDFe(ATransacao : TTransacao); overload;
+    function CancelarDFe() : RTipoRetornoSefaz; overload;
+    function CancelarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz; overload;
 
-    procedure InutilizarDFe(); overload;
-    procedure InutilizarDFe(ATransacao : TTransacao); overload;
+    function InutilizarDFe() : RTipoRetornoSefaz; overload;
+    function InutilizarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz; overload;
 
-    procedure ConsultarDFe(); overload;
-    procedure ConsultarDFe(ATransacao : TTransacao); overload;
+    function ConsultarDFe() : RTipoRetornoSefaz; overload;
+    function ConsultarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz; overload;
   published
-    property TipoRetorno : RTipoRetornoSefaz read fTipoRetorno write SetTipoRetorno;
-    property cStat : Integer read fTipoRetorno.cStat;
-    property xMotivo : String read fTipoRetorno.xMotivo;
-    property RetornoWS : String read fTipoRetorno.RetornoWS;
-    property RetWS : String read fTipoRetorno.RetWS;
   end;
 
   function Instance : TcDFeServico;
@@ -788,212 +771,31 @@ begin
   fACBrNFe.NotasFiscais.GerarNFe;
 end;
 
-procedure TcDFeServico.EnviarDFe;
-const
-  cDS_METHOD = 'TcDFeServico.EnviarDFe()';
+//--
+
+function TcDFeServico.GerarEnvioDFe;
 begin
-  //-- limpar retorno
-  LimparRetorno;
-
-  //-- verifica status contingencia
-  fTp_Contingencia := uclsContingenciaServico.Instance.Tipo;
-
-  //-- envia contingencia pendente
-  if fTp_Contingencia in [tpcSemContingencia] then begin
-    uclsContingenciaServico.Instance.EnviarPendente;
-
-    fTp_Contingencia := uclsContingenciaServico.Instance.Tipo;
-  end;
-
-  //-- envia corrente
-  if fTp_Contingencia in [tpcSemContingencia] then begin
-    LimparRetorno;
-
-    try
-      fACBrNFe.NotasFiscais.Assinar;
-      fACBrNFe.NotasFiscais.Validar;
-      fACBrNFe.Enviar(0);
-
-      TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.Enviar);
-    except
-      on E : Exception do
-        ExceptionRetorno(cDS_METHOD, E);
-    end;
-
-    fTp_Contingencia := uclsContingenciaServico.Instance.Tipo;
-  end;
-
-  //-- gera contingencia
-  if fTp_Contingencia in [tpcContingencia] then begin
-    fACBrNFe.NotasFiscais[0].NFe.Ide.tpEmis := teOffLine;
-    fACBrNFe.NotasFiscais[0].NFe.Ide.dhCont := Now;
-    fACBrNFe.NotasFiscais[0].NFe.Ide.xJust := 'Sem conexão com a internet';
-    fACBrNFe.NotasFiscais.GerarNFe;
+  try
+    fACBrNFe.NotasFiscais.Clear;
+    fACBrNFe.NotasFiscais.LoadFromString(AXml);
     fACBrNFe.NotasFiscais.Assinar;
     fACBrNFe.NotasFiscais.Validar;
-  end;
-end;
-
-procedure TcDFeServico.EnviarDFeContingencia;
-const
-  cDS_METHOD = 'TcDFeServico.EnviarDFeContingencia';
-begin
-  LimparRetorno;
-
-  try
     fACBrNFe.Enviar(0);
 
-    TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.Enviar);
+    Result.tStatus := tsAutorizacao;
+    Result.cStat := fACBrNFe.WebServices.Enviar.cStat;
+    Result.xMotivo := fACBrNFe.WebServices.Enviar.xMotivo;
+    Result.RetornoWS := fACBrNFe.WebServices.Enviar.RetornoWS;
+    Result.RetWS := fACBrNFe.WebServices.Enviar.RetWS;
+    AnalisaRetorno(Result);
   except
-    on E : Exception do
-      ExceptionRetorno(cDS_METHOD, E);
-  end;      
-end;
-
-//--
-
-procedure TcDFeServico.SetTipoRetorno(const Value: RTipoRetornoSefaz);
-var
-  vOk : Boolean;
-begin
-  with uclsContingenciaServico.Instance do begin
-    TipoEmissao := fACBrNFe.NotasFiscais[0].NFe.Ide.tpEmis;
-    ModeloDF := StrToModeloDF(vOk, IntToStr(fACBrNFe.NotasFiscais[0].NFe.Ide.modelo));
-    TipoRetorno := fTipoRetorno;
+    on E : Exception do begin
+      Result.tStatus := tsRejeicao;
+      Result.xMotivo := E.Message;
+      AnalisaRetorno(Result);
+    end;
   end;
 end;
-
-//--
-
-procedure TcDFeServico.LimparRetorno;
-var
-  vTipoRetorno : RTipoRetornoSefaz;
-begin
-  with vTipoRetorno do begin
-    tStatus := TTipoStatusSefaz(Ord(-1));
-    cStat := 0;
-    xMotivo := '';
-    RetornoWS := '';
-    RetWS := '';
-  end;
-
-  TipoRetorno := vTipoRetorno;
-end;
-
-procedure TcDFeServico.TratarRetorno;
-var
-  vTipoRetorno : RTipoRetornoSefaz;
-begin
-  if Assigned(ANFeWebService) then begin
-    if GetPropInfo(ANFeWebService, 'cStat') <> nil then
-      vTipoRetorno.cStat := GetOrdProp(ANFeWebService, 'cStat');
-    if GetPropInfo(ANFeWebService, 'xMotivo') <> nil then
-      vTipoRetorno.xMotivo := GetStrProp(ANFeWebService, 'xMotivo');
-    if GetPropInfo(ANFeWebService, 'RetornoWS') <> nil then
-      vTipoRetorno.RetornoWS := GetStrProp(ANFeWebService, 'RetornoWS');
-    if GetPropInfo(ANFeWebService, 'RetWS') <> nil then
-      vTipoRetorno.RetWS := GetStrProp(ANFeWebService, 'RetWS');
-  end;
-
-  (* if ANFeWebService is TNFeStatusServico then begin
-    with ANFeWebService as TNFeStatusServico do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeRecepcao then begin
-    with ANFeWebService as TNFeRecepcao do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeRetRecepcao then begin
-    with ANFeWebService as TNFeRetRecepcao do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeRecibo then begin
-    with ANFeWebService as TNFeRecibo do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeConsulta then begin
-    with ANFeWebService as TNFeConsulta do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeInutilizacao then begin
-    with ANFeWebService as TNFeInutilizacao do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeConsultaCadastro then begin
-    with ANFeWebService as TNFeConsultaCadastro do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  end else if ANFeWebService is TNFeEnvEvento then begin
-    with ANFeWebService as TNFeEnvEvento do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end;
-
-  { end else if ANFeWebService is TNFeConsNFeDest then begin
-    with ANFeWebService as TNFeConsNFeDest do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end; }
-
-  { end else if ANFeWebService is TNFeDownloadNFe then begin
-    with ANFeWebService as TNFeDownloadNFe do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end; }
-
-  { end else if ANFeWebService is TNFeEnvioWebService then begin
-    with ANFeWebService as TNFeEnvioWebService do begin
-      vTipoRetorno.cStat := cStat;
-      vTipoRetorno.xMotivo := xMotivo;
-      vTipoRetorno.RetornoWS := RetornoWS;
-      vTipoRetorno.RetWS := RetWS;
-    end; }
-
-  end; *)
-
-  TipoRetorno := uTipoRetornoSefaz.GetTipoRetorno(vTipoRetorno);
-end;
-
-procedure TcDFeServico.ExceptionRetorno;
-begin
-  TipoRetorno := uTipoRetornoSefaz.StrToTipoRetorno(AException.Message);
-end;
-
-//--
 
 procedure TcDFeServico.GerarImpressaoDFe;
 const
@@ -1060,12 +862,11 @@ begin
   end;
 
   fACBrNFe.DANFE := nil;
-
 end;
 
 //--
 
-procedure TcDFeServico.GerarCancelamentoDFe;
+function TcDFeServico.GerarCancelamentoDFe;
 const
   cDS_METHOD = 'TcDFeServico.GerarCancelamentoDFe()';
 var
@@ -1094,21 +895,27 @@ begin
     infEvento.detEvento.nProt := AProtocolo;
   end;
 
-  LimparRetorno;
-
   try
     fACBrNFe.EnviarEvento(idLote);
 
-    TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.EnvEvento);
+    Result.tStatus := tsCancelamento;
+    Result.cStat := fACBrNFe.WebServices.EnvEvento.cStat;
+    Result.xMotivo := fACBrNFe.WebServices.EnvEvento.xMotivo;
+    Result.RetornoWS := fACBrNFe.WebServices.EnvEvento.RetornoWS;
+    Result.RetWS := fACBrNFe.WebServices.EnvEvento.RetWS;
+    AnalisaRetorno(Result);
   except
-    on E : Exception do
-      ExceptionRetorno(cDS_METHOD, E);
+    on E : Exception do begin
+      Result.tStatus := tsRejeicao;
+      Result.xMotivo := E.Message;
+      AnalisaRetorno(Result);
+    end;
   end;
 end;
 
 //--
 
-procedure TcDFeServico.GerarInutilizacaoDFe;
+function TcDFeServico.GerarInutilizacaoDFe;
 const
   cDS_METHOD = 'TcDFeServico.GerarInutilizacaoDFe()';
 begin
@@ -1127,45 +934,57 @@ begin
   if ANumeroFinal = 0 then
     raise Exception.Create('Numero final deve ser informado / ' + cDS_METHOD);
 
-  LimparRetorno;
-
   try
     fACBrNFe.WebServices.Inutiliza( ACNPJEmitente, AJustificativa, AAno,
       AModelo, ASerie, ANumeroInicial, ANumeroFinal);
 
-    TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.Inutilizacao);
+    Result.tStatus := tsInutilizacao;
+    Result.cStat := fACBrNFe.WebServices.Inutilizacao.cStat;
+    Result.xMotivo := fACBrNFe.WebServices.Inutilizacao.xMotivo;
+    Result.RetornoWS := fACBrNFe.WebServices.Inutilizacao.RetornoWS;
+    Result.RetWS := fACBrNFe.WebServices.Inutilizacao.RetWS;
+    AnalisaRetorno(Result);
   except
-    on E : Exception do
-      ExceptionRetorno(cDS_METHOD, E);
-  end;      
+    on E : Exception do begin
+      Result.tStatus := tsRejeicao;
+      Result.xMotivo := E.Message;
+      AnalisaRetorno(Result);
+    end;
+  end;
 end;
 
 //--
 
-procedure TcDFeServico.GerarConsultaDFe;
+function TcDFeServico.GerarConsultaDFe;
 const
   cDS_METHOD = 'TcDFeServico.GerarConsultaDFe()';
 begin
   if AXml = '' then
     raise Exception.Create('Xml deve ser informado / ' + cDS_METHOD);
 
-  LimparRetorno;
-
   try
     fACBrNFe.NotasFiscais.Clear;
     fACBrNFe.NotasFiscais.LoadFromString(AXml);
     fACBrNFe.Consultar;
 
-    TratarRetorno(cDS_METHOD, fACBrNFe.WebServices.Consulta);
+    Result.tStatus := tsProcessado;
+    Result.cStat := fACBrNFe.WebServices.Consulta.cStat;
+    Result.xMotivo := fACBrNFe.WebServices.Consulta.xMotivo;
+    Result.RetornoWS := fACBrNFe.WebServices.Consulta.RetornoWS;
+    Result.RetWS := fACBrNFe.WebServices.Consulta.RetWS;
+    AnalisaRetorno(Result);
   except
-    on E : Exception do
-      ExceptionRetorno(cDS_METHOD, E);
-  end;      
+    on E : Exception do begin
+      Result.tStatus := tsRejeicao;
+      Result.xMotivo := E.Message;
+      AnalisaRetorno(Result);
+    end;
+  end;
 end;
 
 //--
 
-procedure TcDFeServico.EmitirDFe();
+function TcDFeServico.EmitirDFe() : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFe()';
 begin
@@ -1174,9 +993,10 @@ begin
   LimparDFe;
   ConfigurarDFe;
   GerarDFe;
-  EnviarDFe;
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+  Result := GerarEnvioDFe;
+
+  if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1188,7 +1008,14 @@ begin
     GerarImpressaoDFe(
       TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
-  end else if (fTp_Contingencia in [tpcContingencia]) then begin
+  end else if (Result.tStatus in [tsContingencia]) then begin
+    fACBrNFe.NotasFiscais[0].NFe.Ide.tpEmis := teOffLine;
+    fACBrNFe.NotasFiscais[0].NFe.Ide.dhCont := Now;
+    fACBrNFe.NotasFiscais[0].NFe.Ide.xJust := 'Sem conexão com a internet';
+    fACBrNFe.NotasFiscais.GerarNFe;
+    fACBrNFe.NotasFiscais.Assinar;
+    fACBrNFe.NotasFiscais.Validar;
+
     GravarDFe(
       tppGerada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1200,7 +1027,7 @@ begin
     GerarImpressaoDFe(
       TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then begin
+  end else if (Result.tStatus in [tsRejeicao]) then begin
     GravarDFe(
       tppCancelada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1214,7 +1041,7 @@ begin
   end;
 end;
 
-procedure TcDFeServico.EmitirDFe(ATransacao : TTransacao);
+function TcDFeServico.EmitirDFe(ATransacao : TTransacao) : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFe()';
 begin
@@ -1229,18 +1056,19 @@ end;
 
 //--
 
-procedure TcDFeServico.EmitirDFeContingencia();
+function TcDFeServico.EmitirDFeGerada() : RTipoRetornoSefaz;
 const
-  cDS_METHOD = 'TcDFeServico.EmitirDFeContingencia()';
+  cDS_METHOD = 'TcDFeServico.EmitirDFeGerada()';
 begin
   ValidarParametro;
 
   LimparDFe;
   ConfigurarDFe;
   CarregarDFe;
-  EnviarDFeContingencia;
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+  Result := GerarEnvioDFe;
+
+  if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1249,7 +1077,7 @@ begin
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
 
-  end else if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsRejeicao]) then begin
+  end else if (Result.tStatus in [tsRejeicao]) then begin
     GravarDFe(
       tppCancelada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1264,9 +1092,9 @@ begin
 
 end;
 
-procedure TcDFeServico.EmitirDFeContingencia(ATransfiscal : TTransfiscal);
+function TcDFeServico.EmitirDFeGerada(ATransacao : TTransacao) : RTipoRetornoSefaz;
 const
-  cDS_METHOD = 'TcDFeServico.EmitirDFeContingencia()';
+  cDS_METHOD = 'TcDFeServico.EmitirDFeGerada()';
 begin
   if not Assigned(ATransfiscal) then
     raise Exception.Create('Fiscal deve ser informado / ' + cDS_METHOD);
@@ -1305,7 +1133,7 @@ end;
 
 //--
 
-procedure TcDFeServico.CancelarDFe();
+function TcDFeServico.CancelarDFe() : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.CancelarDFe()';
 begin
@@ -1315,13 +1143,13 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  GerarCancelamentoDFe(
+  Result := GerarCancelamentoDFe(
     fTransacao.Fiscal.Ds_Chaveacesso,
     fTransacao.Pessoa.Nr_Cpfcnpj,
     'CANCELAMENTO AUTOMATICO',
     fTransacao.Fiscal.Nr_Recibo);
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+  if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppCancelada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1330,13 +1158,13 @@ begin
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
+  end else if (Result.tStatus in [tsRejeicao]) then
 
     raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
 end;
 
-procedure TcDFeServico.CancelarDFe(ATransacao : TTransacao);
+function TcDFeServico.CancelarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.CancelarDFe()';
 begin
@@ -1351,7 +1179,7 @@ end;
 
 //--
 
-procedure TcDFeServico.InutilizarDFe();
+function TcDFeServico.InutilizarDFe() : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.InutilizarDFe()';
 begin
@@ -1361,7 +1189,7 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  GerarInutilizacaoDFe(
+  Result := GerarInutilizacaoDFe(
     fTransacao.Pessoa.Nr_Cpfcnpj, // ACNPJEmitente : String;
     'CANCELAMENTO AUTOMATICO', // AJustificativa : String;
     StrToIntDef(FormatDateTime('yyyy', fTransacao.Dt_Transacao), 0), // AAno : Integer;
@@ -1370,7 +1198,7 @@ begin
     fTransacao.Fiscal.Nr_Nf, // ANumeroInicial : Integer;
     fTransacao.Fiscal.Nr_Nf); // ANumeroFinal : Integer);
 
-  if (fTp_Contingencia in [tpcSemContingencia]) and (fTipoRetorno.tStatus in [tsAutorizacao, tsProcessado]) then begin
+  if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppRejeitada,
       fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
@@ -1379,13 +1207,13 @@ begin
       '0',
       fACBrNFe.WebServices.Retorno.RetornoWS);
 
-  end else if (fTipoRetorno.tStatus in [tsRejeicao]) then
+  end else if (Result.tStatus in [tsRejeicao]) then
 
     raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
 
 end;
 
-procedure TcDFeServico.InutilizarDFe(ATransacao : TTransacao);
+function TcDFeServico.InutilizarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.InutilizarDFe()';
 begin
@@ -1400,7 +1228,7 @@ end;
 
 //--
 
-procedure TcDFeServico.ConsultarDFe();
+function TcDFeServico.ConsultarDFe() : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.ConsultarDFe()';
 begin
@@ -1410,15 +1238,15 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  GerarConsultaDFe(
+  Result := GerarConsultaDFe(
     TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
 
-  if (fTipoRetorno.tStatus in [tsRejeicao]) then  
+  if (Result.tStatus in [tsRejeicao]) then
     raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
-    
+
 end;
 
-procedure TcDFeServico.ConsultarDFe(ATransacao : TTransacao);
+function TcDFeServico.ConsultarDFe(ATransacao : TTransacao) : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.ConsultarDFe()';
 begin
@@ -1432,6 +1260,11 @@ begin
 end;
 
 //--
+
+procedure TcDFeServico.AnalisaRetorno(ATipoRetornoSefaz: RTipoRetornoSefaz);
+begin
+
+end;
 
 initialization
   //Instance();

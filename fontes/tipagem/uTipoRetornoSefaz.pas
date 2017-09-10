@@ -14,18 +14,18 @@ type
     tsContingencia,
     tsRejeicao);
 
+  RTipoStatusSefaz = record
+    cStat : Integer;
+    xMotivo : String;
+    tStatus : TTipoStatusSefaz;
+  end;
+
   RTipoRetornoSefaz = record
     cStat : Integer;
     xMotivo : String;
     tStatus : TTipoStatusSefaz;
     RetornoWS : String;
     RetWS : String;
-  end;
-
-  RTipoStatusSefaz = record
-    cStat : Integer;
-    xMotivo : String;
-    tStatus : TTipoStatusSefaz;
   end;
 
   function GetTipoRetorno(ATipoRetorno : RTipoRetornoSefaz) : RTipoRetornoSefaz;

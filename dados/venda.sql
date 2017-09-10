@@ -142,6 +142,7 @@ Create Table "TRANSPAGTO"  (
 Create Table "TRANSIMPOSTO"  (
 	"ID_TRANSACAO" Varchar(20) NOT NULL,
 	"NR_ITEM" Integer NOT NULL,
+	"CD_IMPOSTO" Integer NOT NULL,
 	"U_VERSION" Char(1),
 	"CD_OPERADOR" Integer NOT NULL,
 	"DT_CADASTRO" Timestamp NOT NULL,
@@ -154,7 +155,7 @@ Create Table "TRANSIMPOSTO"  (
 	"VL_ISENTO" Numeric(15,2) NOT NULL,
 	"CD_CST" Varchar(5) NOT NULL,
 	"CD_CSOSN" Varchar(5),
- Primary Key ("ID_TRANSACAO","NR_ITEM")
+ Primary Key ("ID_TRANSACAO","NR_ITEM","CD_IMPOSTO")
 );
 
 Create Table "PESSOA"  (
@@ -164,7 +165,7 @@ Create Table "PESSOA"  (
 	"DT_CADASTRO" Timestamp NOT NULL,
 	"CD_PESSOA" Integer NOT NULL,
 	"NM_PESSOA" Varchar(60) NOT NULL,
-	"NR_CPFNCPJ" Varchar(20) NOT NULL,
+	"NR_CPFCNPJ" Varchar(20) NOT NULL,
 	"NR_RGIE" Varchar(20) NOT NULL,
 	"NM_FANTASIA" Varchar(60),
 	"CD_CEP" Integer NOT NULL,

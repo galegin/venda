@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, StrUtils,
-  uCaixa;
+  uCaixa, uCaixacont;
 
 type
   TcCaixaServico = class(TComponent)
@@ -14,6 +14,12 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
+    function CaixaAberto(AIdEmpresa, AIdTerminal : Integer) : TCaixa;
+    function ContagemCaixa(AIdEmpresa, AIdTerminal : Integer) : TCaixacont;
+    procedure SuprirCaixa(ACaixa : TCaixa; AVlSuprimento : Real);
+    procedure RetirarCaixa(ACaixa : TCaixa; AVlSuprimento : Real);
+    procedure EncerrarCaixa(ACaixa : TCaixa);
+    procedure FecharCaixa(ACaixa : TCaixa);
   published
   end;
 
@@ -51,6 +57,34 @@ begin
 
   inherited;
 end;
+
+//--
+
+function TcCaixaServico.CaixaAberto(AIdEmpresa, AIdTerminal : Integer) : TCaixa;
+begin
+end;
+
+function TcCaixaServico.ContagemCaixa(AIdEmpresa, AIdTerminal : Integer) : TCaixacont;
+begin
+end;
+
+procedure TcCaixaServico.SuprirCaixa(ACaixa : TCaixa; AVlSuprimento : Real);
+begin
+end;
+
+procedure TcCaixaServico.RetirarCaixa(ACaixa : TCaixa; AVlSuprimento : Real);
+begin
+end;
+
+procedure TcCaixaServico.EncerrarCaixa(ACaixa : TCaixa);
+begin
+end;
+
+procedure TcCaixaServico.FecharCaixa(ACaixa : TCaixa);
+begin
+end;
+
+//--
 
 initialization
   //Instance();
