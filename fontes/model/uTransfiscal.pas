@@ -26,37 +26,24 @@ type
     fEventos: TTransdfes;
     fContingencia: TTranscont;
     fInutilizacao: TTransinut;
-    procedure SetId_Transacao(const Value : String);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetTp_Operacao(const Value : Integer);
-    procedure SetTp_Modalidade(const Value : Integer);
-    procedure SetTp_Modelonf(const Value : Integer);
-    procedure SetCd_Serie(const Value : String);
-    procedure SetNr_Nf(const Value : Integer);
-    procedure SetTp_Processamento(const Value : String);
-    procedure SetDs_Chaveacesso(const Value: String);
-    procedure SetDt_Recebimento(const Value : TDateTime);
-    procedure SetNr_Recibo(const Value : String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Transacao : String read fId_Transacao write SetId_Transacao;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Tp_Operacao : Integer read fTp_Operacao write SetTp_Operacao;
-    property Tp_Modalidade : Integer read fTp_Modalidade write SetTp_Modalidade;
-    property Tp_Modelonf : Integer read fTp_Modelonf write SetTp_Modelonf;
-    property Cd_Serie : String read fCd_Serie write SetCd_Serie;
-    property Nr_Nf : Integer read fNr_Nf write SetNr_Nf;
-    property Tp_Processamento : String read fTp_Processamento write SetTp_Processamento;
-    property Ds_Chaveacesso : String read FDs_Chaveacesso write SetDs_Chaveacesso;
-    property Dt_Recebimento : TDateTime read fDt_Recebimento write SetDt_Recebimento;
-    property Nr_Recibo : String read fNr_Recibo write SetNr_Recibo;
+    property Id_Transacao : String read fId_Transacao write fId_Transacao;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Tp_Operacao : Integer read fTp_Operacao write fTp_Operacao;
+    property Tp_Modalidade : Integer read fTp_Modalidade write fTp_Modalidade;
+    property Tp_Modelonf : Integer read fTp_Modelonf write fTp_Modelonf;
+    property Cd_Serie : String read fCd_Serie write fCd_Serie;
+    property Nr_Nf : Integer read fNr_Nf write fNr_Nf;
+    property Tp_Processamento : String read fTp_Processamento write fTp_Processamento;
+    property Ds_Chaveacesso : String read fDs_Chaveacesso write fDs_Chaveacesso;
+    property Dt_Recebimento : TDateTime read fDt_Recebimento write fDt_Recebimento;
+    property Nr_Recibo : String read fNr_Recibo write fNr_Recibo;
     property Eventos: TTransdfes read fEventos write fEventos;
     property Contingencia: TTranscont read fContingencia write fContingencia;
     property Inutilizacao: TTransinut read fInutilizacao write fInutilizacao;
@@ -100,26 +87,21 @@ begin
     Nome := 'TRANSFISCAL';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Tp_Operacao', 'TP_OPERACAO');
-    Add('Tp_Modalidade', 'TP_MODALIDADE');
-    Add('Tp_Modelonf', 'TP_MODELONF');
-    Add('Cd_Serie', 'CD_SERIE');
-    Add('Nr_Nf', 'NR_NF');
-    Add('Tp_Processamento', 'TP_PROCESSAMENTO');
-    Add('Ds_Chaveacesso', 'DS_CHAVEACESSO');
-    Add('Dt_Recebimento', 'DT_RECEBIMENTO');
-    Add('Nr_Recibo', 'NR_RECIBO');
+    Add('Id_Transacao', 'ID_TRANSACAO', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Tp_Operacao', 'TP_OPERACAO', tfReq);
+    Add('Tp_Modalidade', 'TP_MODALIDADE', tfReq);
+    Add('Tp_Modelonf', 'TP_MODELONF', tfReq);
+    Add('Cd_Serie', 'CD_SERIE', tfReq);
+    Add('Nr_Nf', 'NR_NF', tfReq);
+    Add('Tp_Processamento', 'TP_PROCESSAMENTO', tfReq);
+    Add('Ds_Chaveacesso', 'DS_CHAVEACESSO', tfNul);
+    Add('Dt_Recebimento', 'DT_RECEBIMENTO', tfNul);
+    Add('Nr_Recibo', 'NR_RECIBO', tfNul);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -141,71 +123,6 @@ begin
 end;
 
 //--
-
-procedure TTransfiscal.SetId_Transacao(const Value : String);
-begin
-  fId_Transacao := Value;
-end;
-
-procedure TTransfiscal.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TTransfiscal.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TTransfiscal.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TTransfiscal.SetTp_Operacao(const Value : Integer);
-begin
-  fTp_Operacao := Value;
-end;
-
-procedure TTransfiscal.SetTp_Modalidade(const Value : Integer);
-begin
-  fTp_Modalidade := Value;
-end;
-
-procedure TTransfiscal.SetTp_Modelonf(const Value : Integer);
-begin
-  fTp_Modelonf := Value;
-end;
-
-procedure TTransfiscal.SetCd_Serie(const Value : String);
-begin
-  fCd_Serie := Value;
-end;
-
-procedure TTransfiscal.SetNr_Nf(const Value : Integer);
-begin
-  fNr_Nf := Value;
-end;
-
-procedure TTransfiscal.SetDs_Chaveacesso(const Value: String);
-begin
-  FDs_Chaveacesso := Value;
-end;
-
-procedure TTransfiscal.SetTp_Processamento(const Value : String);
-begin
-  fTp_Processamento := Value;
-end;
-
-procedure TTransfiscal.SetDt_Recebimento(const Value : TDateTime);
-begin
-  fDt_Recebimento := Value;
-end;
-
-procedure TTransfiscal.SetNr_Recibo(const Value : String);
-begin
-  fNr_Recibo := Value;
-end;
 
 { TTransfiscals }
 

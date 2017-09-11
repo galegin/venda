@@ -22,27 +22,25 @@ type
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    function Listar() : TTransacaoList;
+    function Listar() : TTransacaos;
 
     procedure LimparCapa();
 
-    procedure BuscarCapa(ACd_Dnatrans : String);
+    procedure BuscarCapa(AId_Transacao : String);
 
     function NumerarCapa() : Integer;
     function NumerarFiscal(ACd_Serie : String) : Integer;
 
     procedure Salvar(
-      ACd_Equip: String;
       ADt_Transacao: TDateTime;
-      ANr_Cpfcnpj: String;
-      ACd_Operacao: String;
-      ACd_Dnapagto: String = '';
-      ADt_Canc: TDateTime = 0);
+      AId_Empresa: Integer;
+      AId_Pessoa: String;
+      AId_Operacao: String);
 
-    procedure Excluir(ACd_Dnatrans: String);
+    procedure Excluir(AId_Transacao: String);
 
     procedure AdicionarItem(
-      ACd_Barraprd: String;
+      AId_Produto: String;
       AQt_Item: Real = 1;
       AVl_Variacao: Real = 0;
       AVl_VariacaoCapa: Real = 0);
@@ -59,17 +57,12 @@ type
     procedure GravarVariacaoItem(ANr_Item: Integer; AVl_Variacao: Real);
     procedure ExcluirVariacaoItem(ANr_Item: Integer);
 
-    procedure LimparVencto();
-    procedure GerarVencto(
-      ADt_Parcela: TDateTime;
-      AVl_Parcela: Real);
-
     procedure LimparPagto();
     procedure GerarPagto(
-      ATp_Pagto : Integer;
-      AVl_Pagto : Real);
+      ATp_Documento : Integer;
+      AVl_Documento : Real);
 
-    procedure EmitirDFe();  
+    procedure EmitirDFe();
 
   published
     property Transacao : TTransacao read fTransacao write fTransacao;
@@ -88,8 +81,8 @@ uses
   uclsOperacaoServico,
   uclsImpostoServico,
   uclsDFeServico,
-  mCollection, mCollectionItem, mSequence, mFloat,
-  uTransfiscal, uTransvencto, uTranspagto, uTipoProcessamento;
+  mContexto, mSequence, mFloat,
+  uTransfiscal, uTranspagto, uTipoProcessamento;
 
 var
   _instance : TcTransacaoServico;
@@ -125,21 +118,19 @@ end;
 
 function TcTransacaoServico.Listar;
 begin
-  Result := TTransacaoList(fTransacao.Listar(nil));
+  Result := mContexto.Instance.GetLista(TTransacao, '', TTransacaos) as TTransacaos;
 end;
 
 procedure TcTransacaoServico.LimparCapa;
 begin
-  fTransacao.Limpar();
+  fTransacao := Transacao.Create(nil);
 end;
 
 procedure TcTransacaoServico.BuscarCapa;
 begin
-  fTransacao.Limpar();
-  if ACd_Dnatrans <> '' then begin
-    fTransacao.Cd_Dnatrans := ACd_Dnatrans;
-    fTransacao.Consultar(nil);
-  end;
+  LimparCapa();
+  if AId_Transacao <> '' then
+    fTransacao := mContexto.Instance.GetObjeto(TTransacao, 'Id_Transacao = ''' + AId_Transacao + '''') as TTransacao;
 end;
 
 function TcTransacaoServico.NumerarCapa;
@@ -156,31 +147,31 @@ procedure TcTransacaoServico.Salvar;
 const
   cDS_METHOD = 'TcTransacaoServico.Salvar()';
 var
-  vNr_Transacao, vNr_Docfiscal : Integer;
+  vNr_Transacao, vNr_Nf : Integer;
 begin
-  if ANr_Cpfcnpj = '' then
+  if AId_Pessoa = '' then
     raise Exception.Create('Pessoa deve ser informado / ' + cDS_METHOD);
-  if ACd_Operacao = '' then
+  if AId_Operacao = '' then
     raise Exception.Create('Operacao deve ser informado / ' + cDS_METHOD);
 
-  fEmpresa := uclsEmpresaServico.Instance.Consultar();
+  fEmpresa := uclsEmpresaServico.Instance.Consultar(AId_Empresa);
   if not Assigned(fEmpresa) then
     raise Exception.Create('Empresa nao encontrada / ' + cDS_METHOD);
 
-  fPessoa := uclsPessoaServico.Instance.Consultar(ANr_Cpfcnpj);
+  fPessoa := uclsPessoaServico.Instance.Consultar(AId_Pessoa);
   if not Assigned(fPessoa) then
-    raise Exception.Create('Pessoa ' + ANr_Cpfcnpj + ' nao encontrada / ' + cDS_METHOD);
+    raise Exception.Create('Pessoa ' + AId_Pessoa + ' nao encontrada / ' + cDS_METHOD);
 
-  fOperacao := uclsOperacaoServico.Instance.Consultar(ACd_Operacao);
+  fOperacao := uclsOperacaoServico.Instance.Consultar(AId_Operacao);
   if not Assigned(fOperacao) then
-    raise Exception.Create('Operacao ' + ACd_Operacao + ' nao encontrada / ' + cDS_METHOD);
+    raise Exception.Create('Operacao ' + AId_Operacao + ' nao encontrada / ' + cDS_METHOD);
 
   vNr_Transacao := NumerarCapa();
-  vNr_Docfiscal := NumerarFiscal(fOperacao.Cd_Serie);
+  vNr_Nf := NumerarFiscal(fOperacao.Cd_Serie);
 
   with fTransacao do begin
-    Cd_Dnatrans :=
-      ACd_Equip + '#' +
+    Id_Transacao :=
+      IntToStr(AId_Empresa) + '#' +
       FormatDateTime('yyyymmdd', ADt_Transacao) + '#' +
       IntToStr(vNr_Transacao);
 
@@ -188,50 +179,50 @@ begin
     Cd_Operador := 1;
     Dt_Cadastro := Now;
 
-    Cd_Equip := ACd_Equip;
+    Id_Empresa := AId_Empresa;
     Dt_Transacao := ADt_Transacao;
     Nr_Transacao := vNr_Transacao;
-    Nr_Cpfcnpj := ANr_Cpfcnpj;
-    Cd_Operacao := fOperacao.Cd_Operacao;
-    Cd_Dnapagto := ACd_Dnapagto;
-    Dt_Canc := ADt_Canc;
+    Id_Pessoa := fPessoa.Id_Pessoa;
+    Id_Operacao := fOperacao.Id_Operacao;
+    Dt_Cancelamento := 0;
 
-    Obj_Empresa := fEmpresa;
-    Obj_Operacao := fOperacao;
-    Obj_Pessoa := fPessoa;
+    Empresa := fEmpresa;
+    Operacao := fOperacao;
+    Pessoa := fPessoa;
 
-    with Obj_Fiscal do begin
-      Cd_Dnatrans := fTransacao.Cd_Dnatrans;
+    mContexto.Instance.SetObjeto(fTransacao);
+
+    with Fiscal do begin
+      Id_Transacao := fTransacao.Id_Transacao;
 
       U_Version := '';
       Cd_Operador := 1;
       Dt_Cadastro := Now;
 
-      Tp_Docfiscal := fOperacao.Tp_Docfiscal;
-      Nr_Docfiscal := vNr_Docfiscal;
+      Tp_Modelonf := fOperacao.Tp_Modelonf;
+      Nr_Nf := vNr_Nf;
       Tp_Modalidade := fOperacao.Tp_Modalidade;
       Tp_Operacao := fOperacao.Tp_Operacao;
       Cd_Serie := fOperacao.Cd_Serie;
-      Tp_Ambiente := 0;
-      Tp_Emissao := 0;
-      Dh_Emissao := Now;
-      Dh_EntradaSaida := Now;
-      Dh_Recibo := 0;
+      //Tp_Ambiente := 0;
+      //Tp_Emissao := 0;
+      //Dh_Emissao := Now;
+      //Dh_EntradaSaida := Now;
+      Dt_Recebimento := 0;
       Nr_Recibo := '';
       Tp_Processamento := TipoProcessamentoToStr(tppGerada);
     end;
 
-    Incluir();
+    mContexto.Instance.SetObjeto(Fiscal);
   end;
 end;
 
 procedure TcTransacaoServico.Excluir;
 begin
   with fTransacao do begin
-    Limpar();
-    if ACd_Dnatrans <> '' then begin
-      Cd_Dnatrans := ACd_Dnatrans;
-      Excluir();
+    if AId_Transacao <> '' then begin
+      Id_Transacao := AId_Transacao;
+      mContexto.Instance.RemObjeto(fTransacao);
     end;
   end;
 end;
@@ -242,25 +233,25 @@ procedure TcTransacaoServico.AdicionarItem;
 const
   cDS_METHOD = 'TcTransacaoServico.AdicionarItem()';
 begin
-  if ACd_Barraprd = '' then
+  if AId_Produto = '' then
     raise Exception.Create('Produto deve ser informado / ' + cDS_METHOD);
 
-  fProduto := uclsProdutoServico.Instance.Consultar(ACd_Barraprd);
+  fProduto := uclsProdutoServico.Instance.Consultar(AId_Produto);
   if not Assigned(fProduto) then
-    raise Exception.Create('Produto ' + ACd_Barraprd + ' nao encontrado / ' + cDS_METHOD);
+    raise Exception.Create('Produto ' + AId_Produto + ' nao encontrado / ' + cDS_METHOD);
 
-  fTransitem := fTransacao.List_Item.Add;
-  fTransitem.Obj_Produto := fProduto;
+  fTransitem := fTransacao.Itens.Add;
+  fTransitem.Produto := fProduto;
 
   with fTransitem do begin
-    Cd_Dnatrans := fTransacao.Cd_Dnatrans;
-    Nr_Item := fTransacao.List_Item.Count;
+    Id_Transacao := fTransacao.Id_Transacao;
+    Nr_Item := fTransacao.Itens.Count;
 
     U_Version := '';
     Cd_Operador := 1;
     Dt_Cadastro := Now;
 
-    Cd_Barraprd := fProduto.Cd_Barraprd;
+    Id_Produto := fProduto.Id_Produto;
     Cd_Produto := fProduto.Cd_Produto;
     Ds_Produto := fProduto.Ds_Produto;
     Cd_Especie := fProduto.Cd_Especie;
@@ -277,7 +268,7 @@ begin
       fTransacao,
       fTransitem);
 
-    Incluir();
+    mContexto.Instance.SetObjeto(fTransitem);
   end;
 end;
 
@@ -288,10 +279,10 @@ begin
   Result := nil;
 
   with fTransacao do
-    for I := 0 to List_Item.Count - 1 do
-      with List_Item[I] do
+    for I := 0 to Itens.Count - 1 do
+      with TTransitem(Itens[I]) do
         if Nr_Item = ANr_Item then begin
-          Result := List_Item[I];
+          Result := Itens[I];
           Break;
         end;
 end;
@@ -301,11 +292,11 @@ var
   I : Integer;
 begin
   with fTransacao do
-    for I := List_Item.Count - 1 downto 0 do
-      with List_Item[I] do
+    for I := Itens.Count - 1 downto 0 do
+      with TTransitem(Itens[I]) do
         if Nr_Item = ANr_Item then begin
-          Excluir();
-          Limpar();
+          mContexto.Instance.RemObjeto(TTransitem(Itens[I]));
+          Itens.Delete(I);
           Break;
         end;
 end;
@@ -322,22 +313,22 @@ begin
   vTransitemMaior := nil;
 
   with fTransacao do begin
-    for I := 0 to List_Item.Count - 1 do begin
-      with List_Item[I] do begin
+    for I := 0 to Itens.Count - 1 do begin
+      with TTransitem(Itens[I]) do begin
         vPr_Proporcao := Vl_Item / fTransacao.Vl_Item;
         Vl_VariacaoCapa := TmFloat.Rounded(AVl_Variacao * vPr_Proporcao, 2);
         vVl_Resto := vVl_Resto - Vl_VariacaoCapa;
 
         if not Assigned(vTransitemMaior) or (Vl_Item > vTransitemMaior.Vl_Item) then
-          vTransitemMaior := List_Item[I];
+          vTransitemMaior := TTransitem(Itens[I]);
       end;
 
       if Assigned(vTransitemMaior) or (vVl_Resto <> 0) then
-        with vTransitemMaior do
+        with vTransitemMaior do begin
           Vl_VariacaoCapa := Vl_VariacaoCapa + vVl_Resto;
+          mContexto.Instance.SetObjeto(vTransitemMaior);
+        end;
     end;
-
-    Alterar();
   end;
 end;
 
@@ -346,11 +337,11 @@ var
   I : Integer;
 begin
   with fTransacao do begin
-    for I := 0 to List_Item.Count - 1 do
-      with List_Item[I] do
+    for I := 0 to Itens.Count - 1 do
+      with TTransitem(Itens[I]) do begin
         Vl_VariacaoCapa := 0;
-
-    Alterar();
+        mContexto.Instance.SetObjeto(TTransitem(Itens[I]));
+      end;
   end;
 end;
 
@@ -365,7 +356,7 @@ begin
     with vTransitem do begin
       Vl_Variacao := AVl_Variacao;
       RecalcularImpostoItem(vTransitem);
-      Alterar();
+      mContexto.Instance.SetObjeto(vTransitem);
     end;
   end;
 end;
@@ -379,7 +370,7 @@ begin
     with vTransitem do begin
       Vl_Variacao := 0;
       RecalcularImpostoItem(vTransitem);
-      Alterar();
+      mContexto.Instance.SetObjeto(vTransitem);
     end;
   end;
 end;
@@ -392,8 +383,8 @@ var
   I : Integer;
 begin
   with AObj_Item do
-    for I := 0 to List_Imposto.Count - 1 do
-      with List_Imposto[I] do begin
+    for I := 0 to Impostos.Count - 1 do
+      with TTransimposto(Impostos[I]) do begin
         Vl_Basecalculo := Vl_Totitem;
 
         vVl_Imposto := TmFloat.Rounded(Vl_Basecalculo * (Pr_Aliquota / 100) * (Pr_Basecalculo / 100), 2);
@@ -401,75 +392,50 @@ begin
         Vl_Imposto := IfThen(Vl_Imposto > 0, vVl_Imposto, 0);
         Vl_Outro := IfThen(Vl_Outro > 0, vVl_Imposto, 0);
         Vl_Isento := IfThen(Vl_Isento > 0, vVl_Imposto, 0);
+
+        mContexto.Instance.SetObjeto(TTransimposto(Impostos[I]));
       end;
-end;
-
-//-- VENCTO - NFCe / NFe
-
-procedure TcTransacaoServico.LimparVencto();
-begin
-  with fTransacao.List_Vencto do begin
-    Excluir();
-    Limpar();
-  end;
-end;
-
-procedure TcTransacaoServico.GerarVencto;
-const
-  cDS_METHOD = 'TcTransacaoServico.GerarVencto()';
-begin
-  if ADt_Parcela = 0 then
-    raise Exception.Create('Data deve ser informada / ' + cDS_METHOD);
-  if AVl_Parcela = 0 then
-    raise Exception.Create('Valor deve ser informado / ' + cDS_METHOD);
-
-  with fTransacao.List_Vencto.Add do begin
-    Cd_Dnatrans := fTransacao.Cd_Dnatrans;
-    Nr_Parcela := fTransacao.List_Vencto.Count;
-
-    U_Version := '';
-    Cd_Operador := 1;
-    Dt_Cadastro := Now;
-
-    Dt_Parcela := ADt_Parcela;
-    Vl_Parcela := AVl_Parcela;
-
-    Incluir();
-  end;
 end;
 
 //-- PAGTO - NFCe
 
 procedure TcTransacaoServico.LimparPagto();
+var
+  I: Integer;
 begin
-  with fTransacao.List_Pagto do begin
-    Excluir();
-    Limpar();
+  with fTransacao.Pagtos do begin
+    for I := 0 to Count - 1 do
+      with TTranspagto(fTransacao.Pagtos[I]) do
+        mContexto.Instance.SetObjeto(TTranspagto(fTransacao.Pagtos[I]));
+    Clear;
   end;
 end;
 
 procedure TcTransacaoServico.GerarPagto;
 const
   cDS_METHOD = 'TcTransacaoServico.GerarPagto()';
+var
+  vTranspagto : TTranspagto;
 begin
-  if ATp_Pagto = 0 then
-    raise Exception.Create('Tipo deve ser informada / ' + cDS_METHOD);
-  if AVl_Pagto = 0 then
-    raise Exception.Create('Valor deve ser informado / ' + cDS_METHOD);
+  if ATp_Documento = 0 then
+    raise Exception.Create('Tipo documento deve ser informada / ' + cDS_METHOD);
+  if AVl_Documento = 0 then
+    raise Exception.Create('Valor documento deve ser informado / ' + cDS_METHOD);
 
-  with fTransacao.List_Pagto.Add do begin
-    Cd_Dnatrans := fTransacao.Cd_Dnatrans;
-    Nr_Pagto := fTransacao.List_Pagto.Count;
+  vTranspagto := fTransacao.Pagtos.Add;
+  with vTranspagto do begin
+    Id_Transacao := fTransacao.Id_Transacao;
+    Nr_Seq := fTransacao.Pagtos.Count;
 
     U_Version := '';
     Cd_Operador := 1;
     Dt_Cadastro := Now;
 
-    Tp_Pagto := ATp_Pagto;
-    Vl_Pagto := AVl_Pagto;
-
-    Incluir();
+    Tp_Documento := ATp_Documento;
+    Vl_Documento := AVl_Documento;
   end;
+
+  mContexto.Instance.SetObjeto(vTranspagto);
 end;
 
 //--
@@ -477,8 +443,8 @@ end;
 procedure TcTransacaoServico.EmitirDFe;
 begin
   with fTransacao do
-    if Obj_Operacao.Tp_Docfiscal in [55, 65] then
-      if Cd_Dnatrans <> '' then
+    if Operacao.Tp_Modelonf in [55, 65] then
+      if Id_Transacao <> '' then
         uclsDFeServico.Instance.EmitirDFe(Transacao);
 end;
 
@@ -488,7 +454,7 @@ function TcTransacaoServico.GetVl_Total: Real;
 begin
   Result := 0; 
   with fTransacao do
-    if Cd_Dnatrans <> '' then
+    if Id_Transacao <> '' then
       Result := Vl_Total;
 end;
 

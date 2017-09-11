@@ -17,27 +17,19 @@ type
     fCd_Histrel: Integer;
     fDs_Histrel: String;
     fNr_Parcelas: Integer;
-    procedure SetId_Histrel(const Value : Integer);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetTp_Documento(const Value : Integer);
-    procedure SetCd_Histrel(const Value : Integer);
-    procedure SetDs_Histrel(const Value : String);
-    procedure SetNr_Parcelas(const Value : Integer);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Histrel : Integer read fId_Histrel write SetId_Histrel;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Tp_Documento : Integer read fTp_Documento write SetTp_Documento;
-    property Cd_Histrel : Integer read fCd_Histrel write SetCd_Histrel;
-    property Ds_Histrel : String read fDs_Histrel write SetDs_Histrel;
-    property Nr_Parcelas : Integer read fNr_Parcelas write SetNr_Parcelas;
+    property Id_Histrel : Integer read fId_Histrel write fId_Histrel;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Tp_Documento : Integer read fTp_Documento write fTp_Documento;
+    property Cd_Histrel : Integer read fCd_Histrel write fCd_Histrel;
+    property Ds_Histrel : String read fDs_Histrel write fDs_Histrel;
+    property Nr_Parcelas : Integer read fNr_Parcelas write fNr_Parcelas;
   end;
 
   THistrels = class(TList)
@@ -72,21 +64,16 @@ begin
     Nome := 'HISTREL';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Histrel', 'ID_HISTREL');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Histrel', 'ID_HISTREL');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Tp_Documento', 'TP_DOCUMENTO');
-    Add('Cd_Histrel', 'CD_HISTREL');
-    Add('Ds_Histrel', 'DS_HISTREL');
-    Add('Nr_Parcelas', 'NR_PARCELAS');
+    Add('Id_Histrel', 'ID_HISTREL', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Tp_Documento', 'TP_DOCUMENTO', tfReq);
+    Add('Cd_Histrel', 'CD_HISTREL', tfReq);
+    Add('Ds_Histrel', 'DS_HISTREL', tfReq);
+    Add('Nr_Parcelas', 'NR_PARCELAS', tfReq);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -95,46 +82,6 @@ begin
 end;
 
 //--
-
-procedure THistrel.SetId_Histrel(const Value : Integer);
-begin
-  fId_Histrel := Value;
-end;
-
-procedure THistrel.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure THistrel.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure THistrel.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure THistrel.SetTp_Documento(const Value : Integer);
-begin
-  fTp_Documento := Value;
-end;
-
-procedure THistrel.SetCd_Histrel(const Value : Integer);
-begin
-  fCd_Histrel := Value;
-end;
-
-procedure THistrel.SetDs_Histrel(const Value : String);
-begin
-  fDs_Histrel := Value;
-end;
-
-procedure THistrel.SetNr_Parcelas(const Value : Integer);
-begin
-  fNr_Parcelas := Value;
-end;
 
 { THistrels }
 

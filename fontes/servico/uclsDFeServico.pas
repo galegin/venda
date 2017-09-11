@@ -46,8 +46,6 @@ type
     fTp_ImpressaoDanfe : TTipoImpressaoDanfe;
 
     procedure AnalisaRetorno(ATipoRetornoSefaz : RTipoRetornoSefaz);
-    function EmitirDFeGerada(
-      ATransfiscal: TTransfiscal): RTipoRetornoSefaz;
 
   protected
     procedure ValidarParametro;
@@ -787,6 +785,8 @@ begin
     Result.xMotivo := fACBrNFe.WebServices.Enviar.xMotivo;
     Result.RetornoWS := fACBrNFe.WebServices.Enviar.RetornoWS;
     Result.RetWS := fACBrNFe.WebServices.Enviar.RetWS;
+    Result.DhRecebimento := fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto;
+    Result.NrRecibo := fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe;
     AnalisaRetorno(Result);
   except
     on E : Exception do begin
@@ -987,6 +987,8 @@ end;
 function TcDFeServico.EmitirDFe() : RTipoRetornoSefaz;
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFe()';
+var
+  vTransdfe : TTransdfe;
 begin
   ValidarParametro;
 
@@ -994,16 +996,16 @@ begin
   ConfigurarDFe;
   GerarDFe;
 
-  Result := GerarEnvioDFe;
+  Result := GerarEnvioDFe(fACBrNFe.NotasFiscais[0].XMLOriginal);
 
   if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
-      fACBrNFe.NotasFiscais[0].GerarXML,
-      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
-      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
-      fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
+      fACBrNFe.NotasFiscais[0].NumID,
+      fACBrNFe.NotasFiscais[0].XMLOriginal,
+      Result.DhRecebimento, // fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
+      Result.NrRecibo, // fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
+      Result.RetornoWS); // fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
 
     GerarImpressaoDFe(
       TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
@@ -1018,8 +1020,8 @@ begin
 
     GravarDFe(
       tppGerada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
-      fACBrNFe.NotasFiscais[0].GerarXML,
+      fACBrNFe.NotasFiscais[0].NumID,
+      fACBrNFe.NotasFiscais[0].XMLOriginal,
       Now,
       'NA',
       fACBrNFe.WebServices.Retorno.RetornoWS);
@@ -1030,13 +1032,13 @@ begin
   end else if (Result.tStatus in [tsRejeicao]) then begin
     GravarDFe(
       tppCancelada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
-      fACBrNFe.NotasFiscais[0].GerarXML,
+      fACBrNFe.NotasFiscais[0].NumID,
+      fACBrNFe.NotasFiscais[0].XMLOriginal,
       Now,
       'NA',
-      fACBrNFe.WebServices.Retorno.RetornoWS);
+      Result.RetornoWS);
 
-    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
+    raise TmException.Create(cDS_METHOD, Result.xMotivo);
 
   end;
 end;
@@ -1066,13 +1068,13 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  Result := GerarEnvioDFe;
+  Result := GerarEnvioDFe(fACBrNFe.NotasFiscais[0].XMLOriginal);
 
   if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppAutorizada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
-      fACBrNFe.NotasFiscais[0].GerarXML,
+      fACBrNFe.NotasFiscais[0].NumID,
+      fACBrNFe.NotasFiscais[0].XMLOriginal,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].dhRecbto,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].nProt,
       fACBrNFe.WebServices.Recibo.NFeRetorno.ProtNFe.Items[0].XMLprotNFe);
@@ -1080,13 +1082,13 @@ begin
   end else if (Result.tStatus in [tsRejeicao]) then begin
     GravarDFe(
       tppCancelada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].NumID,
       'NA',
       Now,
       '0',
-      fACBrNFe.WebServices.Retorno.RetornoWS);
+      Result.RetornoWS);
 
-    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
+    raise TmException.Create(cDS_METHOD, Result.xMotivo);
 
   end;
 
@@ -1096,12 +1098,13 @@ function TcDFeServico.EmitirDFeGerada(ATransacao : TTransacao) : RTipoRetornoSef
 const
   cDS_METHOD = 'TcDFeServico.EmitirDFeGerada()';
 begin
-  if not Assigned(ATransfiscal) then
-    raise Exception.Create('Fiscal deve ser informado / ' + cDS_METHOD);
+  if not Assigned(ATransacao) then
+    raise Exception.Create('Transacao deve ser informado / ' + cDS_METHOD);
 
-  fTransacao := mContexto.Instance.GetObjeto(TTransacao, 'Id_Transacao = ''' + ATransfiscal.Id_Transacao + '''') as TTransacao;
+  fTransacao :=  ATransacao;
+
   if fTransacao.Nr_Transacao > 0 then
-    EmitirDFeContingencia();
+    EmitirDFeGerada();
 end;
 
 //--
@@ -1114,8 +1117,7 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  GerarImpressaoDFe(
-    TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
+  GerarImpressaoDFe(fACBrNFe.NotasFiscais[0].XMLOriginal);
 end;
 
 procedure TcDFeServico.ImprimirDFe(ATransacao : TTransacao);
@@ -1152,15 +1154,15 @@ begin
   if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppCancelada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].NumID,
       'NA',
       Now,
       '0',
-      fACBrNFe.WebServices.Retorno.RetornoWS);
+      Result.RetornoWS);
 
   end else if (Result.tStatus in [tsRejeicao]) then
 
-    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
+    raise TmException.Create(cDS_METHOD, Result.xMotivo);
 
 end;
 
@@ -1201,15 +1203,15 @@ begin
   if (Result.tStatus in [tsAutorizacao, tsProcessado]) then begin
     GravarDFe(
       tppRejeitada,
-      fACBrNFe.NotasFiscais[0].NFe.infNFe.ID,
+      fACBrNFe.NotasFiscais[0].NumID,
       'NA',
       Now,
       '0',
-      fACBrNFe.WebServices.Retorno.RetornoWS);
+      Result.RetornoWS);
 
   end else if (Result.tStatus in [tsRejeicao]) then
 
-    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
+    raise TmException.Create(cDS_METHOD, Result.xMotivo);
 
 end;
 
@@ -1238,11 +1240,10 @@ begin
   ConfigurarDFe;
   CarregarDFe;
 
-  Result := GerarConsultaDFe(
-    TTransdfe(fTransacao.Fiscal.Eventos.Items[0]).Ds_Envioxml);
+  Result := GerarConsultaDFe(fACBrNFe.NotasFiscais[0].XMLOriginal);
 
   if (Result.tStatus in [tsRejeicao]) then
-    raise TmException.Create(cDS_METHOD, fTipoRetorno.xMotivo);
+    raise TmException.Create(cDS_METHOD, Result.xMotivo);
 
 end;
 

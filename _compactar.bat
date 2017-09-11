@@ -1,0 +1,2 @@
+upx "pVenda.exe"
+pause

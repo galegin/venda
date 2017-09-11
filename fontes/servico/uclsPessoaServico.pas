@@ -51,7 +51,7 @@ type
 implementation
 
 uses
-  mCollectionItem;
+  mContexto;
 
 var
   _instance : TcPessoaServico;
@@ -85,28 +85,21 @@ end;
 
 function TcPessoaServico.Listar;
 begin
-  Result := TPessoaList(fPessoa.Listar(nil));
+  Result := mContexto.Instance.GetLista(TPessoa, '', TPessoas) as TPessoas;
 end;
 
 function TcPessoaServico.Consultar;
 begin
-  with fPessoa do begin
-    Limpar();
-    if ANr_Cpfcnpj <> '' then begin
-      Nr_Cpfcnpj := ANr_Cpfcnpj;
-      Consultar(nil);
-      Result := fPessoa;
-    end else begin
-      Result := nil;
-    end;
+  if AId_Pessoa <> '' then begin
+    Result := mContexto.Instance.GetObjeto(TPessoa, 'Id_Pessoa = ''' + AId_Pessoa + '''') as TPessoa;
+  end else begin
+    Result := nil;
   end;
 end;
 
 procedure TcPessoaServico.Salvar;
 begin
   with fPessoa do begin
-    Limpar();
-
     Nr_Cpfcnpj := ANr_Cpfcnpj;
 
     U_Version := '';
@@ -131,17 +124,18 @@ begin
     Ds_Fone := ADs_Fone;
     Ds_Celular := ADs_Celular;
     Ds_Email := ADs_Email;
-
-    Salvar();
   end;
+
+  mContexto.Instance.SetObjeto(fPessoa);
 end;
 
 procedure TcPessoaServico.Excluir;
 begin
   with fPessoa do begin
-    Nr_Cpfcnpj := '';
-
-    Excluir();
+    if Id_Pessoa <> '' then begin
+      Id_Pessoa := AId_Pessoa;
+      mContexto.Instance.RemObjeto(fPessoa);
+    end;
   end;
 end;
 

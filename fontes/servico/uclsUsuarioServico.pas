@@ -15,10 +15,10 @@ type
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    function Listar() : TUsuarioList;
+    function Listar() : TUsuarios;
 
     procedure Salvar(
-      ACd_Usuario : String;
+      AId_Usuario : Integer;
       ANm_Usuario : String;
       ANm_Login : String;
       ACd_Senha : String;
@@ -26,10 +26,9 @@ type
       ATp_Bloqueio : Integer;
       ADt_Bloqueio : TDateTime);
 
-    procedure Excluir(ACd_Usuario : String);
-    
+    procedure Excluir(AId_Usuario : Integer);
+
   published
-    property Usuario : TUsuario read fUsuario write fUsuario;
   end;
 
   function Instance : TcUsuarioServico;
@@ -38,7 +37,7 @@ type
 implementation
 
 uses
-  mCollectionItem;
+  mContexto;
 
 var
   _instance : TcUsuarioServico;
@@ -72,13 +71,13 @@ end;
 
 function TcUsuarioServico.Listar;
 begin
-  Result := TUsuarioList(fUsuario.Listar(nil));
+  Result := mContexto.Instance.GetLista(TUsuario, '', TUsuarios) as TUsuarios;
 end;
 
 procedure TcUsuarioServico.Salvar;
 begin
   with fUsuario do begin
-    Cd_Usuario := ACd_Usuario;
+    Id_Usuario := AId_Usuario;
 
     U_Version := '';
     Cd_Operador := 1;
@@ -90,18 +89,17 @@ begin
     Cd_Papel := ACd_Papel;
     Tp_Bloqueio := ATp_Bloqueio;
     Dt_Bloqueio := ADt_Bloqueio;
-
-    Salvar();
   end;
+
+  mContexto.Instance.SetObjeto(fUsuario);
 end;
 
 procedure TcUsuarioServico.Excluir;
 begin
   with fUsuario do begin
-    Limpar();
-    if ACd_Usuario <> '' then begin
-      Cd_Usuario := ACd_Usuario;
-      Excluir();
+    if AId_Usuario <> 0 then begin
+      Id_Usuario := AId_Usuario;
+      mContexto.Instance.RemObjeto(fUsuario);
     end;
   end;
 end;

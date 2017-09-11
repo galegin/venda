@@ -19,31 +19,21 @@ type
     fCd_Papel: String;
     fTp_Bloqueio: Integer;
     fDt_Bloqueio: TDateTime;
-    procedure SetId_Usuario(const Value : Integer);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetNm_Usuario(const Value : String);
-    procedure SetNm_Login(const Value : String);
-    procedure SetCd_Senha(const Value : String);
-    procedure SetCd_Papel(const Value : String);
-    procedure SetTp_Bloqueio(const Value : Integer);
-    procedure SetDt_Bloqueio(const Value : TDateTime);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Usuario : Integer read fId_Usuario write SetId_Usuario;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Nm_Usuario : String read fNm_Usuario write SetNm_Usuario;
-    property Nm_Login : String read fNm_Login write SetNm_Login;
-    property Cd_Senha : String read fCd_Senha write SetCd_Senha;
-    property Cd_Papel : String read fCd_Papel write SetCd_Papel;
-    property Tp_Bloqueio : Integer read fTp_Bloqueio write SetTp_Bloqueio;
-    property Dt_Bloqueio : TDateTime read fDt_Bloqueio write SetDt_Bloqueio;
+    property Id_Usuario : Integer read fId_Usuario write fId_Usuario;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Nm_Usuario : String read fNm_Usuario write fNm_Usuario;
+    property Nm_Login : String read fNm_Login write fNm_Login;
+    property Cd_Senha : String read fCd_Senha write fCd_Senha;
+    property Cd_Papel : String read fCd_Papel write fCd_Papel;
+    property Tp_Bloqueio : Integer read fTp_Bloqueio write fTp_Bloqueio;
+    property Dt_Bloqueio : TDateTime read fDt_Bloqueio write fDt_Bloqueio;
   end;
 
   TUsuarios = class(TList)
@@ -78,23 +68,18 @@ begin
     Nome := 'USUARIO';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Usuario', 'ID_USUARIO');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Usuario', 'ID_USUARIO');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Nm_Usuario', 'NM_USUARIO');
-    Add('Nm_Login', 'NM_LOGIN');
-    Add('Cd_Senha', 'CD_SENHA');
-    Add('Cd_Papel', 'CD_PAPEL');
-    Add('Tp_Bloqueio', 'TP_BLOQUEIO');
-    Add('Dt_Bloqueio', 'DT_BLOQUEIO');
+    Add('Id_Usuario', 'ID_USUARIO', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Nm_Usuario', 'NM_USUARIO', tfReq);
+    Add('Nm_Login', 'NM_LOGIN', tfReq);
+    Add('Cd_Senha', 'CD_SENHA', tfReq);
+    Add('Cd_Papel', 'CD_PAPEL', tfNul);
+    Add('Tp_Bloqueio', 'TP_BLOQUEIO', tfReq);
+    Add('Dt_Bloqueio', 'DT_BLOQUEIO', tfNul);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -103,56 +88,6 @@ begin
 end;
 
 //--
-
-procedure TUsuario.SetId_Usuario(const Value : Integer);
-begin
-  fId_Usuario := Value;
-end;
-
-procedure TUsuario.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TUsuario.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TUsuario.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TUsuario.SetNm_Usuario(const Value : String);
-begin
-  fNm_Usuario := Value;
-end;
-
-procedure TUsuario.SetNm_Login(const Value : String);
-begin
-  fNm_Login := Value;
-end;
-
-procedure TUsuario.SetCd_Senha(const Value : String);
-begin
-  fCd_Senha := Value;
-end;
-
-procedure TUsuario.SetCd_Papel(const Value : String);
-begin
-  fCd_Papel := Value;
-end;
-
-procedure TUsuario.SetTp_Bloqueio(const Value : Integer);
-begin
-  fTp_Bloqueio := Value;
-end;
-
-procedure TUsuario.SetDt_Bloqueio(const Value : TDateTime);
-begin
-  fDt_Bloqueio := Value;
-end;
 
 { TUsuarios }
 

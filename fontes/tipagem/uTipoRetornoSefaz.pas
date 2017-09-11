@@ -26,6 +26,8 @@ type
     tStatus : TTipoStatusSefaz;
     RetornoWS : String;
     RetWS : String;
+    DhRecebimento : TDateTime;
+    NrRecibo : String;
   end;
 
   function GetTipoRetorno(ATipoRetorno : RTipoRetornoSefaz) : RTipoRetornoSefaz;

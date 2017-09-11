@@ -15,12 +15,12 @@ type
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
-    function Listar() : TProdutoList;
+    function Listar() : TProdutos;
 
-    function Consultar(ACd_Barraprd: String) : TProduto;
+    function Consultar(AId_Produto: String) : TProduto;
 
     procedure Salvar(
-      ACd_Barraprd: String;
+      AId_Produto: String;
       ACd_Produto: Integer;
       ADs_Produto: String;
       ACd_Especie: String;
@@ -31,7 +31,7 @@ type
       AVl_Venda: Real;
       AVl_Promocao: Real);
 
-    procedure Excluir(ACd_Barraprd: String);
+    procedure Excluir(AId_Produto: String);
     
   published
     property Produto : TProduto read fProduto write fProduto;
@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  mCollectionItem;
+  mContexto;
 
 var
   _instance : TcProdutoServico;
@@ -77,27 +77,22 @@ end;
 
 function TcProdutoServico.Listar;
 begin
-  Result := TProdutoList(fProduto.Listar(nil));
+  Result := mContexto.Instance.GetLista(TProduto, '', TProdutos) as TProdutos;
 end;
 
 function TcProdutoServico.Consultar;
 begin
-  with fProduto do begin
-    Limpar();
-    if ACd_Barraprd <> '' then begin
-      Cd_Barraprd := ACd_Barraprd;
-      Consultar(nil);
-      Result := fProduto;
-    end else begin
-      Result := nil;
-    end;
+  if AId_Produto <> '' then begin
+    Result := mContexto.Instance.GetObjeto(TProduto, 'Id_Produto = ''' + AId_Produto + '''') as TProduto;
+  end else begin
+    Result := nil;
   end;
 end;
 
 procedure TcProdutoServico.Salvar;
 begin
   with fProduto do begin
-    Cd_Barraprd := ACd_Barraprd;
+    Id_Produto := AId_Produto;
 
     U_Version := '';
     Cd_Operador := 1;
@@ -112,18 +107,17 @@ begin
     Vl_Custo := AVl_Custo;
     Vl_Venda := AVl_Venda;
     Vl_Promocao := AVl_Promocao;
-
-    Salvar();
   end;
+
+  mContexto.Instance.SetObjeto(fProduto);
 end;
 
 procedure TcProdutoServico.Excluir;
 begin
   with fProduto do begin
-    Limpar();
-    if ACd_Barraprd <> '' then begin
-      Cd_Barraprd := ACd_Barraprd;
-      Excluir();
+    if AId_Produto <> '' then begin
+      Id_Produto := AId_Produto;
+      mContexto.Instance.RemObjeto(fProduto);
     end;
   end;
 end;

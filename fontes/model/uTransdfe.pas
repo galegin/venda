@@ -19,31 +19,21 @@ type
     fTp_Emissao: Integer;
     fDs_Envioxml: String;
     fDs_Retornoxml: String;
-    procedure SetId_Transacao(const Value : String);
-    procedure SetNr_Sequencia(const Value : Integer);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetTp_Evento(const Value : Integer);
-    procedure SetTp_Ambiente(const Value : Integer);
-    procedure SetTp_Emissao(const Value : Integer);
-    procedure SetDs_Envioxml(const Value : String);
-    procedure SetDs_Retornoxml(const Value : String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Transacao : String read fId_Transacao write SetId_Transacao;
-    property Nr_Sequencia : Integer read fNr_Sequencia write SetNr_Sequencia;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Tp_Evento : Integer read fTp_Evento write SetTp_Evento;
-    property Tp_Ambiente : Integer read fTp_Ambiente write SetTp_Ambiente;
-    property Tp_Emissao : Integer read fTp_Emissao write SetTp_Emissao;
-    property Ds_Envioxml : String read fDs_Envioxml write SetDs_Envioxml;
-    property Ds_Retornoxml : String read fDs_Retornoxml write SetDs_Retornoxml;
+    property Id_Transacao : String read fId_Transacao write fId_Transacao;
+    property Nr_Sequencia : Integer read fNr_Sequencia write fNr_Sequencia;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Tp_Evento : Integer read fTp_Evento write fTp_Evento;
+    property Tp_Ambiente : Integer read fTp_Ambiente write fTp_Ambiente;
+    property Tp_Emissao : Integer read fTp_Emissao write fTp_Emissao;
+    property Ds_Envioxml : String read fDs_Envioxml write fDs_Envioxml;
+    property Ds_Retornoxml : String read fDs_Retornoxml write fDs_Retornoxml;
   end;
 
   TTransdfes = class(TList)
@@ -78,24 +68,18 @@ begin
     Nome := 'TRANSDFE';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-    Add('Nr_Sequencia', 'NR_SEQUENCIA');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-    Add('Nr_Sequencia', 'NR_SEQUENCIA');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Tp_Evento', 'TP_EVENTO');
-    Add('Tp_Ambiente', 'TP_AMBIENTE');
-    Add('Tp_Emissao', 'TP_EMISSAO');
-    Add('Ds_Envioxml', 'DS_ENVIOXML');
-    Add('Ds_Retornoxml', 'DS_RETORNOXML');
+    Add('Id_Transacao', 'ID_TRANSACAO', tfKey);
+    Add('Nr_Sequencia', 'NR_SEQUENCIA', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Tp_Evento', 'TP_EVENTO', tfReq);
+    Add('Tp_Ambiente', 'TP_AMBIENTE', tfReq);
+    Add('Tp_Emissao', 'TP_EMISSAO', tfReq);
+    Add('Ds_Envioxml', 'DS_ENVIOXML', tfReq);
+    Add('Ds_Retornoxml', 'DS_RETORNOXML', tfNul);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -104,56 +88,6 @@ begin
 end;
 
 //--
-
-procedure TTransdfe.SetId_Transacao(const Value : String);
-begin
-  fId_Transacao := Value;
-end;
-
-procedure TTransdfe.SetNr_Sequencia(const Value : Integer);
-begin
-  fNr_Sequencia := Value;
-end;
-
-procedure TTransdfe.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TTransdfe.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TTransdfe.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TTransdfe.SetTp_Evento(const Value : Integer);
-begin
-  fTp_Evento := Value;
-end;
-
-procedure TTransdfe.SetTp_Ambiente(const Value : Integer);
-begin
-  fTp_Ambiente := Value;
-end;
-
-procedure TTransdfe.SetTp_Emissao(const Value : Integer);
-begin
-  fTp_Emissao := Value;
-end;
-
-procedure TTransdfe.SetDs_Envioxml(const Value : String);
-begin
-  fDs_Envioxml := Value;
-end;
-
-procedure TTransdfe.SetDs_Retornoxml(const Value : String);
-begin
-  fDs_Retornoxml := Value;
-end;
 
 { TTransdfes }
 

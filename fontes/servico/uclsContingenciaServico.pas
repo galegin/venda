@@ -89,9 +89,7 @@ begin
         vTranscont := TTranscont(vTransconts.Items[I]);
         vWhere := 'Id_Transacao = ''' + vTranscont.Id_Transacao;
         vTransacao := mContexto.Instance.GetObjeto(TTransacao, vWhere) as TTransacao;
-        vDFeServico.EmitirDFeContingencia(vTransacao);
-        if vDFeServico.cStat in [108, 109] then
-          Break;
+        vDFeServico.EmitirDFeGerada(vTransacao);
       end;
     except
       on E : Exception do

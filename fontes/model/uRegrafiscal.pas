@@ -17,23 +17,17 @@ type
     fDs_Regrafiscal: String;
     fIn_Calcimposto: String;
     fImpostos: TRegraimpostos;
-    procedure SetId_Regrafiscal(const Value : Integer);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetDs_Regrafiscal(const Value : String);
-    procedure SetIn_Calcimposto(const Value : String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Regrafiscal : Integer read fId_Regrafiscal write SetId_Regrafiscal;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Ds_Regrafiscal : String read fDs_Regrafiscal write SetDs_Regrafiscal;
-    property In_Calcimposto : String read fIn_Calcimposto write SetIn_Calcimposto;
+    property Id_Regrafiscal : Integer read fId_Regrafiscal write fId_Regrafiscal;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Ds_Regrafiscal : String read fDs_Regrafiscal write fDs_Regrafiscal;
+    property In_Calcimposto : String read fIn_Calcimposto write fIn_Calcimposto;
     property Impostos : TRegraimpostos read fImpostos write fImpostos;
   end;
 
@@ -71,19 +65,14 @@ begin
     Nome := 'REGRAFISCAL';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Regrafiscal', 'ID_REGRAFISCAL');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Regrafiscal', 'ID_REGRAFISCAL');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Ds_Regrafiscal', 'DS_REGRAFISCAL');
-    Add('In_Calcimposto', 'IN_CALCIMPOSTO');
+    Add('Id_Regrafiscal', 'ID_REGRAFISCAL', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Ds_Regrafiscal', 'DS_REGRAFISCAL', tfReq);
+    Add('In_Calcimposto', 'IN_CALCIMPOSTO', tfReq);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -97,36 +86,6 @@ begin
 end;
 
 //--
-
-procedure TRegrafiscal.SetId_Regrafiscal(const Value : Integer);
-begin
-  fId_Regrafiscal := Value;
-end;
-
-procedure TRegrafiscal.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TRegrafiscal.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TRegrafiscal.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TRegrafiscal.SetDs_Regrafiscal(const Value : String);
-begin
-  fDs_Regrafiscal := Value;
-end;
-
-procedure TRegrafiscal.SetIn_Calcimposto(const Value : String);
-begin
-  fIn_Calcimposto := Value;
-end;
 
 { TRegrafiscals }
 

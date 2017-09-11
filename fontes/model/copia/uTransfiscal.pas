@@ -19,7 +19,8 @@ type
     fTp_Modelonf: Integer;
     fCd_Serie: String;
     fNr_Nf: Integer;
-    fTp_Processamento: Integer;
+    fTp_Processamento: String;
+    fDs_Chaveacesso: String;
     fDt_Recebimento: TDateTime;
     fNr_Recibo: String;
     fEventos: TTransdfes;
@@ -34,7 +35,8 @@ type
     procedure SetTp_Modelonf(const Value : Integer);
     procedure SetCd_Serie(const Value : String);
     procedure SetNr_Nf(const Value : Integer);
-    procedure SetTp_Processamento(const Value : Integer);
+    procedure SetTp_Processamento(const Value : String);
+    procedure SetDs_Chaveacesso(const Value: String);
     procedure SetDt_Recebimento(const Value : TDateTime);
     procedure SetNr_Recibo(const Value : String);
   public
@@ -51,12 +53,13 @@ type
     property Tp_Modelonf : Integer read fTp_Modelonf write SetTp_Modelonf;
     property Cd_Serie : String read fCd_Serie write SetCd_Serie;
     property Nr_Nf : Integer read fNr_Nf write SetNr_Nf;
-    property Tp_Processamento : Integer read fTp_Processamento write SetTp_Processamento;
+    property Tp_Processamento : String read fTp_Processamento write SetTp_Processamento;
+    property Ds_Chaveacesso : String read FDs_Chaveacesso write SetDs_Chaveacesso;
     property Dt_Recebimento : TDateTime read fDt_Recebimento write SetDt_Recebimento;
     property Nr_Recibo : String read fNr_Recibo write SetNr_Recibo;
-    property Eventos: TTransdfes read f write f;
-    property Contingencia: TTranscont read f write f;
-    property Inutilizacao: TTransinut read f write f;
+    property Eventos: TTransdfes read fEventos write fEventos;
+    property Contingencia: TTranscont read fContingencia write fContingencia;
+    property Inutilizacao: TTransinut read fInutilizacao write fInutilizacao;
   end;
 
   TTransfiscals = class(TList)
@@ -72,10 +75,16 @@ constructor TTransfiscal.Create(AOwner: TComponent);
 begin
   inherited;
 
+  fEventos:= TTransdfes.Create;
+  fContingencia:= TTranscont.Create(nil);
+  fInutilizacao:= TTransinut.Create(nil);
 end;
 
 destructor TTransfiscal.Destroy;
 begin
+  FreeAndNil(fEventos);
+  FreeAndNil(fContingencia);
+  FreeAndNil(fInutilizacao);
 
   inherited;
 end;
@@ -108,12 +117,26 @@ begin
     Add('Cd_Serie', 'CD_SERIE');
     Add('Nr_Nf', 'NR_NF');
     Add('Tp_Processamento', 'TP_PROCESSAMENTO');
+    Add('Ds_Chaveacesso', 'DS_CHAVEACESSO');
     Add('Dt_Recebimento', 'DT_RECEBIMENTO');
     Add('Nr_Recibo', 'NR_RECIBO');
   end;
 
   Result.Relacoes := TmRelacoes.Create;
   with Result.Relacoes do begin
+
+    with Add('Eventos', TTransdfe, TTransdfes)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Contingencia', TTranscont)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
+    with Add('Inutilizacao', TTransinut)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
   end;
 end;
 
@@ -164,7 +187,12 @@ begin
   fNr_Nf := Value;
 end;
 
-procedure TTransfiscal.SetTp_Processamento(const Value : Integer);
+procedure TTransfiscal.SetDs_Chaveacesso(const Value: String);
+begin
+  FDs_Chaveacesso := Value;
+end;
+
+procedure TTransfiscal.SetTp_Processamento(const Value : String);
 begin
   fTp_Processamento := Value;
 end;

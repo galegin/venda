@@ -4,7 +4,8 @@ interface
 
 uses
   Classes, SysUtils,
-  mMapping;
+  mMapping,
+  uRegrafiscal;
 
 type
   TOperacao = class(TmMapping)
@@ -20,6 +21,7 @@ type
     fCd_Serie: String;
     fCd_Cfop: Integer;
     fId_Regrafiscal: Integer;
+    fRegrafiscal: TRegrafiscal;
     procedure SetId_Operacao(const Value : String);
     procedure SetU_Version(const Value : String);
     procedure SetCd_Operador(const Value : Integer);
@@ -47,6 +49,7 @@ type
     property Cd_Serie : String read fCd_Serie write SetCd_Serie;
     property Cd_Cfop : Integer read fCd_Cfop write SetCd_Cfop;
     property Id_Regrafiscal : Integer read fId_Regrafiscal write SetId_Regrafiscal;
+    property Regrafiscal : TRegrafiscal read fRegrafiscal write fRegrafiscal;
   end;
 
   TOperacaos = class(TList)
@@ -62,10 +65,12 @@ constructor TOperacao.Create(AOwner: TComponent);
 begin
   inherited;
 
+  fRegrafiscal:= TRegrafiscal.Create(nil);
 end;
 
 destructor TOperacao.Destroy;
 begin
+  FreeAndNil(fRegrafiscal);
 
   inherited;
 end;

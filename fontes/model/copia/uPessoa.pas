@@ -15,7 +15,7 @@ type
     fDt_Cadastro: TDateTime;
     fCd_Pessoa: Integer;
     fNm_Pessoa: String;
-    fNr_Cpfncpj: String;
+    fNr_Cpfcnpj: String;
     fNr_Rgie: String;
     fNm_Fantasia: String;
     fCd_Cep: Integer;
@@ -40,7 +40,7 @@ type
     procedure SetDt_Cadastro(const Value : TDateTime);
     procedure SetCd_Pessoa(const Value : Integer);
     procedure SetNm_Pessoa(const Value : String);
-    procedure SetNr_Cpfncpj(const Value : String);
+    procedure SetNr_Cpfcnpj(const Value : String);
     procedure SetNr_Rgie(const Value : String);
     procedure SetNm_Fantasia(const Value : String);
     procedure SetCd_Cep(const Value : Integer);
@@ -70,7 +70,7 @@ type
     property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
     property Cd_Pessoa : Integer read fCd_Pessoa write SetCd_Pessoa;
     property Nm_Pessoa : String read fNm_Pessoa write SetNm_Pessoa;
-    property Nr_Cpfncpj : String read fNr_Cpfncpj write SetNr_Cpfncpj;
+    property Nr_Cpfcnpj : String read fNr_Cpfcnpj write SetNr_Cpfcnpj;
     property Nr_Rgie : String read fNr_Rgie write SetNr_Rgie;
     property Nm_Fantasia : String read fNm_Fantasia write SetNm_Fantasia;
     property Cd_Cep : Integer read fCd_Cep write SetCd_Cep;
@@ -136,7 +136,7 @@ begin
     Add('Dt_Cadastro', 'DT_CADASTRO');
     Add('Cd_Pessoa', 'CD_PESSOA');
     Add('Nm_Pessoa', 'NM_PESSOA');
-    Add('Nr_Cpfncpj', 'NR_CPFNCPJ');
+    Add('Nr_Cpfcnpj', 'Nr_Cpfcnpj');
     Add('Nr_Rgie', 'NR_RGIE');
     Add('Nm_Fantasia', 'NM_FANTASIA');
     Add('Cd_Cep', 'CD_CEP');
@@ -194,9 +194,9 @@ begin
   fNm_Pessoa := Value;
 end;
 
-procedure TPessoa.SetNr_Cpfncpj(const Value : String);
+procedure TPessoa.SetNr_Cpfcnpj(const Value : String);
 begin
-  fNr_Cpfncpj := Value;
+  fNr_Cpfcnpj := Value;
 end;
 
 procedure TPessoa.SetNr_Rgie(const Value : String);

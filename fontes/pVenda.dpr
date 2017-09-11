@@ -56,28 +56,10 @@ uses
   uclsTransacaoServico in 'servico\uclsTransacaoServico.pas',
   uclsTransacaoTef in 'servico\uclsTransacaoTef.pas',
   uclsUsuarioServico in 'servico\uclsUsuarioServico.pas',
-  uclsContexto in 'repositorio\uclsContexto.pas',
-  uclsMapeamento in 'repositorio\uclsMapeamento.pas',
-  uclsMigracao in 'repositorio\uclsMigracao.pas',
-  uclsPopulador in 'repositorio\uclsPopulador.pas',
-  uclsAliqicmsPopulador in 'repositorio\populador\uclsAliqicmsPopulador.pas',
-  uclsCfopPopulador in 'repositorio\populador\uclsCfopPopulador.pas',
-  uclsEstadoPopulador in 'repositorio\populador\uclsEstadoPopulador.pas',
-  uclsMunicipioPopulador in 'repositorio\populador\uclsMunicipioPopulador.pas',
-  uclsNcmPopulador in 'repositorio\populador\uclsNcmPopulador.pas',
-  uclsOperacaoPopulador in 'repositorio\populador\uclsOperacaoPopulador.pas',
-  uclsPaisPopulador in 'repositorio\populador\uclsPaisPopulador.pas',
-  uclsRegrafiscalPopulador in 'repositorio\populador\uclsRegrafiscalPopulador.pas',
   ufrmVenda in 'view\ufrmVenda.pas' {F_Venda},
   ufrmPagto in 'view\ufrmPagto.pas' {F_Pagto},
   uclsTestar in 'view\uclsTestar.pas',
-  ufrmTestar in 'view\ufrmTestar.pas' {F_Testar},
-  DFeComumServico in 'servico\DFeComumServico.pas',
-  DFeConfiguracaoServico in 'servico\DFeConfiguracaoServico.pas',
-  DFeEmissaoServico in 'servico\DFeEmissaoServico.pas',
-  DFeEventoServico in 'servico\DFeEventoServico.pas',
-  DFeFiscalServico in 'servico\DFeFiscalServico.pas',
-  DFeGerarServico in 'servico\DFeGerarServico.pas';
+  ufrmTestar in 'view\ufrmTestar.pas' {F_Testar};
 
 {$R *.res}
 

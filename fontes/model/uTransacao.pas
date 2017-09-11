@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils,
-  mMapping,
+  mMapping, mList,
   uEmpresa, uPessoa, uOperacao,
   uTransfiscal, uTransitem, uTranspagto;
 
@@ -28,17 +28,6 @@ type
     fFiscal: TTransfiscal;
     fItens: TTransitems;
     fPagtos: TTranspagtos;
-    procedure SetId_Transacao(const Value : String);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetId_Empresa(const Value : Integer);
-    procedure SetId_Pessoa(const Value : String);
-    procedure SetId_Operacao(const Value : String);
-    procedure SetDt_Transacao(const Value : TDateTime);
-    procedure SetNr_Transacao(const Value : Integer);
-    procedure SetTp_Situacao(const Value : Integer);
-    procedure SetDt_Cancelamento(const Value : TDateTime);
     function GetVl_Baseicms: Real;
     function GetVl_Baseicmsst: Real;
     function GetVl_Icms: Real;
@@ -58,17 +47,17 @@ type
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Transacao : String read fId_Transacao write SetId_Transacao;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Id_Empresa : Integer read fId_Empresa write SetId_Empresa;
-    property Id_Pessoa : String read fId_Pessoa write SetId_Pessoa;
-    property Id_Operacao : String read fId_Operacao write SetId_Operacao;
-    property Dt_Transacao : TDateTime read fDt_Transacao write SetDt_Transacao;
-    property Nr_Transacao : Integer read fNr_Transacao write SetNr_Transacao;
-    property Tp_Situacao : Integer read fTp_Situacao write SetTp_Situacao;
-    property Dt_Cancelamento : TDateTime read fDt_Cancelamento write SetDt_Cancelamento;
+    property Id_Transacao : String read fId_Transacao write fId_Transacao;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Id_Empresa : Integer read fId_Empresa write fId_Empresa;
+    property Id_Pessoa : String read fId_Pessoa write fId_Pessoa;
+    property Id_Operacao : String read fId_Operacao write fId_Operacao;
+    property Dt_Transacao : TDateTime read fDt_Transacao write fDt_Transacao;
+    property Nr_Transacao : Integer read fNr_Transacao write fNr_Transacao;
+    property Tp_Situacao : Integer read fTp_Situacao write fTp_Situacao;
+    property Dt_Cancelamento : TDateTime read fDt_Cancelamento write fDt_Cancelamento;
     property Empresa: TEmpresa read fEmpresa write fEmpresa;
     property Pessoa: TPessoa read fPessoa write fPessoa;
     property Operacao: TOperacao read fOperacao write fOperacao;
@@ -97,9 +86,6 @@ type
   end;
 
 implementation
-
-uses
-  mList;
 
 { TTransacao }
 
@@ -138,24 +124,19 @@ begin
     Nome := 'TRANSACAO';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Transacao', 'ID_TRANSACAO');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Id_Empresa', 'ID_EMPRESA');
-    Add('Id_Pessoa', 'ID_PESSOA');
-    Add('Id_Operacao', 'ID_OPERACAO');
-    Add('Dt_Transacao', 'DT_TRANSACAO');
-    Add('Nr_Transacao', 'NR_TRANSACAO');
-    Add('Tp_Situacao', 'TP_SITUACAO');
-    Add('Dt_Cancelamento', 'DT_CANCELAMENTO');
+    Add('Id_Transacao', 'ID_TRANSACAO', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Id_Empresa', 'ID_EMPRESA', tfReq);
+    Add('Id_Pessoa', 'ID_PESSOA', tfReq);
+    Add('Id_Operacao', 'ID_OPERACAO', tfReq);
+    Add('Dt_Transacao', 'DT_TRANSACAO', tfReq);
+    Add('Nr_Transacao', 'NR_TRANSACAO', tfReq);
+    Add('Tp_Situacao', 'TP_SITUACAO', tfReq);
+    Add('Dt_Cancelamento', 'DT_CANCELAMENTO', tfNul);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -189,61 +170,6 @@ begin
 end;
 
 //--
-
-procedure TTransacao.SetId_Transacao(const Value : String);
-begin
-  fId_Transacao := Value;
-end;
-
-procedure TTransacao.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TTransacao.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TTransacao.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TTransacao.SetId_Empresa(const Value : Integer);
-begin
-  fId_Empresa := Value;
-end;
-
-procedure TTransacao.SetId_Pessoa(const Value : String);
-begin
-  fId_Pessoa := Value;
-end;
-
-procedure TTransacao.SetId_Operacao(const Value : String);
-begin
-  fId_Operacao := Value;
-end;
-
-procedure TTransacao.SetDt_Transacao(const Value : TDateTime);
-begin
-  fDt_Transacao := Value;
-end;
-
-procedure TTransacao.SetNr_Transacao(const Value : Integer);
-begin
-  fNr_Transacao := Value;
-end;
-
-procedure TTransacao.SetTp_Situacao(const Value : Integer);
-begin
-  fTp_Situacao := Value;
-end;
-
-procedure TTransacao.SetDt_Cancelamento(const Value : TDateTime);
-begin
-  fDt_Cancelamento := Value;
-end;
 
 function TTransacao.GetVl_Baseicms: Real;
 begin

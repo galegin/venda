@@ -3,14 +3,16 @@ unit uTransimposto;
 interface
 
 uses
-  Classes, SysUtils,
-  mMapping;
+  Classes, SysUtils, Math,
+  mMapping,
+  uTipoImposto;
 
 type
   TTransimposto = class(TmMapping)
   private
     fId_Transacao: String;
     fNr_Item: Integer;
+    fCd_Imposto: Integer;
     fU_Version: String;
     fCd_Operador: Integer;
     fDt_Cadastro: TDateTime;
@@ -25,6 +27,7 @@ type
     fCd_Csosn: String;
     procedure SetId_Transacao(const Value : String);
     procedure SetNr_Item(const Value : Integer);
+    procedure SetCd_Imposto(const Value: Integer);
     procedure SetU_Version(const Value : String);
     procedure SetCd_Operador(const Value : Integer);
     procedure SetDt_Cadastro(const Value : TDateTime);
@@ -37,6 +40,15 @@ type
     procedure SetVl_Isento(const Value : Real);
     procedure SetCd_Cst(const Value : String);
     procedure SetCd_Csosn(const Value : String);
+    function GetTp_Imposto: TTipoImposto;
+    function GetVl_Baseicms: Real;
+    function GetVl_Baseicmsst: Real;
+    function GetVl_Cofins: Real;
+    function GetVl_Icms: Real;
+    function GetVl_Icmsst: Real;
+    function GetVl_Ii: Real;
+    function GetVl_Ipi: Real;
+    function GetVl_Pis: Real;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -44,6 +56,7 @@ type
   published
     property Id_Transacao : String read fId_Transacao write SetId_Transacao;
     property Nr_Item : Integer read fNr_Item write SetNr_Item;
+    property Cd_Imposto : Integer read FCd_Imposto write SetCd_Imposto;
     property U_Version : String read fU_Version write SetU_Version;
     property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
     property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
@@ -56,6 +69,15 @@ type
     property Vl_Isento : Real read fVl_Isento write SetVl_Isento;
     property Cd_Cst : String read fCd_Cst write SetCd_Cst;
     property Cd_Csosn : String read fCd_Csosn write SetCd_Csosn;
+    property Tp_Imposto : TTipoImposto read GetTp_Imposto;
+    property Vl_Baseicms : Real read GetVl_Baseicms;
+    property Vl_Icms : Real read GetVl_Icms;
+    property Vl_Baseicmsst : Real read GetVl_Baseicmsst;
+    property Vl_Icmsst : Real read GetVl_Icmsst;
+    property Vl_Ii : Real read GetVl_Ii;
+    property Vl_Ipi : Real read GetVl_Ipi;
+    property Vl_Pis : Real read GetVl_Pis;
+    property Vl_Cofins : Real read GetVl_Cofins;
   end;
 
   TTransimpostos = class(TList)
@@ -94,12 +116,14 @@ begin
   with Result.Chaves do begin
     Add('Id_Transacao', 'ID_TRANSACAO');
     Add('Nr_Item', 'NR_ITEM');
+    Add('Cd_Imposto', 'CD_IMPOSTO');
   end;
 
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
     Add('Id_Transacao', 'ID_TRANSACAO');
     Add('Nr_Item', 'NR_ITEM');
+    Add('Cd_Imposto', 'CD_IMPOSTO');
     Add('U_Version', 'U_VERSION');
     Add('Cd_Operador', 'CD_OPERADOR');
     Add('Dt_Cadastro', 'DT_CADASTRO');
@@ -129,6 +153,11 @@ end;
 procedure TTransimposto.SetNr_Item(const Value : Integer);
 begin
   fNr_Item := Value;
+end;
+
+procedure TTransimposto.SetCd_Imposto(const Value: Integer);
+begin
+  FCd_Imposto := Value;
 end;
 
 procedure TTransimposto.SetU_Version(const Value : String);
@@ -189,6 +218,51 @@ end;
 procedure TTransimposto.SetCd_Csosn(const Value : String);
 begin
   fCd_Csosn := Value;
+end;
+
+function TTransimposto.GetTp_Imposto: TTipoImposto;
+begin
+  Result := IntToTipoImposto(Cd_Imposto);
+end;
+
+function TTransimposto.GetVl_Baseicms: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiICMS, Vl_Basecalculo, 0);
+end;
+
+function TTransimposto.GetVl_Baseicmsst: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiICMSST, Vl_Basecalculo, 0);
+end;
+
+function TTransimposto.GetVl_Cofins: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiCOFINS, Vl_Imposto, 0);
+end;
+
+function TTransimposto.GetVl_Icms: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiICMS, Vl_Imposto, 0);
+end;
+
+function TTransimposto.GetVl_Icmsst: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiICMSST, Vl_Imposto, 0);
+end;
+
+function TTransimposto.GetVl_Ii: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiII, Vl_Imposto, 0);
+end;
+
+function TTransimposto.GetVl_Ipi: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiIPI, Vl_Imposto, 0);
+end;
+
+function TTransimposto.GetVl_Pis: Real;
+begin
+  Result := IfThen(Tp_Imposto = tpiPIS, Vl_Imposto, 0);
 end;
 
 { TTransimpostos }

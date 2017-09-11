@@ -3,8 +3,9 @@ unit uTransitem;
 interface
 
 uses
-  Classes, SysUtils,
-  mMapping;
+  Classes, SysUtils, Math,
+  mMapping, mList,
+  uProduto, uTransimposto;
 
 type
   TTransitem = class(TmMapping)
@@ -30,6 +31,8 @@ type
     fVl_Seguro: Real;
     fVl_Outro: Real;
     fVl_Despesa: Real;
+    fProduto: TProduto;
+    fImpostos: TTransimpostos;
     procedure SetId_Transacao(const Value : String);
     procedure SetNr_Item(const Value : Integer);
     procedure SetU_Version(const Value : String);
@@ -51,6 +54,17 @@ type
     procedure SetVl_Seguro(const Value : Real);
     procedure SetVl_Outro(const Value : Real);
     procedure SetVl_Despesa(const Value : Real);
+    function GetVl_Desconto: Real;
+    function GetVl_Acrescimo: Real;
+    function GetVl_Baseicms: Real;
+    function GetVl_Baseicmsst: Real;
+    function GetVl_Icms: Real;
+    function GetVl_Icmsst: Real;
+    function GetVl_Cofins: Real;
+    function GetVl_Ii: Real;
+    function GetVl_Ipi: Real;
+    function GetVl_Pis: Real;
+    function GetVl_Totitem: Real;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -77,6 +91,19 @@ type
     property Vl_Seguro : Real read fVl_Seguro write SetVl_Seguro;
     property Vl_Outro : Real read fVl_Outro write SetVl_Outro;
     property Vl_Despesa : Real read fVl_Despesa write SetVl_Despesa;
+    property Produto : TProduto read fProduto write fProduto;
+    property Impostos : TTransimpostos read fImpostos write fImpostos;
+    property Vl_Desconto : Real read GetVl_Desconto;
+    property Vl_Acrescimo : Real read GetVl_Acrescimo;
+    property Vl_Baseicms : Real read GetVl_Baseicms;
+    property Vl_Icms : Real read GetVl_Icms;
+    property Vl_Baseicmsst : Real read GetVl_Baseicmsst;
+    property Vl_Icmsst : Real read GetVl_Icmsst;
+    property Vl_Ii : Real read GetVl_Ii;
+    property Vl_Ipi : Real read GetVl_Ipi;
+    property Vl_Pis : Real read GetVl_Pis;
+    property Vl_Cofins : Real read GetVl_Cofins;
+    property Vl_Totitem : Real read GetVl_Totitem;
   end;
 
   TTransitems = class(TList)
@@ -92,10 +119,14 @@ constructor TTransitem.Create(AOwner: TComponent);
 begin
   inherited;
 
+  fProduto:= TProduto.Create(nil);
+  fImpostos:= TTransimpostos.Create;
 end;
 
 destructor TTransitem.Destroy;
 begin
+  FreeAndNil(fProduto);
+  FreeAndNil(fImpostos);
 
   inherited;
 end;
@@ -144,6 +175,15 @@ begin
 
   Result.Relacoes := TmRelacoes.Create;
   with Result.Relacoes do begin
+
+    with Add('Produto', TProduto)^.Campos do begin
+      Add('Id_Produto');
+    end;
+
+    with Add('Impostos', TTransimpostos)^.Campos do begin
+      Add('Id_Transacao');
+    end;
+
   end;
 end;
 
@@ -252,6 +292,65 @@ end;
 procedure TTransitem.SetVl_Despesa(const Value : Real);
 begin
   fVl_Despesa := Value;
+end;
+
+function TTransitem.GetVl_Desconto: Real;
+begin
+  Result :=
+    IfThen(Vl_Variacao < 0, Vl_Variacao, 0) +
+    IfThen(Vl_Variacaocapa < 0, Vl_Variacaocapa, 0);
+end;
+
+function TTransitem.GetVl_Acrescimo: Real;
+begin
+  Result :=
+    IfThen(Vl_Variacao > 0, Vl_Variacao, 0) +
+    IfThen(Vl_Variacaocapa > 0, Vl_Variacaocapa, 0);
+end;
+
+function TTransitem.GetVl_Baseicms: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Baseicms');
+end;
+
+function TTransitem.GetVl_Icms: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Icms');
+end;
+
+function TTransitem.GetVl_Baseicmsst: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Baseicmsst');
+end;
+
+function TTransitem.GetVl_Icmsst: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Icmsst');
+end;
+
+function TTransitem.GetVl_Cofins: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Cofins');
+end;
+
+function TTransitem.GetVl_Ii: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Ii');
+end;
+
+function TTransitem.GetVl_Ipi: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Ipi');
+end;
+
+function TTransitem.GetVl_Pis: Real;
+begin
+  Result := TmList(fImpostos).Sum('Vl_Pis');
+end;
+
+function TTransitem.GetVl_Totitem: Real;
+begin
+  Result := Vl_Unitario * Qt_Item;
 end;
 
 { TTransitems }

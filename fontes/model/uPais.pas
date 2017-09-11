@@ -16,25 +16,18 @@ type
     fCd_Pais: Integer;
     fDs_Pais: String;
     fDs_Sigla: String;
-    procedure SetId_Pais(const Value : Integer);
-    procedure SetU_Version(const Value : String);
-    procedure SetCd_Operador(const Value : Integer);
-    procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetCd_Pais(const Value : Integer);
-    procedure SetDs_Pais(const Value : String);
-    procedure SetDs_Sigla(const Value : String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function GetMapping() : PmMapping; override;
   published
-    property Id_Pais : Integer read fId_Pais write SetId_Pais;
-    property U_Version : String read fU_Version write SetU_Version;
-    property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
-    property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Cd_Pais : Integer read fCd_Pais write SetCd_Pais;
-    property Ds_Pais : String read fDs_Pais write SetDs_Pais;
-    property Ds_Sigla : String read fDs_Sigla write SetDs_Sigla;
+    property Id_Pais : Integer read fId_Pais write fId_Pais;
+    property U_Version : String read fU_Version write fU_Version;
+    property Cd_Operador : Integer read fCd_Operador write fCd_Operador;
+    property Dt_Cadastro : TDateTime read fDt_Cadastro write fDt_Cadastro;
+    property Cd_Pais : Integer read fCd_Pais write fCd_Pais;
+    property Ds_Pais : String read fDs_Pais write fDs_Pais;
+    property Ds_Sigla : String read fDs_Sigla write fDs_Sigla;
   end;
 
   TPaiss = class(TList)
@@ -69,20 +62,15 @@ begin
     Nome := 'PAIS';
   end;
 
-  Result.Chaves := TmChaves.Create;
-  with Result.Chaves do begin
-    Add('Id_Pais', 'ID_PAIS');
-  end;
-
   Result.Campos := TmCampos.Create;
   with Result.Campos do begin
-    Add('Id_Pais', 'ID_PAIS');
-    Add('U_Version', 'U_VERSION');
-    Add('Cd_Operador', 'CD_OPERADOR');
-    Add('Dt_Cadastro', 'DT_CADASTRO');
-    Add('Cd_Pais', 'CD_PAIS');
-    Add('Ds_Pais', 'DS_PAIS');
-    Add('Ds_Sigla', 'DS_SIGLA');
+    Add('Id_Pais', 'ID_PAIS', tfKey);
+    Add('U_Version', 'U_VERSION', tfNul);
+    Add('Cd_Operador', 'CD_OPERADOR', tfReq);
+    Add('Dt_Cadastro', 'DT_CADASTRO', tfReq);
+    Add('Cd_Pais', 'CD_PAIS', tfReq);
+    Add('Ds_Pais', 'DS_PAIS', tfReq);
+    Add('Ds_Sigla', 'DS_SIGLA', tfReq);
   end;
 
   Result.Relacoes := TmRelacoes.Create;
@@ -91,41 +79,6 @@ begin
 end;
 
 //--
-
-procedure TPais.SetId_Pais(const Value : Integer);
-begin
-  fId_Pais := Value;
-end;
-
-procedure TPais.SetU_Version(const Value : String);
-begin
-  fU_Version := Value;
-end;
-
-procedure TPais.SetCd_Operador(const Value : Integer);
-begin
-  fCd_Operador := Value;
-end;
-
-procedure TPais.SetDt_Cadastro(const Value : TDateTime);
-begin
-  fDt_Cadastro := Value;
-end;
-
-procedure TPais.SetCd_Pais(const Value : Integer);
-begin
-  fCd_Pais := Value;
-end;
-
-procedure TPais.SetDs_Pais(const Value : String);
-begin
-  fDs_Pais := Value;
-end;
-
-procedure TPais.SetDs_Sigla(const Value : String);
-begin
-  fDs_Sigla := Value;
-end;
 
 { TPaiss }
 

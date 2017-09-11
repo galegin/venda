@@ -5,7 +5,9 @@ interface
 uses
   Classes, SysUtils,
   mMapping,
-  uCaixacont, uCaixamov;
+  uEmpresa, uTerminal,
+  uCaixacont, uCaixamov,
+  uTranspagto;
 
 type
   TCaixa = class(TmMapping)
@@ -14,18 +16,23 @@ type
     fU_Version: String;
     fCd_Operador: Integer;
     fDt_Cadastro: TDateTime;
-    fCd_Terminal: Integer;
+    fId_Empresa: Integer;
+    fId_Terminal: Integer;
     fDt_Abertura: TDateTime;
     fVl_Abertura: Real;
     fIn_Fechado: String;
     fDt_Fechado: TDateTime;
+    fEmpresa: TEmpresa;
+    fTerminal: TTerminal;
     fContagens: TCaixaconts;
     fMovtos: TCaixamovs;
+    fPagtos: TTranspagtos;
     procedure SetId_Caixa(const Value : Integer);
     procedure SetU_Version(const Value : String);
     procedure SetCd_Operador(const Value : Integer);
     procedure SetDt_Cadastro(const Value : TDateTime);
-    procedure SetCd_Terminal(const Value : Integer);
+    procedure SetId_Empresa(const Value : Integer);
+    procedure SetId_Terminal(const Value : Integer);
     procedure SetDt_Abertura(const Value : TDateTime);
     procedure SetVl_Abertura(const Value : Real);
     procedure SetIn_Fechado(const Value : String);
@@ -39,13 +46,17 @@ type
     property U_Version : String read fU_Version write SetU_Version;
     property Cd_Operador : Integer read fCd_Operador write SetCd_Operador;
     property Dt_Cadastro : TDateTime read fDt_Cadastro write SetDt_Cadastro;
-    property Cd_Terminal : Integer read fCd_Terminal write SetCd_Terminal;
+    property Id_Empresa : Integer read fId_Empresa write SetId_Empresa;
+    property Id_Terminal : Integer read fId_Terminal write SetId_Terminal;
     property Dt_Abertura : TDateTime read fDt_Abertura write SetDt_Abertura;
     property Vl_Abertura : Real read fVl_Abertura write SetVl_Abertura;
     property In_Fechado : String read fIn_Fechado write SetIn_Fechado;
     property Dt_Fechado : TDateTime read fDt_Fechado write SetDt_Fechado;
+    property Empresa : TEmpresa read fEmpresa write fEmpresa;
+    property Terminal : TTerminal read fTerminal write fTerminal;
     property Contagens : TCaixaconts read fContagens write fContagens;
     property Movtos : TCaixamovs read fMovtos write fMovtos;
+    property Pagtos : TTranspagtos read fPagtos write fPagtos;
   end;
 
   TCaixas = class(TList)
@@ -61,14 +72,20 @@ constructor TCaixa.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fContagens := TCaixaconts.Create;
-  fMovtos := TCaixamovs.Create;
+  fEmpresa:= TEmpresa.Create(nil);
+  fTerminal:= TTerminal.Create(nil);
+  fContagens:= TCaixaconts.Create;
+  fMovtos:= TCaixamovs.Create;
+  fPagtos:= TTranspagtos.Create;
 end;
 
 destructor TCaixa.Destroy;
 begin
+  FreeAndNil(fEmpresa);
+  FreeAndNil(fTerminal);
   FreeAndNil(fContagens);
   FreeAndNil(fMovtos);
+  FreeAndNil(fPagtos);
 
   inherited;
 end;
@@ -105,11 +122,23 @@ begin
   Result.Relacoes := TmRelacoes.Create;
   with Result.Relacoes do begin
 
+    with Add('Empresa', TEmpresa)^.Campos do begin
+      Add('Id_Empresa');
+    end;
+
+    with Add('Terminal', TTerminal)^.Campos do begin
+      Add('Id_Terminal');
+    end;
+
     with Add('Contagens', TCaixacont, TCaixaconts)^.Campos do begin
       Add('Id_Caixa');
     end;
 
     with Add('Movtos', TCaixamov, TCaixamovs)^.Campos do begin
+      Add('Id_Caixa');
+    end;
+
+    with Add('Pagtos', TTranspagto, TTranspagtos)^.Campos do begin
       Add('Id_Caixa');
     end;
 
@@ -138,9 +167,14 @@ begin
   fDt_Cadastro := Value;
 end;
 
-procedure TCaixa.SetCd_Terminal(const Value : Integer);
+procedure TCaixa.SetId_Empresa(const Value : Integer);
 begin
-  fCd_Terminal := Value;
+  fId_Empresa := Value;
+end;
+
+procedure TCaixa.SetId_Terminal(const Value : Integer);
+begin
+  fId_Terminal := Value;
 end;
 
 procedure TCaixa.SetDt_Abertura(const Value : TDateTime);
